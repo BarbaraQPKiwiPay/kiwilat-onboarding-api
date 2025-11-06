@@ -5,8 +5,8 @@ WORKDIR /app
 # Copiar todos los archivos del proyecto
 COPY . .
 
-# Construir la aplicación
-RUN mvn clean package -DskipTests
+# Construir la aplicación sin compilar ni ejecutar tests
+RUN mvn clean package -Dmaven.test.skip=true
 
 # Exponer el puerto
 EXPOSE 8080
