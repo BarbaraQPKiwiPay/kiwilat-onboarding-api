@@ -27,8 +27,6 @@ public class ClinicalDataQueryServiceImpl implements ClinicalDataQueryService {
         response.setMedicalCategoryId(clinicalData.getMedicalCategoryId());
         response.setClinicId(clinicalData.getClinicId());
         response.setBranchId(clinicalData.getBranchId());
-        response.setMonthlyIncome(clinicalData.getMonthlyIncome());
-        response.setCurrency(clinicalData.getCurrency());
         response.setCreatedAt(clinicalData.getCreatedAt().toString());
         response.setUpdatedAt(clinicalData.getUpdatedAt() != null ? 
                             clinicalData.getUpdatedAt().toString() : null);
