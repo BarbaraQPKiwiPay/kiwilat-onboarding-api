@@ -40,11 +40,7 @@ public class ClinicalDataCommandServiceImpl implements ClinicalDataCommandServic
             throw ClinicalDataBusinessException.clinicalDataAlreadyExists();
         }
 
-        // 3. Validar monthly income
-        if (request.getMonthlyIncome() == null || 
-            request.getMonthlyIncome().compareTo(BigDecimal.ZERO) <= 0) {
-            throw ClinicalDataBusinessException.invalidMonthlyIncome();
-        }
+
 
         // 4. Validar que la sede pertenece a la clínica
         if (!clinicBranchRepository.existsByIdAndClinicId(request.getBranchId(), request.getClinicId())) {
@@ -56,9 +52,7 @@ public class ClinicalDataCommandServiceImpl implements ClinicalDataCommandServic
             clientId,
             request.getMedicalCategoryId(),
             request.getClinicId(),
-            request.getBranchId(),
-            request.getMonthlyIncome(),
-            request.getCurrency()
+            request.getBranchId()
         );
 
         clinicalData = clinicalDataRepository.save(clinicalData);
@@ -70,11 +64,7 @@ public class ClinicalDataCommandServiceImpl implements ClinicalDataCommandServic
         ClinicalData existingData = clinicalDataRepository.findByClientId(clientId)
             .orElseThrow(ClinicalDataBusinessException::clinicalDataNotFound);
 
-        // Validar monthly income
-        if (request.getMonthlyIncome() == null || 
-            request.getMonthlyIncome().compareTo(BigDecimal.ZERO) <= 0) {
-            throw ClinicalDataBusinessException.invalidMonthlyIncome();
-        }
+
 
         // Validar que la sede pertenece a la clínica
         if (!clinicBranchRepository.existsByIdAndClinicId(request.getBranchId(), request.getClinicId())) {
@@ -82,12 +72,10 @@ public class ClinicalDataCommandServiceImpl implements ClinicalDataCommandServic
         }
 
         // Actualizar campos
-        existingData.setMedicalCategoryId(request.getMedicalCategoryId());
-        existingData.setClinicId(request.getClinicId());
-        existingData.setBranchId(request.getBranchId());
-        existingData.setMonthlyIncome(request.getMonthlyIncome());
-        existingData.setCurrency(request.getCurrency());
-        existingData.setUpdatedAt(OffsetDateTime.now());
+    existingData.setMedicalCategoryId(request.getMedicalCategoryId());
+    existingData.setClinicId(request.getClinicId());
+    existingData.setBranchId(request.getBranchId());
+    existingData.setUpdatedAt(OffsetDateTime.now());
 
         existingData = clinicalDataRepository.save(existingData);
         return toClinicalDataResponse(existingData);
@@ -103,16 +91,14 @@ public class ClinicalDataCommandServiceImpl implements ClinicalDataCommandServic
 
     private ClinicalDataResponse toClinicalDataResponse(ClinicalData clinicalData) {
         ClinicalDataResponse response = new ClinicalDataResponse();
-        response.setId("CD-" + clinicalData.getId());
-        response.setClientId(clinicalData.getClientId());
-        response.setMedicalCategoryId(clinicalData.getMedicalCategoryId());
-        response.setClinicId(clinicalData.getClinicId());
-        response.setBranchId(clinicalData.getBranchId());
-        response.setMonthlyIncome(clinicalData.getMonthlyIncome());
-        response.setCurrency(clinicalData.getCurrency());
-        response.setCreatedAt(clinicalData.getCreatedAt().toString());
-        response.setUpdatedAt(clinicalData.getUpdatedAt() != null ? 
-                            clinicalData.getUpdatedAt().toString() : null);
+    response.setId("CD-" + clinicalData.getId());
+    response.setClientId(clinicalData.getClientId());
+    response.setMedicalCategoryId(clinicalData.getMedicalCategoryId());
+    response.setClinicId(clinicalData.getClinicId());
+    response.setBranchId(clinicalData.getBranchId());
+    response.setCreatedAt(clinicalData.getCreatedAt().toString());
+    response.setUpdatedAt(clinicalData.getUpdatedAt() != null ? 
+                clinicalData.getUpdatedAt().toString() : null);
         return response;
     }
 }

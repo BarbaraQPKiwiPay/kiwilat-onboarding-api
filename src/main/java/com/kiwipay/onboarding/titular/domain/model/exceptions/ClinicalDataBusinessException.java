@@ -43,11 +43,4 @@ public class ClinicalDataBusinessException extends RuntimeException {
         );
     }
     
-    public static ClinicalDataBusinessException invalidMonthlyIncome() {
-        return new ClinicalDataBusinessException(
-            "Monthly income must be greater than 0", 
-            "INVALID_MONTHLY_INCOME", 
-            400
-        );
-    }
 }

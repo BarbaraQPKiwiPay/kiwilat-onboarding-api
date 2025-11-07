@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
@@ -20,40 +19,31 @@ public class ClinicalData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(name = "client_id", nullable = false, unique = true)
     private Long clientId;
-    
+
     @Column(name = "medical_category_id", nullable = false)
     private String medicalCategoryId;
-    
+
     @Column(name = "clinic_id", nullable = false)
     private String clinicId;
-    
+
     @Column(name = "branch_id", nullable = false)
     private String branchId;
-    
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal monthlyIncome;
-    
-    @Column(nullable = false, length = 3)
-    private String currency = "PEN";
-    
+
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
-    
-    public ClinicalData(Long clientId, String medicalCategoryId, String clinicId, 
-                       String branchId, BigDecimal monthlyIncome, String currency) {
+
+    public ClinicalData(Long clientId, String medicalCategoryId, String clinicId, String branchId) {
         this.clientId = clientId;
         this.medicalCategoryId = medicalCategoryId;
         this.clinicId = clinicId;
         this.branchId = branchId;
-        this.monthlyIncome = monthlyIncome;
-        this.currency = currency != null ? currency : "PEN";
         this.createdAt = OffsetDateTime.now();
         this.updatedAt = null;
     }
-    
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -61,7 +51,7 @@ public class ClinicalData {
         ClinicalData that = (ClinicalData) o;
         return Objects.equals(id, that.id);
     }
-    
+
     @Override
     public int hashCode() {
         return Objects.hash(id);

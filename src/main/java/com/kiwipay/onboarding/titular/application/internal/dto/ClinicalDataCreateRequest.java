@@ -11,6 +11,4 @@ public class ClinicalDataCreateRequest {
     private String medicalCategoryId;
     private String clinicId;
     private String branchId;
-    private BigDecimal monthlyIncome;
-    private String currency = "PEN";
 }
