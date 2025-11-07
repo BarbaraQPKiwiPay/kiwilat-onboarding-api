@@ -1,8 +1,0 @@
-# Ejemplo de configuración para entorno local
-spring.datasource.url=jdbc:mysql://localhost:3306/kiwi_db
-spring.datasource.username=usuario
-spring.datasource.password=contraseña
-spring.jpa.hibernate.ddl-auto=update
-server.port=8080
-# Otras variables sensibles
-jwt.secret=tu_jwt_secreto

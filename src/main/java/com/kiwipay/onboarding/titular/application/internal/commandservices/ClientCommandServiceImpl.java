@@ -15,7 +15,6 @@ import com.kiwipay.onboarding.titular.application.internal.dto.ClientUpdateReque
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
-//handlers de casos de uso “write”
 @Service
 public class ClientCommandServiceImpl implements ClientCommandService {
 

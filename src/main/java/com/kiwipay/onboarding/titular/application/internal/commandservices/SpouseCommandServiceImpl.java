@@ -30,23 +30,19 @@ public class SpouseCommandServiceImpl implements SpouseCommandService {
 
     @Override
     public SpouseResponse createSpouse(Long clientId, SpouseCreateRequest request) {
-        // 1. Verificar que el cliente existe y tiene estado civil compatible
         Client client = clientRepository.findById(clientId)
             .orElseThrow(() -> new RuntimeException("Client not found with id: " + clientId));
         
         validateClientMaritalStatus(client);
         
-        // 2. Verificar que no existe ya un cónyuge para este cliente
         if (spouseRepository.existsByClientId(clientId)) {
             throw SpouseBusinessException.spouseAlreadyExists();
         }
         
-        // 3. Verificar que el documento no esté ya vinculado a otro cónyuge
         if (spouseRepository.existsByDocumentNumber(request.getDocumentNumber())) {
             throw SpouseBusinessException.documentAlreadyLinked();
         }
         
-        // 4. Validar formato de documento
         validateDocumentFormat(request.getDocumentType(), request.getDocumentNumber());
         
         // 5. Crear el cónyuge
@@ -69,7 +65,6 @@ public class SpouseCommandServiceImpl implements SpouseCommandService {
         Spouse existingSpouse = spouseRepository.findByClientId(clientId)
             .orElseThrow(SpouseBusinessException::spouseNotFound);
         
-        // Actualizar campos (reemplazo completo)
         existingSpouse.setFirstNames(request.getFirstNames());
         existingSpouse.setLastNames(request.getLastNames());
         existingSpouse.setEmail(request.getEmail());
@@ -85,7 +80,6 @@ public class SpouseCommandServiceImpl implements SpouseCommandService {
         Spouse existingSpouse = spouseRepository.findByClientId(clientId)
             .orElseThrow(SpouseBusinessException::spouseNotFound);
         
-        // Actualizar solo los campos que vienen en el request (parcial)
         if (request.getFirstNames() != null) {
             existingSpouse.setFirstNames(request.getFirstNames());
         }
@@ -112,7 +106,6 @@ public class SpouseCommandServiceImpl implements SpouseCommandService {
         spouseRepository.deleteByClientId(clientId);
     }
 
-    // Validaciones de negocio
     private void validateClientMaritalStatus(Client client) {
         MaritalStatus maritalStatus = client.getMaritalStatus();
         if (maritalStatus != MaritalStatus.MARRIED && maritalStatus != MaritalStatus.COHABITANT) {
@@ -138,7 +131,6 @@ public class SpouseCommandServiceImpl implements SpouseCommandService {
                     throw new IllegalArgumentException("Passport must have between 8 and 12 characters");
                 }
                 break;
-            // Agregar más validaciones según sea necesario
         }
     }
 
