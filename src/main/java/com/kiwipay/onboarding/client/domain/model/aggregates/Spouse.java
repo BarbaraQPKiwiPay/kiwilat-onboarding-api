@@ -1,6 +1,6 @@
-package com.kiwipay.onboarding.titular.domain.model.aggregates;
+package com.kiwipay.onboarding.client.domain.model.aggregates;
 
-import com.kiwipay.onboarding.titular.domain.model.valueobjects.DocumentType;
+import com.kiwipay.onboarding.client.domain.model.valueobjects.DocumentType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

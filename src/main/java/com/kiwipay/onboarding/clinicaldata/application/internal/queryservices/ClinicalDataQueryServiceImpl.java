@@ -1,6 +1,6 @@
-package com.kiwipay.onboarding.titular.application.internal.queryservices;
+package com.kiwipay.onboarding.clinicaldata.application.internal.queryservices;
 
-import com.kiwipay.onboarding.titular.application.internal.dto.ClinicalDataResponse;
+import com.kiwipay.onboarding.clinicaldata.application.internal.dto.ClinicalDataResponse;
 import com.kiwipay.onboarding.clinicaldata.domain.model.aggregates.ClinicalData;
 import com.kiwipay.onboarding.clinicaldata.domain.services.ClinicalDataQueryService;
 import com.kiwipay.onboarding.clinicaldata.infrastructure.persistence.jpa.repositories.ClinicalDataRepository;

@@ -2,10 +2,12 @@ package com.kiwipay.onboarding.catalog.interfaces.rest;
 
 import com.kiwipay.onboarding.catalog.application.internal.dto.ClinicBranchDto;
 import com.kiwipay.onboarding.catalog.application.internal.dto.ClinicDto;
+import com.kiwipay.onboarding.catalog.domain.exceptions.CatalogBusinessException;
 import com.kiwipay.onboarding.catalog.domain.services.CatalogQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,9 +47,28 @@ public class ClinicCatalogController {
 
     @Operation(summary = "Get branches by clinic")
     @GetMapping("/{clinicId}/branches")
-    public ResponseEntity<List<ClinicBranchDto>> getBranchesByClinic(
+    public ResponseEntity<?> getBranchesByClinic(
             @PathVariable String clinicId) {
-        List<ClinicBranchDto> branches = catalogQueryService.getBranchesByClinic(clinicId);
-        return ResponseEntity.ok(branches);
+        try {
+            List<ClinicBranchDto> branches = catalogQueryService.getBranchesByClinic(clinicId);
+            return ResponseEntity.ok(branches);
+        } catch (CatalogBusinessException e) {
+            return ResponseEntity.status(e.getHttpStatus())
+                .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
+        }
+    }
+
+    // Error response class
+    public static class ErrorResponse {
+        private String errorCode;
+        private String message;
+
+        public ErrorResponse(String errorCode, String message) {
+            this.errorCode = errorCode;
+            this.message = message;
+        }
+
+        public String getErrorCode() { return errorCode; }
+        public String getMessage() { return message; }
     }
 }

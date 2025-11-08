@@ -1,4 +1,4 @@
-package com.kiwipay.onboarding.titular.infrastructure.persistence.jpa.repositories;
+package com.kiwipay.onboarding.client.infrastructure.persistence.jpa.repositories;
 
 import com.kiwipay.onboarding.client.domain.model.aggregates.Spouse;
 import org.springframework.data.jpa.repository.JpaRepository;

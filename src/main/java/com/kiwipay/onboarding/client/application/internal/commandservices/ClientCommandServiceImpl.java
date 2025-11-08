@@ -1,17 +1,18 @@
-package com.kiwipay.onboarding.titular.application.internal.commandservices;
+package com.kiwipay.onboarding.client.application.internal.commandservices;
 
-import com.kiwipay.onboarding.titular.infrastructure.persistence.jpa.repositories.ClientRepository;
+import com.kiwipay.onboarding.client.domain.model.exceptions.ClientBusinessException;
+import com.kiwipay.onboarding.client.infrastructure.persistence.jpa.repositories.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.kiwipay.onboarding.titular.application.internal.dto.ClientCreateRequest;
-import com.kiwipay.onboarding.titular.application.internal.dto.ClientResponse;
+import com.kiwipay.onboarding.client.application.internal.dto.ClientCreateRequest;
+import com.kiwipay.onboarding.client.application.internal.dto.ClientResponse;
 import com.kiwipay.onboarding.client.domain.model.aggregates.Client;
 import com.kiwipay.onboarding.client.domain.model.entities.Address;
 import com.kiwipay.onboarding.client.domain.model.valueobjects.DocumentType;
 import com.kiwipay.onboarding.client.domain.model.valueobjects.Gender;
 import com.kiwipay.onboarding.client.domain.model.valueobjects.MaritalStatus;
 import com.kiwipay.onboarding.client.domain.services.ClientCommandService;
-import com.kiwipay.onboarding.titular.application.internal.dto.ClientUpdateRequest;
+import com.kiwipay.onboarding.client.application.internal.dto.ClientUpdateRequest;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
@@ -23,6 +24,20 @@ public class ClientCommandServiceImpl implements ClientCommandService {
 
 	@Override
 	public ClientResponse createClient(ClientCreateRequest request) {
+		// Validar unicidad de documento y email
+		if (clientRepository.existsByDocumentNumber(request.getDocumentNumber())) {
+			throw ClientBusinessException.documentAlreadyExists();
+		}
+		if (clientRepository.existsByEmail(request.getEmail())) {
+			throw ClientBusinessException.emailAlreadyExists();
+		}
+		// Validar gender
+		Gender gender;
+		try {
+			gender = Gender.valueOf(request.getGender());
+		} catch (IllegalArgumentException | NullPointerException e) {
+			throw ClientBusinessException.invalidGender();
+		}
 		Address address = new Address(
 			request.getAddress().getDepartmentId(),
 			request.getAddress().getProvinceId(),
@@ -35,7 +50,7 @@ public class ClientCommandServiceImpl implements ClientCommandService {
 			request.getFirstNames(),
 			request.getLastNames(),
 			MaritalStatus.valueOf(request.getMaritalStatus()),
-			Gender.valueOf(request.getGender()),
+			gender,
 			LocalDate.parse(request.getBirthDate()),
 			request.getEmail(),
 			request.getPhone(),

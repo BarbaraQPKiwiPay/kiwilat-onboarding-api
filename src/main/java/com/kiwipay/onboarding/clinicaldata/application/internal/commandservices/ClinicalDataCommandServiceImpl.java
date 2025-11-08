@@ -1,11 +1,11 @@
-package com.kiwipay.onboarding.titular.application.internal.commandservices;
+package com.kiwipay.onboarding.clinicaldata.application.internal.commandservices;
 
-import com.kiwipay.onboarding.titular.application.internal.dto.ClinicalDataCreateRequest;
-import com.kiwipay.onboarding.titular.application.internal.dto.ClinicalDataResponse;
+import com.kiwipay.onboarding.clinicaldata.application.internal.dto.ClinicalDataCreateRequest;
+import com.kiwipay.onboarding.clinicaldata.application.internal.dto.ClinicalDataResponse;
 import com.kiwipay.onboarding.clinicaldata.domain.model.aggregates.ClinicalData;
 import com.kiwipay.onboarding.clinicaldata.domain.model.exceptions.ClinicalDataBusinessException;
 import com.kiwipay.onboarding.clinicaldata.domain.services.ClinicalDataCommandService;
-import com.kiwipay.onboarding.titular.infrastructure.persistence.jpa.repositories.ClinicBranchRepository;
+import com.kiwipay.onboarding.catalog.infrastructure.persistence.jpa.repositories.ClinicBranchRepository;
 import com.kiwipay.onboarding.clinicaldata.infrastructure.persistence.jpa.repositories.ClinicalDataRepository;
 import com.kiwipay.onboarding.client.infrastructure.persistence.jpa.repositories.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;

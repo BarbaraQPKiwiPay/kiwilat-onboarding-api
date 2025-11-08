@@ -1,6 +1,6 @@
-package com.kiwipay.onboarding.titular.domain.services;
+package com.kiwipay.onboarding.client.domain.services;
 
-import com.kiwipay.onboarding.titular.application.internal.dto.ClientResponse;
+import com.kiwipay.onboarding.client.application.internal.dto.ClientResponse;
 import java.util.List;
 
 public interface ClientQueryService {

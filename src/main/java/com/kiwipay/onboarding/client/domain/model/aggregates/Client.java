@@ -1,9 +1,9 @@
-package com.kiwipay.onboarding.titular.domain.model.aggregates;
+package com.kiwipay.onboarding.client.domain.model.aggregates;
 
-import com.kiwipay.onboarding.titular.domain.model.entities.Address;
-import com.kiwipay.onboarding.titular.domain.model.valueobjects.DocumentType;
-import com.kiwipay.onboarding.titular.domain.model.valueobjects.Gender;
-import com.kiwipay.onboarding.titular.domain.model.valueobjects.MaritalStatus;
+import com.kiwipay.onboarding.client.domain.model.entities.Address;
+import com.kiwipay.onboarding.client.domain.model.valueobjects.DocumentType;
+import com.kiwipay.onboarding.client.domain.model.valueobjects.Gender;
+import com.kiwipay.onboarding.client.domain.model.valueobjects.MaritalStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,18 +16,26 @@ import java.util.Objects;
 @Setter
 @Getter
 @Entity
+@Table(
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"documentNumber"}),
+        @UniqueConstraint(columnNames = {"email"})
+    }
+)
 @NoArgsConstructor
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private DocumentType documentType;
+    @Column(unique = true, nullable = false)
     private String documentNumber;
     private String firstNames;
     private String lastNames;
     private MaritalStatus maritalStatus;
     private Gender gender;
     private LocalDate birthDate;
+    @Column(unique = true, nullable = false)
     private String email;
     private String phone;
 

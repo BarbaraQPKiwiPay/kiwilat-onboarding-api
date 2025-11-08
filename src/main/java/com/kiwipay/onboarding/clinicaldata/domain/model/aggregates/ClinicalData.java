@@ -1,4 +1,4 @@
-package com.kiwipay.onboarding.titular.domain.model.aggregates;
+package com.kiwipay.onboarding.clinicaldata.domain.model.aggregates;
 
 import jakarta.persistence.*;
 import lombok.Getter;

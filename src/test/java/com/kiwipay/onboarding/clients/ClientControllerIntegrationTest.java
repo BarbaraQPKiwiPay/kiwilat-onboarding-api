@@ -1,9 +1,9 @@
 package com.kiwipay.onboarding.clients;
 
-import com.kiwipay.onboarding.titular.domain.model.entities.Address;
-import com.kiwipay.onboarding.titular.domain.model.valueobjects.DocumentType;
-import com.kiwipay.onboarding.titular.domain.model.valueobjects.Gender;
-import com.kiwipay.onboarding.titular.domain.model.valueobjects.MaritalStatus;
+import com.kiwipay.onboarding.client.domain.model.entities.Address;
+import com.kiwipay.onboarding.client.domain.model.valueobjects.DocumentType;
+import com.kiwipay.onboarding.client.domain.model.valueobjects.Gender;
+import com.kiwipay.onboarding.client.domain.model.valueobjects.MaritalStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

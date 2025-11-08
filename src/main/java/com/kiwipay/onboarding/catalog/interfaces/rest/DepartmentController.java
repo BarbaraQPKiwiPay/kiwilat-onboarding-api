@@ -1,6 +1,7 @@
 package com.kiwipay.onboarding.catalog.interfaces.rest;
 
 import com.kiwipay.onboarding.catalog.application.internal.dto.DepartmentDto;
+import com.kiwipay.onboarding.catalog.domain.exceptions.CatalogBusinessException;
 import com.kiwipay.onboarding.catalog.domain.services.LocationQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +27,28 @@ public class DepartmentController {
     }
 
     @GetMapping("/{departmentId}")
-    public ResponseEntity<DepartmentDto> getDepartmentById(@PathVariable String departmentId) {
-        return locationQueryService.getDepartmentById(departmentId)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> getDepartmentById(@PathVariable String departmentId) {
+        try {
+            return locationQueryService.getDepartmentById(departmentId)
+                .map(ResponseEntity::ok)
+                .orElseThrow(CatalogBusinessException::departmentNotFound);
+        } catch (CatalogBusinessException e) {
+            return ResponseEntity.status(e.getHttpStatus())
+                .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
+        }
+    }
+
+    // Error response class
+    public static class ErrorResponse {
+        private String errorCode;
+        private String message;
+
+        public ErrorResponse(String errorCode, String message) {
+            this.errorCode = errorCode;
+            this.message = message;
+        }
+
+        public String getErrorCode() { return errorCode; }
+        public String getMessage() { return message; }
     }
 }

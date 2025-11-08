@@ -1,9 +1,9 @@
-package com.kiwipay.onboarding.titular.interfaces.rest;
+package com.kiwipay.onboarding.client.interfaces.rest;
 
-import com.kiwipay.onboarding.titular.application.internal.dto.SpouseCreateRequest;
-import com.kiwipay.onboarding.titular.application.internal.dto.SpousePatchRequest;
-import com.kiwipay.onboarding.titular.application.internal.dto.SpouseResponse;
-import com.kiwipay.onboarding.titular.application.internal.dto.SpouseUpdateRequest;
+import com.kiwipay.onboarding.client.application.internal.dto.SpouseCreateRequest;
+import com.kiwipay.onboarding.client.application.internal.dto.SpousePatchRequest;
+import com.kiwipay.onboarding.client.application.internal.dto.SpouseResponse;
+import com.kiwipay.onboarding.client.application.internal.dto.SpouseUpdateRequest;
 import com.kiwipay.onboarding.client.domain.model.exceptions.SpouseBusinessException;
 import com.kiwipay.onboarding.client.domain.services.SpouseCommandService;
 import com.kiwipay.onboarding.client.domain.services.SpouseQueryService;

@@ -1,7 +1,7 @@
-package com.kiwipay.onboarding.titular.domain.services;
+package com.kiwipay.onboarding.clinicaldata.domain.services;
 
-import com.kiwipay.onboarding.titular.application.internal.dto.ClinicalDataCreateRequest;
-import com.kiwipay.onboarding.titular.application.internal.dto.ClinicalDataResponse;
+import com.kiwipay.onboarding.clinicaldata.application.internal.dto.ClinicalDataCreateRequest;
+import com.kiwipay.onboarding.clinicaldata.application.internal.dto.ClinicalDataResponse;
 
 public interface ClinicalDataCommandService {
     ClinicalDataResponse createClinicalData(Long clientId, ClinicalDataCreateRequest request);

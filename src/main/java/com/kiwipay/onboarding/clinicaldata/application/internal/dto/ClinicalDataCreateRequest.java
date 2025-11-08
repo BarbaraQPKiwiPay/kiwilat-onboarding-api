@@ -1,9 +1,7 @@
-package com.kiwipay.onboarding.titular.application.internal.dto;
+package com.kiwipay.onboarding.clinicaldata.application.internal.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor

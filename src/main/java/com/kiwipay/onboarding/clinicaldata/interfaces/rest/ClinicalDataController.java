@@ -1,7 +1,7 @@
-package com.kiwipay.onboarding.titular.interfaces.rest;
+package com.kiwipay.onboarding.clinicaldata.interfaces.rest;
 
-import com.kiwipay.onboarding.titular.application.internal.dto.ClinicalDataCreateRequest;
-import com.kiwipay.onboarding.titular.application.internal.dto.ClinicalDataResponse;
+import com.kiwipay.onboarding.clinicaldata.application.internal.dto.ClinicalDataCreateRequest;
+import com.kiwipay.onboarding.clinicaldata.application.internal.dto.ClinicalDataResponse;
 import com.kiwipay.onboarding.clinicaldata.domain.model.exceptions.ClinicalDataBusinessException;
 import com.kiwipay.onboarding.clinicaldata.domain.services.ClinicalDataCommandService;
 import com.kiwipay.onboarding.clinicaldata.domain.services.ClinicalDataQueryService;

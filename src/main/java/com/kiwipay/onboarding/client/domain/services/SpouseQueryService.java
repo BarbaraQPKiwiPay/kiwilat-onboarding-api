@@ -1,6 +1,6 @@
-package com.kiwipay.onboarding.titular.domain.services;
+package com.kiwipay.onboarding.client.domain.services;
 
-import com.kiwipay.onboarding.titular.application.internal.dto.SpouseResponse;
+import com.kiwipay.onboarding.client.application.internal.dto.SpouseResponse;
 
 public interface SpouseQueryService {
     SpouseResponse getSpouseByClientId(Long clientId);

@@ -1,17 +1,17 @@
-package com.kiwipay.onboarding.titular.application.internal.commandservices;
+package com.kiwipay.onboarding.client.application.internal.commandservices;
 
-import com.kiwipay.onboarding.titular.application.internal.dto.SpouseCreateRequest;
-import com.kiwipay.onboarding.titular.application.internal.dto.SpousePatchRequest;
-import com.kiwipay.onboarding.titular.application.internal.dto.SpouseResponse;
-import com.kiwipay.onboarding.titular.application.internal.dto.SpouseUpdateRequest;
+import com.kiwipay.onboarding.client.application.internal.dto.SpouseCreateRequest;
+import com.kiwipay.onboarding.client.application.internal.dto.SpousePatchRequest;
+import com.kiwipay.onboarding.client.application.internal.dto.SpouseResponse;
+import com.kiwipay.onboarding.client.application.internal.dto.SpouseUpdateRequest;
 import com.kiwipay.onboarding.client.domain.model.aggregates.Client;
 import com.kiwipay.onboarding.client.domain.model.aggregates.Spouse;
 import com.kiwipay.onboarding.client.domain.model.exceptions.SpouseBusinessException;
 import com.kiwipay.onboarding.client.domain.model.valueobjects.DocumentType;
 import com.kiwipay.onboarding.client.domain.model.valueobjects.MaritalStatus;
 import com.kiwipay.onboarding.client.domain.services.SpouseCommandService;
-import com.kiwipay.onboarding.titular.infrastructure.persistence.jpa.repositories.ClientRepository;
-import com.kiwipay.onboarding.titular.infrastructure.persistence.jpa.repositories.SpouseRepository;
+import com.kiwipay.onboarding.client.infrastructure.persistence.jpa.repositories.ClientRepository;
+import com.kiwipay.onboarding.client.infrastructure.persistence.jpa.repositories.SpouseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,9 +1,9 @@
-package com.kiwipay.onboarding.titular.application.internal.queryservices;
+package com.kiwipay.onboarding.client.application.internal.queryservices;
 
-import com.kiwipay.onboarding.titular.application.internal.dto.SpouseResponse;
+import com.kiwipay.onboarding.client.application.internal.dto.SpouseResponse;
 import com.kiwipay.onboarding.client.domain.model.aggregates.Spouse;
 import com.kiwipay.onboarding.client.domain.services.SpouseQueryService;
-import com.kiwipay.onboarding.titular.infrastructure.persistence.jpa.repositories.SpouseRepository;
+import com.kiwipay.onboarding.client.infrastructure.persistence.jpa.repositories.SpouseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

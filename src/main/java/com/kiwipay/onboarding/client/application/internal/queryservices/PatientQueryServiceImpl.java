@@ -1,10 +1,10 @@
-package com.kiwipay.onboarding.titular.application.internal.queryservices;
+package com.kiwipay.onboarding.client.application.internal.queryservices;
 
-import com.kiwipay.onboarding.titular.application.internal.dto.PatientResponse;
-import com.kiwipay.onboarding.titular.application.internal.dto.PatientSummaryResponse;
+import com.kiwipay.onboarding.client.application.internal.dto.PatientResponse;
+import com.kiwipay.onboarding.client.application.internal.dto.PatientSummaryResponse;
 import com.kiwipay.onboarding.client.domain.model.aggregates.Patient;
 import com.kiwipay.onboarding.client.domain.services.PatientQueryService;
-import com.kiwipay.onboarding.titular.infrastructure.persistence.jpa.repositories.PatientRepository;
+import com.kiwipay.onboarding.client.infrastructure.persistence.jpa.repositories.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

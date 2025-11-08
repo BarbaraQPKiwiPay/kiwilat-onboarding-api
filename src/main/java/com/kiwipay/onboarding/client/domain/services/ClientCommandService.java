@@ -1,8 +1,8 @@
-package com.kiwipay.onboarding.titular.domain.services;
+package com.kiwipay.onboarding.client.domain.services;
 
-import com.kiwipay.onboarding.titular.application.internal.dto.ClientCreateRequest;
-import com.kiwipay.onboarding.titular.application.internal.dto.ClientResponse;
-import com.kiwipay.onboarding.titular.application.internal.dto.ClientUpdateRequest;
+import com.kiwipay.onboarding.client.application.internal.dto.ClientCreateRequest;
+import com.kiwipay.onboarding.client.application.internal.dto.ClientResponse;
+import com.kiwipay.onboarding.client.application.internal.dto.ClientUpdateRequest;
 
 public interface ClientCommandService {
 	ClientResponse createClient(ClientCreateRequest request);

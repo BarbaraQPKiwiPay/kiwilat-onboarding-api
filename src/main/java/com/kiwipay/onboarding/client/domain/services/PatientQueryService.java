@@ -1,7 +1,7 @@
-package com.kiwipay.onboarding.titular.domain.services;
+package com.kiwipay.onboarding.client.domain.services;
 
-import com.kiwipay.onboarding.titular.application.internal.dto.PatientResponse;
-import com.kiwipay.onboarding.titular.application.internal.dto.PatientSummaryResponse;
+import com.kiwipay.onboarding.client.application.internal.dto.PatientResponse;
+import com.kiwipay.onboarding.client.application.internal.dto.PatientSummaryResponse;
 
 import java.util.List;
 

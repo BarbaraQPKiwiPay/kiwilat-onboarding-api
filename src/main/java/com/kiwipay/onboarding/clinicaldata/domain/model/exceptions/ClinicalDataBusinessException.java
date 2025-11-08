@@ -1,4 +1,4 @@
-package com.kiwipay.onboarding.titular.domain.model.exceptions;
+package com.kiwipay.onboarding.clinicaldata.domain.model.exceptions;
 
 public class ClinicalDataBusinessException extends RuntimeException {
     private final String errorCode;

@@ -1,4 +1,4 @@
-package com.kiwipay.onboarding.titular.application.internal.dto;
+package com.kiwipay.onboarding.client.application.internal.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;

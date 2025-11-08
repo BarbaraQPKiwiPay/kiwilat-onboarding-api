@@ -1,15 +1,15 @@
-package com.kiwipay.onboarding.titular.application.internal.commandservices;
+package com.kiwipay.onboarding.client.application.internal.commandservices;
 
-import com.kiwipay.onboarding.titular.application.internal.dto.PatientCreateRequest;
-import com.kiwipay.onboarding.titular.application.internal.dto.PatientResponse;
-import com.kiwipay.onboarding.titular.application.internal.dto.PatientUpdateRequest;
+import com.kiwipay.onboarding.client.application.internal.dto.PatientCreateRequest;
+import com.kiwipay.onboarding.client.application.internal.dto.PatientResponse;
+import com.kiwipay.onboarding.client.application.internal.dto.PatientUpdateRequest;
 import com.kiwipay.onboarding.client.domain.model.aggregates.Patient;
 import com.kiwipay.onboarding.client.domain.model.entities.Address;
 import com.kiwipay.onboarding.client.domain.model.valueobjects.DocumentType;
 import com.kiwipay.onboarding.client.domain.model.valueobjects.Gender;
 import com.kiwipay.onboarding.client.domain.services.PatientCommandService;
-import com.kiwipay.onboarding.titular.infrastructure.persistence.jpa.repositories.ClientRepository;
-import com.kiwipay.onboarding.titular.infrastructure.persistence.jpa.repositories.PatientRepository;
+import com.kiwipay.onboarding.client.infrastructure.persistence.jpa.repositories.ClientRepository;
+import com.kiwipay.onboarding.client.infrastructure.persistence.jpa.repositories.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

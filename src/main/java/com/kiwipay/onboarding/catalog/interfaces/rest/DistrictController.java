@@ -1,6 +1,7 @@
 package com.kiwipay.onboarding.catalog.interfaces.rest;
 
 import com.kiwipay.onboarding.catalog.application.internal.dto.DistrictDto;
+import com.kiwipay.onboarding.catalog.domain.exceptions.CatalogBusinessException;
 import com.kiwipay.onboarding.catalog.domain.services.LocationQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +21,30 @@ public class DistrictController {
     private LocationQueryService locationQueryService;
 
     @GetMapping
-    public ResponseEntity<Map<String, List<DistrictDto>>> getDistricts(
+    public ResponseEntity<?> getDistricts(
             @RequestParam(required = false) String provinceId) {
-        List<DistrictDto> districts = provinceId != null
-            ? locationQueryService.getDistrictsByProvinceId(provinceId)
-            : locationQueryService.getAllDistricts();
-        return ResponseEntity.ok(Map.of("data", districts));
+        try {
+            List<DistrictDto> districts = provinceId != null
+                ? locationQueryService.getDistrictsByProvinceId(provinceId)
+                : locationQueryService.getAllDistricts();
+            return ResponseEntity.ok(Map.of("data", districts));
+        } catch (CatalogBusinessException e) {
+            return ResponseEntity.status(e.getHttpStatus())
+                .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
+        }
+    }
+
+    // Error response class
+    public static class ErrorResponse {
+        private String errorCode;
+        private String message;
+
+        public ErrorResponse(String errorCode, String message) {
+            this.errorCode = errorCode;
+            this.message = message;
+        }
+
+        public String getErrorCode() { return errorCode; }
+        public String getMessage() { return message; }
     }
 }

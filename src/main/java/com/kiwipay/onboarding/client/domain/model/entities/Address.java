@@ -1,4 +1,4 @@
-package com.kiwipay.onboarding.titular.domain.model.entities;
+package com.kiwipay.onboarding.client.domain.model.entities;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,6 +1,6 @@
-package com.kiwipay.onboarding.titular.infrastructure.persistence.jpa.repositories;
+package com.kiwipay.onboarding.clinicaldata.infrastructure.persistence.jpa.repositories;
 
-import com.kiwipay.onboarding.titular.domain.model.aggregates.ClinicalData;
+import com.kiwipay.onboarding.clinicaldata.domain.model.aggregates.ClinicalData;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

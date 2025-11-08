@@ -1,4 +1,4 @@
-package com.kiwipay.onboarding.titular.domain.model.exceptions;
+package com.kiwipay.onboarding.client.domain.model.exceptions;
 
 public class SpouseBusinessException extends RuntimeException {
     private final String errorCode;

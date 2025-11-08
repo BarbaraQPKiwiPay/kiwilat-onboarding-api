@@ -1,8 +1,9 @@
-package com.kiwipay.onboarding.titular.interfaces.rest;
+package com.kiwipay.onboarding.client.interfaces.rest;
 
-import com.kiwipay.onboarding.titular.application.internal.dto.ClientCreateRequest;
-import com.kiwipay.onboarding.titular.application.internal.dto.ClientResponse;
-import com.kiwipay.onboarding.titular.application.internal.dto.ClientUpdateRequest;
+import com.kiwipay.onboarding.client.application.internal.dto.ClientCreateRequest;
+import com.kiwipay.onboarding.client.application.internal.dto.ClientResponse;
+import com.kiwipay.onboarding.client.application.internal.dto.ClientUpdateRequest;
+import com.kiwipay.onboarding.client.domain.model.exceptions.ClientBusinessException;
 import com.kiwipay.onboarding.client.domain.services.ClientCommandService;
 import com.kiwipay.onboarding.client.domain.services.ClientQueryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,18 +26,28 @@ public class ClientController {
     private ClientQueryService clientQueryService;
 
     @PostMapping
-    public ResponseEntity<ClientResponse> createClient(@RequestBody ClientCreateRequest request) {
-        ClientResponse response = clientCommandService.createClient(request);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    public ResponseEntity<?> createClient(@RequestBody ClientCreateRequest request) {
+        try {
+            ClientResponse response = clientCommandService.createClient(request);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (ClientBusinessException e) {
+            return ResponseEntity.status(e.getHttpStatus())
+                .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ClientResponse> getClientById(@PathVariable Long id) {
-        ClientResponse response = clientQueryService.getClientById(id);
-        if (response == null) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> getClientById(@PathVariable Long id) {
+        try {
+            ClientResponse response = clientQueryService.getClientById(id);
+            if (response == null) {
+                throw ClientBusinessException.clientNotFound();
+            }
+            return ResponseEntity.ok(response);
+        } catch (ClientBusinessException e) {
+            return ResponseEntity.status(e.getHttpStatus())
+                .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
         }
-        return ResponseEntity.ok(response);
     }
 
     @GetMapping
@@ -46,22 +57,38 @@ public class ClientController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ClientResponse> updateClient(@PathVariable Long id, @RequestBody ClientUpdateRequest request) {
+    public ResponseEntity<?> updateClient(@PathVariable Long id, @RequestBody ClientUpdateRequest request) {
         try {
             ClientResponse response = clientCommandService.updateClient(id, request);
             return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+        } catch (ClientBusinessException e) {
+            return ResponseEntity.status(e.getHttpStatus())
+                .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
+    public ResponseEntity<?> deleteClient(@PathVariable Long id) {
         try {
             clientCommandService.deleteClient(id);
             return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+        } catch (ClientBusinessException e) {
+            return ResponseEntity.status(e.getHttpStatus())
+                .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
         }
+    }
+
+    // Error response class
+    public static class ErrorResponse {
+        private String errorCode;
+        private String message;
+
+        public ErrorResponse(String errorCode, String message) {
+            this.errorCode = errorCode;
+            this.message = message;
+        }
+
+        public String getErrorCode() { return errorCode; }
+        public String getMessage() { return message; }
     }
 }
