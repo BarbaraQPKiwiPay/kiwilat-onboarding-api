@@ -1,5 +1,6 @@
 package com.kiwipay.onboarding.quote.application.internal.commandservices;
 
+import com.kiwipay.onboarding.client.domain.model.aggregates.Client;
 import com.kiwipay.onboarding.client.infrastructure.persistence.jpa.repositories.ClientRepository;
 import com.kiwipay.onboarding.quote.application.internal.dto.QuoteCreateRequest;
 import com.kiwipay.onboarding.quote.application.internal.dto.QuoteResponse;
@@ -27,8 +28,12 @@ public class QuoteCommandServiceImpl implements QuoteCommandService {
     @Override
     public QuoteResponse createQuote(Long clientId, QuoteCreateRequest request) {
         // Verificar si el cliente existe
-        if (!clientRepository.existsById(clientId)) {
-            throw QuoteBusinessException.clientNotFound();
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(QuoteBusinessException::clientNotFound);
+
+        // Validar que el documentNumber del cliente coincide con el de la solicitud
+        if (!client.getDocumentNumber().equals(request.getDocumentNumber())) {
+            throw QuoteBusinessException.invalidDocumentNumber();
         }
         Quote quote = new Quote(
             request.getDocumentType(),

@@ -26,8 +26,9 @@ public class QuoteBusinessException extends RuntimeException {
     }
 
     public static QuoteBusinessException invalidDocumentNumber() {
-        return new QuoteBusinessException("Invalid document number for the given document type", "INVALID_DOCUMENT_NUMBER", 422);
+        return new QuoteBusinessException("The document number does not match the client's document number.", "INVALID_DOCUMENT_NUMBER", 422);
     }
+
 
     public static QuoteBusinessException branchNotFound() {
         return new QuoteBusinessException("Branch not found", "BRANCH_NOT_FOUND", 404);
