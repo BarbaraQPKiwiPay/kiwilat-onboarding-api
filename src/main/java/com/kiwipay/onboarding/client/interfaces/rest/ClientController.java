@@ -26,14 +26,9 @@ public class ClientController {
     private ClientQueryService clientQueryService;
 
     @PostMapping
-    public ResponseEntity<?> createClient(@RequestBody ClientCreateRequest request) {
-        try {
-            ClientResponse response = clientCommandService.createClient(request);
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } catch (ClientBusinessException e) {
-            return ResponseEntity.status(e.getHttpStatus())
-                .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
-        }
+    public ResponseEntity<ClientResponse> createClient(@RequestBody ClientCreateRequest request) {
+        ClientResponse response = clientCommandService.createClient(request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
