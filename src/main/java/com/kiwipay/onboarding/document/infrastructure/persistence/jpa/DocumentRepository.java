@@ -11,4 +11,8 @@ public interface DocumentRepository extends JpaRepository<Document, String> {
     Optional<Document> findByIdAndClientId(String id, Long clientId);
     long countByClientId(Long clientId);
     boolean existsByIdAndClientId(String id, Long clientId);
+    
+    // New methods for filtering by document type
+    List<Document> findByClientIdAndDocumentTypeIdNotOrderByCreatedAtDesc(Long clientId, String documentTypeId);
+    List<Document> findByClientIdAndDocumentTypeIdOrderByCreatedAtDesc(Long clientId, String documentTypeId);
 }
