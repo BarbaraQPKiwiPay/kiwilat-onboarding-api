@@ -8,4 +8,5 @@ import java.util.List;
 public interface PatientQueryService {
     PatientResponse getPatientById(Long clientId, Long patientId);
     List<PatientSummaryResponse> getPatientsByClientId(Long clientId);
+    List<PatientResponse> getAllPatientsByClientId(Long clientId);
 }

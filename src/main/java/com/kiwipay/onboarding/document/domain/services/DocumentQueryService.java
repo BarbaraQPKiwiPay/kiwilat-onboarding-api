@@ -10,4 +10,8 @@ public interface DocumentQueryService {
     List<DocumentResponse> getDocumentsByClientId(Long clientId);
     byte[] getDocumentContent(String documentId);
     DocumentResponse getDocumentById(String documentId);
+    
+    // New methods for filtered documents
+    List<DocumentResponse> getNonRiskDocumentsByClientId(Long clientId);
+    List<DocumentResponse> getRiskDocumentsByClientId(Long clientId);
 }

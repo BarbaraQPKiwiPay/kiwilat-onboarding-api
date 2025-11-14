@@ -3,6 +3,7 @@ package com.kiwipay.onboarding.document.interfaces.rest;
 import com.kiwipay.onboarding.document.application.internal.dto.DocumentResponse;
 import com.kiwipay.onboarding.document.application.internal.dto.DocumentTypeResponse;
 import com.kiwipay.onboarding.document.application.internal.dto.DocumentUploadRequest;
+import com.kiwipay.onboarding.document.application.internal.dto.DocumentReviewRequest;
 import com.kiwipay.onboarding.document.domain.services.DocumentCommandService;
 import com.kiwipay.onboarding.document.domain.services.DocumentQueryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
-@Tag(name = "Document Management", description = "API endpoints for managing documents and document types")
+@Tag(name = "Document Management", description = "Managing documents and document types")
 public class DocumentController {
 
     @Autowired
@@ -102,5 +103,41 @@ public class DocumentController {
             @PathVariable String documentId) {
         documentCommandService.deleteDocument(clientId, documentId);
         return ResponseEntity.noContent().build();
+    }
+
+    // =============== NEW ENDPOINTS ===============
+
+    @PatchMapping("/documents/{documentId}/review")
+    @Operation(summary = "Review document", description = "Approves or rejects a document by updating its review status")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Document reviewed successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid review status"),
+        @ApiResponse(responseCode = "404", description = "Document not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<DocumentResponse> reviewDocument(
+            @PathVariable String documentId,
+            @Valid @RequestBody DocumentReviewRequest request) {
+        return ResponseEntity.ok(documentCommandService.reviewDocument(documentId, request));
+    }
+
+    @GetMapping("/clients/{clientId}/documents/non-risk")
+    @Operation(summary = "Get non-risk documents", description = "Retrieves all documents for a client excluding FICHA_RIESGO type")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Non-risk documents retrieved successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<List<DocumentResponse>> getNonRiskDocuments(@PathVariable Long clientId) {
+        return ResponseEntity.ok(documentQueryService.getNonRiskDocumentsByClientId(clientId));
+    }
+
+    @GetMapping("/clients/{clientId}/documents/risk")
+    @Operation(summary = "Get risk documents", description = "Retrieves all FICHA_RIESGO documents for a client")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Risk documents retrieved successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<List<DocumentResponse>> getRiskDocuments(@PathVariable Long clientId) {
+        return ResponseEntity.ok(documentQueryService.getRiskDocumentsByClientId(clientId));
     }
 }

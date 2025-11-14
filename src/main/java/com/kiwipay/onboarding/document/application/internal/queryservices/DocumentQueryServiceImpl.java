@@ -71,4 +71,28 @@ public class DocumentQueryServiceImpl implements DocumentQueryService {
         BeanUtils.copyProperties(document, response);
         return response;
     }
+
+    @Override
+    public List<DocumentResponse> getNonRiskDocumentsByClientId(Long clientId) {
+        List<Document> documents = documentRepository.findByClientIdAndDocumentTypeIdNotOrderByCreatedAtDesc(clientId, "FICHA_RIESGO");
+        return documents.stream()
+            .map(document -> {
+                DocumentResponse response = new DocumentResponse();
+                BeanUtils.copyProperties(document, response);
+                return response;
+            })
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DocumentResponse> getRiskDocumentsByClientId(Long clientId) {
+        List<Document> documents = documentRepository.findByClientIdAndDocumentTypeIdOrderByCreatedAtDesc(clientId, "FICHA_RIESGO");
+        return documents.stream()
+            .map(document -> {
+                DocumentResponse response = new DocumentResponse();
+                BeanUtils.copyProperties(document, response);
+                return response;
+            })
+            .collect(Collectors.toList());
+    }
 }

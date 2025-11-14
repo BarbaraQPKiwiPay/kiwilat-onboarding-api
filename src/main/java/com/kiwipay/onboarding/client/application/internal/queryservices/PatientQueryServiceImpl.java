@@ -56,6 +56,13 @@ public class PatientQueryServiceImpl implements PatientQueryService {
         return response;
     }
 
+    @Override
+    public List<PatientResponse> getAllPatientsByClientId(Long clientId) {
+        return patientRepository.findByClientId(clientId).stream()
+            .map(this::toPatientResponse)
+            .collect(Collectors.toList());
+    }
+
     private PatientSummaryResponse toPatientSummaryResponse(Patient patient) {
         PatientSummaryResponse response = new PatientSummaryResponse();
         response.setId(patient.getId());

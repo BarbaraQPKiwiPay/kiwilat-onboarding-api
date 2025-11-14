@@ -1,7 +1,6 @@
-package com.kiwipay.onboarding.document.application.internal.dto;
+package com.kiwipay.onboarding.guarantor.application.internal.dto;
 
-import com.kiwipay.onboarding.document.domain.model.aggregates.Document.DocumentStatus;
-import com.kiwipay.onboarding.document.domain.model.aggregates.Document.ReviewStatus;
+import com.kiwipay.onboarding.guarantor.domain.model.aggregates.GuarantorDocument.ReviewStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
-public class DocumentResponse {
+public class GuarantorDocumentResponse {
     private String id;
     private Long clientId;
     private String documentTypeId;
@@ -17,10 +16,7 @@ public class DocumentResponse {
     private String mimeType;
     private Long sizeBytes;
     private String comment;
-    private DocumentStatus status;
-    private LocalDateTime createdAt;
-    
-    // Review fields
     private ReviewStatus reviewStatus;
+    private LocalDateTime uploadedAt;
     private LocalDateTime reviewedAt;
 }

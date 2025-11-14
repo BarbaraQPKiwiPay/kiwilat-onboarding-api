@@ -3,6 +3,7 @@ package com.kiwipay.onboarding.document.application.internal.commandservices;
 import com.kiwipay.onboarding.client.infrastructure.persistence.jpa.repositories.ClientRepository;
 import com.kiwipay.onboarding.document.application.internal.dto.DocumentUploadRequest;
 import com.kiwipay.onboarding.document.application.internal.dto.DocumentResponse;
+import com.kiwipay.onboarding.document.application.internal.dto.DocumentReviewRequest;
 import com.kiwipay.onboarding.document.domain.model.aggregates.Document;
 import com.kiwipay.onboarding.document.domain.model.exceptions.DocumentBusinessException;
 import com.kiwipay.onboarding.document.domain.services.DocumentCommandService;
@@ -102,6 +103,19 @@ public class DocumentCommandServiceImpl implements DocumentCommandService {
         }
 
         documentRepository.deleteById(documentId);
+    }
+
+    @Override
+    public DocumentResponse reviewDocument(String documentId, DocumentReviewRequest request) {
+        Document document = documentRepository.findById(documentId)
+            .orElseThrow(DocumentBusinessException::documentNotFound);
+
+        document.updateReviewStatus(request.getReviewStatus());
+        Document reviewedDocument = documentRepository.save(document);
+
+        DocumentResponse response = new DocumentResponse();
+        BeanUtils.copyProperties(reviewedDocument, response);
+        return response;
     }
 
     private String generateDocumentId() {

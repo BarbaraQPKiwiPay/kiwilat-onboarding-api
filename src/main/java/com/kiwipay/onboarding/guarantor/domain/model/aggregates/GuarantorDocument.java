@@ -1,4 +1,4 @@
-package com.kiwipay.onboarding.document.domain.model.aggregates;
+package com.kiwipay.onboarding.guarantor.domain.model.aggregates;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Entity
-@Table(name = "documents")
-public class Document {
+@Table(name = "guarantor_documents")
+public class GuarantorDocument {
     @Id
     private String id;
 
@@ -35,24 +35,20 @@ public class Document {
     private String contentBase64;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private DocumentStatus status;
-
-    @Column(nullable = false, name = "created_at")
-    private LocalDateTime createdAt;
-
-    // Review fields
-    @Enumerated(EnumType.STRING)
-    @Column(name = "review_status")
+    @Column(nullable = false, name = "review_status")
     private ReviewStatus reviewStatus;
+
+
+    @Column(nullable = false, name = "uploaded_at")
+    private LocalDateTime uploadedAt;
 
     @Column(name = "reviewed_at")
     private LocalDateTime reviewedAt;
 
-    public Document() {}
+    public GuarantorDocument() {}
 
-    public Document(String id, Long clientId, String documentTypeId, String filename, 
-                   String mimeType, Long sizeBytes, String comment, String contentBase64) {
+    public GuarantorDocument(String id, Long clientId, String documentTypeId, String filename,
+                            String mimeType, Long sizeBytes, String comment, String contentBase64) {
         this.id = id;
         this.clientId = clientId;
         this.documentTypeId = documentTypeId;
@@ -61,18 +57,13 @@ public class Document {
         this.sizeBytes = sizeBytes;
         this.comment = comment;
         this.contentBase64 = contentBase64;
-        this.status = DocumentStatus.READY;
-        this.createdAt = LocalDateTime.now();
+        this.reviewStatus = ReviewStatus.PENDING;
+        this.uploadedAt = LocalDateTime.now();
     }
 
-    // Method to update review status
-    public void updateReviewStatus(ReviewStatus reviewStatus) {
+    public void updateReviewStatus(ReviewStatus reviewStatus, Object o) {
         this.reviewStatus = reviewStatus;
         this.reviewedAt = LocalDateTime.now();
-    }
-
-    public enum DocumentStatus {
-        READY, PROCESSING, REJECTED
     }
 
     public enum ReviewStatus {
