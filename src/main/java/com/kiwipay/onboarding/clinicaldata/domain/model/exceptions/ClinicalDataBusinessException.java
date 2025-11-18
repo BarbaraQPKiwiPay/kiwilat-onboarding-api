@@ -18,7 +18,6 @@ public class ClinicalDataBusinessException extends RuntimeException {
         return httpStatus;
     }
     
-    // Business rule exceptions
     public static ClinicalDataBusinessException clinicalDataAlreadyExists() {
         return new ClinicalDataBusinessException(
             "Clinical data already exists for this client", 
