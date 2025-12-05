@@ -71,6 +71,12 @@ public class ClientCommandServiceImpl implements ClientCommandService {
 			.orElseThrow(() -> new RuntimeException("Client not found with id: " + id));
 
 		// Actualizar campos
+		if (request.getDocumentType() != null) {
+			existingClient.setDocumentType(DocumentType.valueOf(request.getDocumentType()));
+		}
+		if (request.getDocumentNumber() != null) {
+			existingClient.setDocumentNumber(request.getDocumentNumber());
+		}
 		existingClient.setFirstNames(request.getFirstNames());
 		existingClient.setLastNames(request.getLastNames());
 		existingClient.setMaritalStatus(MaritalStatus.valueOf(request.getMaritalStatus()));
