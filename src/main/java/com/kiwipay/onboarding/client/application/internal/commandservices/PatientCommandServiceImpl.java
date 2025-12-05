@@ -60,6 +60,12 @@ public class PatientCommandServiceImpl implements PatientCommandService {
             .orElseThrow(() -> new RuntimeException("Patient not found with id: " + patientId + " for client: " + clientId));
 
         // Actualizar campos
+        if (request.getDocumentType() != null) {
+            existingPatient.setDocumentType(DocumentType.valueOf(request.getDocumentType()));
+        }
+        if (request.getDocumentNumber() != null) {
+            existingPatient.setDocumentNumber(request.getDocumentNumber());
+        }
         existingPatient.setFirstNames(request.getFirstNames());
         existingPatient.setLastNames(request.getLastNames());
         existingPatient.setGender(Gender.valueOf(request.getGender()));
