@@ -33,15 +33,22 @@ public class DataInitializer implements CommandLineRunner {
         // Create default SuperAdmin user if no users exist
         if (userRepository.count() == 0) {
             System.out.println("Creating default SuperAdmin user...");
-            userCommandService.createUser(
-                "superadmin",
-                "admin123",
-                "Super",
-                "Administrator",
-                "admin@kiwipay.com",
-                Arrays.asList("SUPERADMIN")
-            );
-            System.out.println("Default SuperAdmin created: username=superadmin, password=admin123");
+            try {
+                userCommandService.createUser(
+                    "superadmin",
+                    "admin123",
+                    "Super",
+                    "Administrator",
+                    "admin@kiwipay.com",
+                    Arrays.asList("SUPERADMIN")
+                );
+                System.out.println("Default SuperAdmin created: username=superadmin, password=admin123");
+            } catch (Exception e) {
+                System.err.println("Error creating SuperAdmin user: " + e.getMessage());
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Users already exist. Total users: " + userRepository.count());
         }
     }
 

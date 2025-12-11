@@ -12,7 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200")
 @Tag(name = "Role Examples", description = "Examples of role-based access control")
 @SecurityRequirement(name = "bearerAuth")
 public class RoleBasedController {

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200")
 @Tag(name = "Authentication", description = "Authentication management endpoints")
 public class AuthenticationController {
 
@@ -22,10 +22,15 @@ public class AuthenticationController {
     @Operation(summary = "User login", description = "Authenticate user and return JWT token")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest loginRequest) {
         try {
+            System.out.println("Login attempt for username: " + loginRequest.getUsername());
             AuthenticationResponse response = authenticationService.login(loginRequest);
+            System.out.println("Login successful for username: " + loginRequest.getUsername());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            System.err.println("Login failed for username: " + loginRequest.getUsername());
+            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
         }
     }
 
