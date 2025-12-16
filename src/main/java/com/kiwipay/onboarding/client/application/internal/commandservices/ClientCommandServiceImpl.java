@@ -58,6 +58,9 @@ public class ClientCommandServiceImpl implements ClientCommandService {
 			OffsetDateTime.now(),
 			null
 		);
+
+        // Setear si sufre de algún padecimiento
+        client.setSuffersCondition(request.getSuffersCondition());
 		// Persistir el cliente
 		client = clientRepository.save(client);
 
@@ -85,6 +88,9 @@ public class ClientCommandServiceImpl implements ClientCommandService {
 		existingClient.setEmail(request.getEmail());
 		existingClient.setPhone(request.getPhone());
 		existingClient.setUpdatedAt(OffsetDateTime.now());
+
+		// Setear si sufre de algún padecimiento
+		existingClient.setSuffersCondition(request.getSuffersCondition());
 
 		if (request.getAddress() != null) {
 			Address updatedAddress = new Address(
@@ -131,6 +137,9 @@ public class ClientCommandServiceImpl implements ClientCommandService {
 		}
 		
 		response.setCreatedAt(client.getCreatedAt().toString());
+
+        // Exponer si sufre de algún padecimiento
+        response.setSuffersCondition(client.getSuffersCondition());
 		return response;
 	}
 }

@@ -54,6 +54,7 @@ public class ClientQueryServiceImpl implements ClientQueryService {
 		}
 		
 		response.setCreatedAt(client.getCreatedAt().toString());
+		response.setSuffersCondition(client.getSuffersCondition());
 		return response;
 	}
 }

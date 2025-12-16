@@ -16,6 +16,7 @@ public class ClientUpdateRequest {
     private String email;
     private String phone;
     private AddressDto address;
+    private Boolean suffersCondition;
 
     @Data
     @NoArgsConstructor

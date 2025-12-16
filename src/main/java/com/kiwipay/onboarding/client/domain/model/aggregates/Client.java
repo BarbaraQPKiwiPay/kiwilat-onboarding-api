@@ -42,6 +42,8 @@ public class Client {
     // Embeddable
     @Embedded
     private Address address;
+    // Indica si el cliente sufre de algún padecimiento
+    private Boolean suffersCondition;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 
