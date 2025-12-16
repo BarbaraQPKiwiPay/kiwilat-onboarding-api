@@ -21,4 +21,9 @@ public interface GuarantorCommandService {
     
     // Review operations
     GuarantorDocumentResponse reviewDocument(String documentId, GuarantorDocumentReviewRequest request);
+    
+    // Spouse operations
+    com.kiwipay.onboarding.guarantor.application.internal.dto.SpouseResponse createSpouse(String guarantorId, com.kiwipay.onboarding.guarantor.application.internal.dto.SpouseCreateRequest request);
+    com.kiwipay.onboarding.guarantor.application.internal.dto.SpouseResponse updateSpouse(String guarantorId, com.kiwipay.onboarding.guarantor.application.internal.dto.SpouseUpdateRequest request);
+    void deleteSpouse(String guarantorId);
 }

@@ -13,4 +13,7 @@ public interface GuarantorQueryService {
     List<GuarantorDocumentResponse> getDocumentsByClientId(Long clientId);
     byte[] getDocumentContent(String documentId);
     GuarantorDocumentResponse getDocumentById(String documentId);
+    
+    // Spouse queries
+    com.kiwipay.onboarding.guarantor.application.internal.dto.SpouseResponse getSpouseByGuarantorId(String guarantorId);
 }

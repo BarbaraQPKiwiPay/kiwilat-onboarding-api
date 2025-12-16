@@ -5,11 +5,13 @@ import com.kiwipay.onboarding.document.infrastructure.persistence.jpa.DocumentTy
 import com.kiwipay.onboarding.guarantor.application.internal.dto.*;
 import com.kiwipay.onboarding.guarantor.domain.model.aggregates.Guarantor;
 import com.kiwipay.onboarding.guarantor.domain.model.aggregates.GuarantorDocument;
+import com.kiwipay.onboarding.guarantor.domain.model.entities.Spouse;
 import com.kiwipay.onboarding.guarantor.domain.model.exceptions.GuarantorBusinessException;
 import com.kiwipay.onboarding.guarantor.domain.model.valueobjects.GuarantorAddress;
 import com.kiwipay.onboarding.guarantor.domain.services.GuarantorCommandService;
 import com.kiwipay.onboarding.guarantor.infrastructure.persistence.jpa.GuarantorDocumentRepository;
 import com.kiwipay.onboarding.guarantor.infrastructure.persistence.jpa.GuarantorRepository;
+import com.kiwipay.onboarding.guarantor.infrastructure.persistence.jpa.GuarantorSpouseRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,9 @@ public class GuarantorCommandServiceImpl implements GuarantorCommandService {
 
     @Autowired
     private DocumentTypeRepository documentTypeRepository;
+
+    @Autowired
+    private GuarantorSpouseRepository spouseRepository;
 
     private static final List<String> ALLOWED_MIME_TYPES = Arrays.asList(
         "application/pdf", "image/jpeg", "image/png"
@@ -252,5 +257,96 @@ public class GuarantorCommandServiceImpl implements GuarantorCommandService {
         GuarantorDocumentResponse response = new GuarantorDocumentResponse();
         BeanUtils.copyProperties(document, response);
         return response;
+    }
+
+    // =============== SPOUSE OPERATIONS ===============
+
+    @Override
+    public SpouseResponse createSpouse(String guarantorId, SpouseCreateRequest request) {
+        // Verificar que el guarantor existe
+        if (!guarantorRepository.existsById(guarantorId)) {
+            throw GuarantorBusinessException.guarantorNotFound();
+        }
+
+        // Verificar que no tenga cónyuge ya
+        if (spouseRepository.existsByGuarantorId(guarantorId)) {
+            throw new RuntimeException("Guarantor already has a spouse");
+        }
+
+        // Verificar que el documento no esté duplicado
+        if (spouseRepository.existsByDocumentTypeAndDocumentNumber(request.getDocumentType(), request.getDocumentNumber())) {
+            throw new RuntimeException("Document already exists for another spouse");
+        }
+
+        Spouse spouse = new Spouse(
+            guarantorId,
+            request.getDocumentType(),
+            request.getDocumentNumber(),
+            request.getFirstNames(),
+            request.getLastNames(),
+            request.getEmail(),
+            request.getPhone()
+        );
+
+        Spouse savedSpouse = spouseRepository.save(spouse);
+        return mapToSpouseResponse(savedSpouse);
+    }
+
+    @Override
+    public SpouseResponse updateSpouse(String guarantorId, SpouseUpdateRequest request) {
+        // Verificar que el guarantor existe
+        if (!guarantorRepository.existsById(guarantorId)) {
+            throw GuarantorBusinessException.guarantorNotFound();
+        }
+
+        Spouse spouse = spouseRepository.findByGuarantorId(guarantorId)
+            .orElseThrow(() -> new RuntimeException("Spouse not found for this guarantor"));
+
+        // Verificar que el documento no esté duplicado (excluyendo el actual)
+        if (spouseRepository.existsByDocumentTypeAndDocumentNumberAndGuarantorIdNot(
+                request.getDocumentType(), request.getDocumentNumber(), guarantorId)) {
+            throw new RuntimeException("Document already exists for another spouse");
+        }
+
+        spouse.updateDetails(
+            request.getDocumentType(),
+            request.getDocumentNumber(),
+            request.getFirstNames(),
+            request.getLastNames(),
+            request.getEmail(),
+            request.getPhone()
+        );
+
+        Spouse updatedSpouse = spouseRepository.save(spouse);
+        return mapToSpouseResponse(updatedSpouse);
+    }
+
+    @Override
+    public void deleteSpouse(String guarantorId) {
+        // Verificar que el guarantor existe
+        if (!guarantorRepository.existsById(guarantorId)) {
+            throw GuarantorBusinessException.guarantorNotFound();
+        }
+
+        if (!spouseRepository.existsByGuarantorId(guarantorId)) {
+            throw new RuntimeException("Spouse not found for this guarantor");
+        }
+
+        spouseRepository.deleteByGuarantorId(guarantorId);
+    }
+
+    private SpouseResponse mapToSpouseResponse(Spouse spouse) {
+        return new SpouseResponse(
+            spouse.getId(),
+            spouse.getGuarantorId(),
+            spouse.getDocumentType(),
+            spouse.getDocumentNumber(),
+            spouse.getFirstNames(),
+            spouse.getLastNames(),
+            spouse.getEmail(),
+            spouse.getPhone(),
+            spouse.getCreatedAt(),
+            spouse.getUpdatedAt()
+        );
     }
 }
