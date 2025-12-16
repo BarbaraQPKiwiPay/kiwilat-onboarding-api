@@ -110,7 +110,7 @@ public class DocumentCommandServiceImpl implements DocumentCommandService {
         Document document = documentRepository.findById(documentId)
             .orElseThrow(DocumentBusinessException::documentNotFound);
 
-        document.updateReviewStatus(request.getReviewStatus());
+        document.updateReviewStatus(request.getReviewStatus(), request.getComment());
         Document reviewedDocument = documentRepository.save(document);
 
         DocumentResponse response = new DocumentResponse();

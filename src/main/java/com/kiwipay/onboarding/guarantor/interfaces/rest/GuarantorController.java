@@ -162,10 +162,10 @@ public class GuarantorController {
     // =============== DOCUMENT REVIEW OPERATIONS ===============
 
     @PatchMapping("/guarantor-documents/{documentId}/review")
-    @Operation(summary = "Update status of document", description = "Updates the review status of a guarantor document")
+    @Operation(summary = "Update status of document", description = "Updates the review status of a guarantor document and optionally adds a comment")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Document status updated successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid review status"),
+        @ApiResponse(responseCode = "400", description = "Invalid review status or comment"),
         @ApiResponse(responseCode = "404", description = "Document not found"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })

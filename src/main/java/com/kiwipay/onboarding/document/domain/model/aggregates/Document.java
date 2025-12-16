@@ -65,9 +65,12 @@ public class Document {
         this.createdAt = LocalDateTime.now();
     }
 
-    // Method to update review status
-    public void updateReviewStatus(ReviewStatus reviewStatus) {
+    // Method to update review status with comment
+    public void updateReviewStatus(ReviewStatus reviewStatus, String comment) {
         this.reviewStatus = reviewStatus;
+        if (comment != null && !comment.trim().isEmpty()) {
+            this.comment = comment;
+        }
         this.reviewedAt = LocalDateTime.now();
     }
 

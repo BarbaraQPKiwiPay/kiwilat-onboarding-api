@@ -222,7 +222,7 @@ public class GuarantorCommandServiceImpl implements GuarantorCommandService {
         GuarantorDocument document = guarantorDocumentRepository.findById(documentId)
             .orElseThrow(GuarantorBusinessException::guarantorDocumentNotFound);
 
-        document.updateReviewStatus(request.getReviewStatus(), null);
+        document.updateReviewStatus(request.getReviewStatus(), request.getComment());
         GuarantorDocument reviewedDocument = guarantorDocumentRepository.save(document);
         return mapToGuarantorDocumentResponse(reviewedDocument);
     }
