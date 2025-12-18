@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.kiwipay.onboarding.client.application.internal.dto.ClientResponse;
 import com.kiwipay.onboarding.client.domain.model.aggregates.Client;
 import com.kiwipay.onboarding.client.domain.services.ClientQueryService;
+import com.kiwipay.onboarding.client.domain.services.ClientStateService;
 import com.kiwipay.onboarding.client.infrastructure.persistence.jpa.repositories.ClientRepository;
 
 import java.util.List;
@@ -16,6 +17,9 @@ public class ClientQueryServiceImpl implements ClientQueryService {
 
 	@Autowired
 	private ClientRepository clientRepository;
+	
+	@Autowired
+	private ClientStateService clientStateService;
 
 	@Override
 	public ClientResponse getClientById(Long id) {
@@ -55,6 +59,11 @@ public class ClientQueryServiceImpl implements ClientQueryService {
 		
 		response.setCreatedAt(client.getCreatedAt().toString());
 		response.setSuffersCondition(client.getSuffersCondition());
+		
+		// Estado y acciones permitidas
+		response.setStatus(client.getStatus().name());
+		response.setAllowedActions(clientStateService.getAllowedActions(client.getStatus()));
+		
 		return response;
 	}
 }
