@@ -16,12 +16,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
+@CrossOrigin(origins = "http://localhost:4200")
 @Tag(name = "Document Management", description = "Managing documents and document types")
 public class DocumentController {
 
@@ -30,6 +33,8 @@ public class DocumentController {
 
     @Autowired
     private DocumentQueryService documentQueryService;
+
+    @Autowired
 
     @GetMapping("/document-types")
     @Operation(summary = "Get all document types", description = "Retrieves a list of all available document types")
@@ -108,17 +113,28 @@ public class DocumentController {
     // =============== NEW ENDPOINTS ===============
 
     @PatchMapping("/documents/{documentId}/review")
-    @Operation(summary = "Review document", description = "Approves or rejects a document by updating its review status")
+    @Operation(summary = "Review document", description = "Approves or rejects a document by updating its review status and optionally adding a comment")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Document reviewed successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid review status"),
+        @ApiResponse(responseCode = "400", description = "Invalid review status or comment"),
         @ApiResponse(responseCode = "404", description = "Document not found"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<DocumentResponse> reviewDocument(
             @PathVariable String documentId,
             @Valid @RequestBody DocumentReviewRequest request) {
-        return ResponseEntity.ok(documentCommandService.reviewDocument(documentId, request));
+        
+        DocumentResponse reviewedDocument = documentCommandService.reviewDocument(documentId, request);
+        
+        // Obtener el rol del usuario actual
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserRole = auth.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");
+        
+        // Generar notificaciones automáticas según las reglas de negocio
+        String reviewStatus = request.getReviewStatus().name(); // Convertir enum a String
+    
+        
+        return ResponseEntity.ok(reviewedDocument);
     }
 
     @GetMapping("/clients/{clientId}/documents/non-risk")

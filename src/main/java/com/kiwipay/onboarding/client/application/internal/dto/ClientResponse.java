@@ -18,6 +18,13 @@ public class ClientResponse {
     private String phone;
     private AddressDto address;
     private String createdAt;
+    private Boolean suffersCondition;
+    
+    // Estado actual del cliente
+    private String status;
+    
+    // Acciones permitidas según el estado actual
+    private String[] allowedActions;
 
     @Data
     @NoArgsConstructor

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/clients/{clientId}/clinical-data")
 @Tag(name = "Clinical Data", description = "Clinical data management endpoints")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ClinicalDataController {
 
     @Autowired

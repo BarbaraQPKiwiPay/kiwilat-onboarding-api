@@ -3,12 +3,15 @@ package com.kiwipay.onboarding.guarantor.application.internal.queryservices;
 import com.kiwipay.onboarding.guarantor.application.internal.dto.GuarantorAddressResponse;
 import com.kiwipay.onboarding.guarantor.application.internal.dto.GuarantorDocumentResponse;
 import com.kiwipay.onboarding.guarantor.application.internal.dto.GuarantorResponse;
+import com.kiwipay.onboarding.guarantor.application.internal.dto.SpouseResponse;
 import com.kiwipay.onboarding.guarantor.domain.model.aggregates.Guarantor;
 import com.kiwipay.onboarding.guarantor.domain.model.aggregates.GuarantorDocument;
+import com.kiwipay.onboarding.guarantor.domain.model.entities.Spouse;
 import com.kiwipay.onboarding.guarantor.domain.model.exceptions.GuarantorBusinessException;
 import com.kiwipay.onboarding.guarantor.domain.services.GuarantorQueryService;
 import com.kiwipay.onboarding.guarantor.infrastructure.persistence.jpa.GuarantorDocumentRepository;
 import com.kiwipay.onboarding.guarantor.infrastructure.persistence.jpa.GuarantorRepository;
+import com.kiwipay.onboarding.guarantor.infrastructure.persistence.jpa.GuarantorSpouseRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,9 @@ public class GuarantorQueryServiceImpl implements GuarantorQueryService {
 
     @Autowired
     private GuarantorDocumentRepository guarantorDocumentRepository;
+
+    @Autowired
+    private GuarantorSpouseRepository spouseRepository;
 
     @Override
     public GuarantorResponse getGuarantorByClientId(Long clientId) {
@@ -74,5 +80,24 @@ public class GuarantorQueryServiceImpl implements GuarantorQueryService {
         GuarantorDocumentResponse response = new GuarantorDocumentResponse();
         BeanUtils.copyProperties(document, response);
         return response;
+    }
+
+    @Override
+    public SpouseResponse getSpouseByGuarantorId(String guarantorId) {
+        Spouse spouse = spouseRepository.findByGuarantorId(guarantorId)
+            .orElseThrow(() -> new RuntimeException("Spouse not found for this guarantor"));
+
+        return new SpouseResponse(
+            spouse.getId(),
+            spouse.getGuarantorId(),
+            spouse.getDocumentType(),
+            spouse.getDocumentNumber(),
+            spouse.getFirstNames(),
+            spouse.getLastNames(),
+            spouse.getEmail(),
+            spouse.getPhone(),
+            spouse.getCreatedAt(),
+            spouse.getUpdatedAt()
+        );
     }
 }

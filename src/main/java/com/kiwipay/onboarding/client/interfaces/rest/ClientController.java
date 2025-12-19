@@ -2,6 +2,7 @@ package com.kiwipay.onboarding.client.interfaces.rest;
 
 import com.kiwipay.onboarding.client.application.internal.dto.ClientCreateRequest;
 import com.kiwipay.onboarding.client.application.internal.dto.ClientResponse;
+import com.kiwipay.onboarding.client.application.internal.dto.ClientStateChangeRequest;
 import com.kiwipay.onboarding.client.application.internal.dto.ClientUpdateRequest;
 import com.kiwipay.onboarding.client.domain.model.exceptions.ClientBusinessException;
 import com.kiwipay.onboarding.client.domain.services.ClientCommandService;
@@ -170,6 +171,140 @@ public class ClientController {
         } catch (ClientBusinessException e) {
             return ResponseEntity.status(e.getHttpStatus())
                 .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
+        }
+    }
+
+    // ==================== ENDPOINTS DE CAMBIO DE ESTADO ====================
+    
+    @PostMapping("/{id}/documentos-completados")
+    @Operation(
+        summary = "Mark documents as completed",
+        description = "Changes client status to DOCUMENTOS_COMPLETADOS"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Status updated successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid state transition"),
+        @ApiResponse(responseCode = "404", description = "Client not found"),
+        @ApiResponse(responseCode = "409", description = "State transition not allowed")
+    })
+    public ResponseEntity<?> markDocumentosCompletados(
+        @PathVariable Long id, 
+        @RequestBody ClientStateChangeRequest request
+    ) {
+        try {
+            ClientResponse response = clientCommandService.markDocumentosCompletados(id, request);
+            return ResponseEntity.ok(response);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse("INVALID_TRANSITION", e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("CLIENT_NOT_FOUND", e.getMessage()));
+        }
+    }
+    
+    @PostMapping("/{id}/aprobado-por-adv")
+    @Operation(
+        summary = "Approve by ADV",
+        description = "Changes client status to APROBADO_POR_ADV"
+    )
+    public ResponseEntity<?> aprobarPorAdv(
+        @PathVariable Long id, 
+        @RequestBody ClientStateChangeRequest request
+    ) {
+        try {
+            ClientResponse response = clientCommandService.aprobarPorAdv(id, request);
+            return ResponseEntity.ok(response);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse("INVALID_TRANSITION", e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("CLIENT_NOT_FOUND", e.getMessage()));
+        }
+    }
+    
+    @PostMapping("/{id}/observado-por-adv")
+    @Operation(
+        summary = "Mark as observed by ADV",
+        description = "Changes client status to OBSERVADO_POR_ADV"
+    )
+    public ResponseEntity<?> observarPorAdv(
+        @PathVariable Long id, 
+        @RequestBody ClientStateChangeRequest request
+    ) {
+        try {
+            ClientResponse response = clientCommandService.observarPorAdv(id, request);
+            return ResponseEntity.ok(response);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse("INVALID_TRANSITION", e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("CLIENT_NOT_FOUND", e.getMessage()));
+        }
+    }
+    
+    @PostMapping("/{id}/aprobado-por-riesgos")
+    @Operation(
+        summary = "Approve by Risk Management",
+        description = "Changes client status to APROBADO_POR_RIESGOS"
+    )
+    public ResponseEntity<?> aprobarPorRiesgos(
+        @PathVariable Long id, 
+        @RequestBody ClientStateChangeRequest request
+    ) {
+        try {
+            ClientResponse response = clientCommandService.aprobarPorRiesgos(id, request);
+            return ResponseEntity.ok(response);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse("INVALID_TRANSITION", e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("CLIENT_NOT_FOUND", e.getMessage()));
+        }
+    }
+    
+    @PostMapping("/{id}/rechazado-por-riesgos")
+    @Operation(
+        summary = "Reject by Risk Management",
+        description = "Changes client status to RECHAZO_POR_RIESGOS"
+    )
+    public ResponseEntity<?> rechazarPorRiesgos(
+        @PathVariable Long id, 
+        @RequestBody ClientStateChangeRequest request
+    ) {
+        try {
+            ClientResponse response = clientCommandService.rechazarPorRiesgos(id, request);
+            return ResponseEntity.ok(response);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse("INVALID_TRANSITION", e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("CLIENT_NOT_FOUND", e.getMessage()));
+        }
+    }
+    
+    @PostMapping("/{id}/observado-por-riesgos")
+    @Operation(
+        summary = "Mark as observed by Risk Management",
+        description = "Changes client status to OBSERVADO_POR_RIESGOS"
+    )
+    public ResponseEntity<?> observarPorRiesgos(
+        @PathVariable Long id, 
+        @RequestBody ClientStateChangeRequest request
+    ) {
+        try {
+            ClientResponse response = clientCommandService.observarPorRiesgos(id, request);
+            return ResponseEntity.ok(response);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse("INVALID_TRANSITION", e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("CLIENT_NOT_FOUND", e.getMessage()));
         }
     }
 

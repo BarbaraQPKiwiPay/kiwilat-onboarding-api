@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/medical-categories")
 @Tag(name = "Medical Categories", description = "Medical categories catalog endpoints")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class MedicalCategoryController {
 
     @Autowired

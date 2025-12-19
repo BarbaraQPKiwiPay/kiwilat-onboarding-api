@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class ClientUpdateRequest {
+    private String documentType;
+    private String documentNumber;
     private String firstNames;
     private String lastNames;
     private String maritalStatus;
@@ -14,6 +16,7 @@ public class ClientUpdateRequest {
     private String email;
     private String phone;
     private AddressDto address;
+    private Boolean suffersCondition;
 
     @Data
     @NoArgsConstructor

@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/clinics")
 @Tag(name = "Clinics", description = "Clinics catalog endpoints")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ClinicCatalogController {
 
     @Autowired

@@ -65,6 +65,17 @@ public class SpouseCommandServiceImpl implements SpouseCommandService {
         Spouse existingSpouse = spouseRepository.findByClientId(clientId)
             .orElseThrow(SpouseBusinessException::spouseNotFound);
         
+        // Actualizar tipo y número de documento si se proporcionan
+        if (request.getDocumentType() != null) {
+            if (request.getDocumentNumber() != null) {
+                validateDocumentFormat(request.getDocumentType(), request.getDocumentNumber());
+            }
+            existingSpouse.setDocumentType(DocumentType.valueOf(request.getDocumentType()));
+        }
+        if (request.getDocumentNumber() != null) {
+            existingSpouse.setDocumentNumber(request.getDocumentNumber());
+        }
+        
         existingSpouse.setFirstNames(request.getFirstNames());
         existingSpouse.setLastNames(request.getLastNames());
         existingSpouse.setEmail(request.getEmail());

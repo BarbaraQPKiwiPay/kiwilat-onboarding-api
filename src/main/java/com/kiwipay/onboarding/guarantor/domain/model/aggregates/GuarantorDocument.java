@@ -61,8 +61,11 @@ public class GuarantorDocument {
         this.uploadedAt = LocalDateTime.now();
     }
 
-    public void updateReviewStatus(ReviewStatus reviewStatus, Object o) {
+    public void updateReviewStatus(ReviewStatus reviewStatus, String comment) {
         this.reviewStatus = reviewStatus;
+        if (comment != null && !comment.trim().isEmpty()) {
+            this.comment = comment;
+        }
         this.reviewedAt = LocalDateTime.now();
     }
 

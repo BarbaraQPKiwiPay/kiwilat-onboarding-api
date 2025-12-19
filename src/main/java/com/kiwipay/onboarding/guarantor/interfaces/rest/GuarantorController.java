@@ -162,10 +162,10 @@ public class GuarantorController {
     // =============== DOCUMENT REVIEW OPERATIONS ===============
 
     @PatchMapping("/guarantor-documents/{documentId}/review")
-    @Operation(summary = "Update status of document", description = "Updates the review status of a guarantor document")
+    @Operation(summary = "Update status of document", description = "Updates the review status of a guarantor document and optionally adds a comment")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Document status updated successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid review status"),
+        @ApiResponse(responseCode = "400", description = "Invalid review status or comment"),
         @ApiResponse(responseCode = "404", description = "Document not found"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
@@ -173,5 +173,61 @@ public class GuarantorController {
             @PathVariable String documentId,
             @Valid @RequestBody GuarantorDocumentReviewRequest request) {
         return ResponseEntity.ok(guarantorCommandService.reviewDocument(documentId, request));
+    }
+
+    // =============== SPOUSE CRUD ===============
+
+    @PostMapping("/guarantors/{guarantorId}/spouse")
+    @Operation(summary = "Create spouse for guarantor", description = "Creates a spouse for a specific guarantor")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Spouse created successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid request data or guarantor already has spouse"),
+        @ApiResponse(responseCode = "404", description = "Guarantor not found"),
+        @ApiResponse(responseCode = "409", description = "Document already exists for another spouse"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<SpouseResponse> createSpouse(
+            @PathVariable String guarantorId,
+            @Valid @RequestBody SpouseCreateRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(guarantorCommandService.createSpouse(guarantorId, request));
+    }
+
+    @GetMapping("/guarantors/{guarantorId}/spouse")
+    @Operation(summary = "Get spouse by guarantor ID", description = "Retrieves spouse information for a specific guarantor")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Spouse retrieved successfully"),
+        @ApiResponse(responseCode = "404", description = "Spouse not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<SpouseResponse> getSpouseByGuarantorId(@PathVariable String guarantorId) {
+        return ResponseEntity.ok(guarantorQueryService.getSpouseByGuarantorId(guarantorId));
+    }
+
+    @PutMapping("/guarantors/{guarantorId}/spouse")
+    @Operation(summary = "Update spouse", description = "Updates spouse information for a specific guarantor")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Spouse updated successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid request data"),
+        @ApiResponse(responseCode = "404", description = "Guarantor or spouse not found"),
+        @ApiResponse(responseCode = "409", description = "Document already exists for another spouse"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<SpouseResponse> updateSpouse(
+            @PathVariable String guarantorId,
+            @Valid @RequestBody SpouseUpdateRequest request) {
+        return ResponseEntity.ok(guarantorCommandService.updateSpouse(guarantorId, request));
+    }
+
+    @DeleteMapping("/guarantors/{guarantorId}/spouse")
+    @Operation(summary = "Delete spouse", description = "Deletes spouse for a specific guarantor")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Spouse deleted successfully"),
+        @ApiResponse(responseCode = "404", description = "Guarantor or spouse not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<Void> deleteSpouse(@PathVariable String guarantorId) {
+        guarantorCommandService.deleteSpouse(guarantorId);
+        return ResponseEntity.noContent().build();
     }
 }

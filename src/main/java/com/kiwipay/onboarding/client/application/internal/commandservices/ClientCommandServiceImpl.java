@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.kiwipay.onboarding.client.application.internal.dto.ClientCreateRequest;
 import com.kiwipay.onboarding.client.application.internal.dto.ClientResponse;
+import com.kiwipay.onboarding.client.application.internal.dto.ClientStateChangeRequest;
 import com.kiwipay.onboarding.client.domain.model.aggregates.Client;
 import com.kiwipay.onboarding.client.domain.model.entities.Address;
 import com.kiwipay.onboarding.client.domain.model.valueobjects.DocumentType;
 import com.kiwipay.onboarding.client.domain.model.valueobjects.Gender;
 import com.kiwipay.onboarding.client.domain.model.valueobjects.MaritalStatus;
 import com.kiwipay.onboarding.client.domain.services.ClientCommandService;
+import com.kiwipay.onboarding.client.domain.services.ClientStateService;
 import com.kiwipay.onboarding.client.application.internal.dto.ClientUpdateRequest;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -21,6 +23,9 @@ public class ClientCommandServiceImpl implements ClientCommandService {
 
 	@Autowired
 	private ClientRepository clientRepository;
+	
+	@Autowired
+	private ClientStateService clientStateService;
 
 	@Override
 	public ClientResponse createClient(ClientCreateRequest request) {
@@ -58,6 +63,9 @@ public class ClientCommandServiceImpl implements ClientCommandService {
 			OffsetDateTime.now(),
 			null
 		);
+
+        // Setear si sufre de algún padecimiento
+        client.setSuffersCondition(request.getSuffersCondition());
 		// Persistir el cliente
 		client = clientRepository.save(client);
 
@@ -71,6 +79,12 @@ public class ClientCommandServiceImpl implements ClientCommandService {
 			.orElseThrow(() -> new RuntimeException("Client not found with id: " + id));
 
 		// Actualizar campos
+		if (request.getDocumentType() != null) {
+			existingClient.setDocumentType(DocumentType.valueOf(request.getDocumentType()));
+		}
+		if (request.getDocumentNumber() != null) {
+			existingClient.setDocumentNumber(request.getDocumentNumber());
+		}
 		existingClient.setFirstNames(request.getFirstNames());
 		existingClient.setLastNames(request.getLastNames());
 		existingClient.setMaritalStatus(MaritalStatus.valueOf(request.getMaritalStatus()));
@@ -79,6 +93,9 @@ public class ClientCommandServiceImpl implements ClientCommandService {
 		existingClient.setEmail(request.getEmail());
 		existingClient.setPhone(request.getPhone());
 		existingClient.setUpdatedAt(OffsetDateTime.now());
+
+		// Setear si sufre de algún padecimiento
+		existingClient.setSuffersCondition(request.getSuffersCondition());
 
 		if (request.getAddress() != null) {
 			Address updatedAddress = new Address(
@@ -125,6 +142,74 @@ public class ClientCommandServiceImpl implements ClientCommandService {
 		}
 		
 		response.setCreatedAt(client.getCreatedAt().toString());
+
+        // Exponer si sufre de algún padecimiento
+        response.setSuffersCondition(client.getSuffersCondition());
+        
+        // Estado y acciones permitidas
+        response.setStatus(client.getStatus().name());
+        response.setAllowedActions(clientStateService.getAllowedActions(client.getStatus()));
+        
 		return response;
+	}
+	
+	@Override
+	public ClientResponse markDocumentosCompletados(Long clientId, ClientStateChangeRequest request) {
+		Client client = clientRepository.findById(clientId)
+			.orElseThrow(() -> new RuntimeException("Client not found with id: " + clientId));
+			
+		clientStateService.markDocumentosCompletados(client, request.getReason());
+		client = clientRepository.save(client);
+		return toClientResponse(client);
+	}
+	
+	@Override
+	public ClientResponse aprobarPorAdv(Long clientId, ClientStateChangeRequest request) {
+		Client client = clientRepository.findById(clientId)
+			.orElseThrow(() -> new RuntimeException("Client not found with id: " + clientId));
+			
+		clientStateService.aprobarPorAdv(client, request.getReason());
+		client = clientRepository.save(client);
+		return toClientResponse(client);
+	}
+	
+	@Override
+	public ClientResponse observarPorAdv(Long clientId, ClientStateChangeRequest request) {
+		Client client = clientRepository.findById(clientId)
+			.orElseThrow(() -> new RuntimeException("Client not found with id: " + clientId));
+			
+		clientStateService.observarPorAdv(client, request.getReason());
+		client = clientRepository.save(client);
+		return toClientResponse(client);
+	}
+	
+	@Override
+	public ClientResponse aprobarPorRiesgos(Long clientId, ClientStateChangeRequest request) {
+		Client client = clientRepository.findById(clientId)
+			.orElseThrow(() -> new RuntimeException("Client not found with id: " + clientId));
+			
+		clientStateService.aprobarPorRiesgos(client, request.getReason());
+		client = clientRepository.save(client);
+		return toClientResponse(client);
+	}
+	
+	@Override
+	public ClientResponse rechazarPorRiesgos(Long clientId, ClientStateChangeRequest request) {
+		Client client = clientRepository.findById(clientId)
+			.orElseThrow(() -> new RuntimeException("Client not found with id: " + clientId));
+			
+		clientStateService.rechazarPorRiesgos(client, request.getReason());
+		client = clientRepository.save(client);
+		return toClientResponse(client);
+	}
+	
+	@Override
+	public ClientResponse observarPorRiesgos(Long clientId, ClientStateChangeRequest request) {
+		Client client = clientRepository.findById(clientId)
+			.orElseThrow(() -> new RuntimeException("Client not found with id: " + clientId));
+			
+		clientStateService.observarPorRiesgos(client, request.getReason());
+		client = clientRepository.save(client);
+		return toClientResponse(client);
 	}
 }

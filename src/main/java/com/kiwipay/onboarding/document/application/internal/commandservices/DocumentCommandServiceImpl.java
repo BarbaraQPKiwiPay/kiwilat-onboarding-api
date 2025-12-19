@@ -1,5 +1,6 @@
 package com.kiwipay.onboarding.document.application.internal.commandservices;
 
+import com.kiwipay.onboarding.client.domain.model.aggregates.Client;
 import com.kiwipay.onboarding.client.infrastructure.persistence.jpa.repositories.ClientRepository;
 import com.kiwipay.onboarding.document.application.internal.dto.DocumentUploadRequest;
 import com.kiwipay.onboarding.document.application.internal.dto.DocumentResponse;
@@ -41,9 +42,13 @@ public class DocumentCommandServiceImpl implements DocumentCommandService {
 
     @Override
     public DocumentResponse uploadDocument(Long clientId, DocumentUploadRequest request) {
-        // Validar que el cliente existe
-        if (!clientRepository.existsById(clientId)) {
-            throw DocumentBusinessException.clientNotFound();
+        // Validar que el cliente existe y obtener su estado
+        Client client = clientRepository.findById(clientId)
+            .orElseThrow(() -> DocumentBusinessException.clientNotFound());
+            
+        // VALIDACIÓN CRÍTICA: Verificar si el estado permite subida de documentos
+        if (!client.allowsDocumentUpload()) {
+            throw DocumentBusinessException.documentUploadNotAllowed(client.getStatus().name());
         }
 
         // Validar que el tipo de documento existe
@@ -110,7 +115,7 @@ public class DocumentCommandServiceImpl implements DocumentCommandService {
         Document document = documentRepository.findById(documentId)
             .orElseThrow(DocumentBusinessException::documentNotFound);
 
-        document.updateReviewStatus(request.getReviewStatus());
+        document.updateReviewStatus(request.getReviewStatus(), request.getComment());
         Document reviewedDocument = documentRepository.save(document);
 
         DocumentResponse response = new DocumentResponse();

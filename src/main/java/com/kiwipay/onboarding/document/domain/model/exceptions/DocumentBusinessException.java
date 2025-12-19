@@ -44,4 +44,12 @@ public class DocumentBusinessException extends RuntimeException {
     public static DocumentBusinessException documentNotBelongsToClient() {
         return new DocumentBusinessException("Document does not belong to the specified client", "DOCUMENT_NOT_BELONGS_TO_CLIENT", 403);
     }
+    
+    public static DocumentBusinessException documentUploadNotAllowed(String currentStatus) {
+        return new DocumentBusinessException(
+            String.format("Document upload not allowed in current status: %s. Only MANUAL and OBSERVADO_POR_ADV statuses allow document upload.", currentStatus), 
+            "DOCUMENT_UPLOAD_NOT_ALLOWED", 
+            403
+        );
+    }
 }

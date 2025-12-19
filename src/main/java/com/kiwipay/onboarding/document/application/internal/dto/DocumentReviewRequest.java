@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class DocumentReviewRequest {
     @NotNull(message = "Review status is required")
     private ReviewStatus reviewStatus;
+    private String comment;
 }
