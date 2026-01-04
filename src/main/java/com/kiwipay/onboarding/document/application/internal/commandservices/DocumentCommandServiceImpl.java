@@ -1,6 +1,7 @@
 package com.kiwipay.onboarding.document.application.internal.commandservices;
 
 import com.kiwipay.onboarding.client.domain.model.aggregates.Client;
+import com.kiwipay.onboarding.client.domain.model.valueobjects.ClientStatus;
 import com.kiwipay.onboarding.client.infrastructure.persistence.jpa.repositories.ClientRepository;
 import com.kiwipay.onboarding.document.application.internal.dto.DocumentUploadRequest;
 import com.kiwipay.onboarding.document.application.internal.dto.DocumentResponse;
@@ -35,8 +36,7 @@ public class DocumentCommandServiceImpl implements DocumentCommandService {
     private ClientRepository clientRepository;
 
     private static final List<String> ALLOWED_MIME_TYPES = Arrays.asList(
-        "application/pdf", "image/jpeg", "image/png"
-    );
+            "application/pdf", "image/jpeg", "image/png");
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
     private static final int MAX_DOCUMENTS_PER_CLIENT = 10;
 
@@ -44,11 +44,21 @@ public class DocumentCommandServiceImpl implements DocumentCommandService {
     public DocumentResponse uploadDocument(Long clientId, DocumentUploadRequest request) {
         // Validar que el cliente existe y obtener su estado
         Client client = clientRepository.findById(clientId)
-            .orElseThrow(() -> DocumentBusinessException.clientNotFound());
-            
+                .orElseThrow(() -> DocumentBusinessException.clientNotFound());
+
         // VALIDACIÓN CRÍTICA: Verificar si el estado permite subida de documentos
-        if (!client.allowsDocumentUpload()) {
-            throw DocumentBusinessException.documentUploadNotAllowed(client.getStatus().name());
+        // Para documentos FICHA_RIESGO, permitir subida en cualquier estado excepto
+        // APROBADO_POR_RIESGOS
+        boolean isFichaRiesgo = "FICHA_RIESGO".equals(request.getDocumentTypeId());
+        if (isFichaRiesgo) {
+            if (client.getStatus() == ClientStatus.APROBADO_POR_RIESGOS) {
+                throw DocumentBusinessException.documentUploadNotAllowed(client.getStatus().name());
+            }
+        } else {
+            // Para otros tipos de documentos, aplicar la validación estándar
+            if (!client.allowsDocumentUpload()) {
+                throw DocumentBusinessException.documentUploadNotAllowed(client.getStatus().name());
+            }
         }
 
         // Validar que el tipo de documento existe
@@ -83,15 +93,14 @@ public class DocumentCommandServiceImpl implements DocumentCommandService {
 
         // Crear documento
         Document document = new Document(
-            documentId,
-            clientId,
-            request.getDocumentTypeId(),
-            request.getFilename(),
-            request.getMimeType(),
-            request.getSizeBytes(),
-            request.getComment(),
-            request.getContentBase64()
-        );
+                documentId,
+                clientId,
+                request.getDocumentTypeId(),
+                request.getFilename(),
+                request.getMimeType(),
+                request.getSizeBytes(),
+                request.getComment(),
+                request.getContentBase64());
 
         Document savedDocument = documentRepository.save(document);
 
@@ -113,7 +122,7 @@ public class DocumentCommandServiceImpl implements DocumentCommandService {
     @Override
     public DocumentResponse reviewDocument(String documentId, DocumentReviewRequest request) {
         Document document = documentRepository.findById(documentId)
-            .orElseThrow(DocumentBusinessException::documentNotFound);
+                .orElseThrow(DocumentBusinessException::documentNotFound);
 
         document.updateReviewStatus(request.getReviewStatus(), request.getComment());
         Document reviewedDocument = documentRepository.save(document);
