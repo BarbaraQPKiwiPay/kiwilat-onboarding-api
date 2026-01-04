@@ -4,9 +4,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Request DTO for creating a new loan
- */
 @Getter
 @Setter
 public class LoanCreateRequest {
@@ -28,7 +25,6 @@ public class LoanCreateRequest {
     private Double additionalRate;
     private Double initial;
 
-    // User making the creation
     @NotNull(message = "Created by user ID is required")
     private Long createdByUserId;
 }

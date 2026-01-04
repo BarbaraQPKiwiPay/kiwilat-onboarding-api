@@ -5,9 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Request DTO for changing loan status
- */
 @Getter
 @Setter
 public class LoanStatusChangeRequest {

@@ -7,10 +7,6 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
-/**
- * Query Service interface for Loan operations (Read)
- * Handles all read-only operations
- */
 public interface LoanQueryService {
 
     /**

@@ -6,30 +6,29 @@ package com.kiwipay.onboarding.loan.domain.model.valueobjects;
  */
 public enum LoanStatus {
 
-    // ========== ESTADO INICIAL ==========
+    // ESTADO INICIAL
     PENDING,
+
+    // FLUJO DE COMERCIAL
     DOCUMENTS_COMPLETED,
 
-    // ========== FLUJO ADV (Área de Ventas) ==========
+    // FLUJO ADV (Área de Ventas)
     APPROVED_BY_ADV,
     OBSERVED_BY_ADV,
 
-    // ========== FLUJO RIESGOS ==========
+    // FLUJO RIESGOS
     APPROVED_BY_RISK,
     REJECTED_BY_RISK,
     OBSERVED_BY_RISK,
 
-    // ========== ESTADOS FINALES ==========
+    // ESTADOS FINALES
     SIGNED,
     DISBURSED,
 
-    // ========== AUTOMÁTICOS ==========
+    // AUTOMÁTICOS
     PRE_APPROVED,
     AUTO_REJECTED;
 
-    /**
-     * Obtiene los estados permitidos desde el estado actual
-     */
     public LoanStatus[] getAllowedTransitions() {
         switch (this) {
             case PENDING:
@@ -40,20 +39,14 @@ public enum LoanStatus {
 
             case APPROVED_BY_ADV:
                 return new LoanStatus[] { APPROVED_BY_RISK, REJECTED_BY_RISK, OBSERVED_BY_RISK };
-
             case OBSERVED_BY_ADV:
                 return new LoanStatus[] { DOCUMENTS_COMPLETED };
-
             case OBSERVED_BY_RISK:
                 return new LoanStatus[] { DOCUMENTS_COMPLETED };
-
             case APPROVED_BY_RISK:
                 return new LoanStatus[] { SIGNED };
-
             case SIGNED:
                 return new LoanStatus[] { DISBURSED };
-
-            // Estados finales - no permiten transiciones
             case REJECTED_BY_RISK:
             case DISBURSED:
             case PRE_APPROVED:

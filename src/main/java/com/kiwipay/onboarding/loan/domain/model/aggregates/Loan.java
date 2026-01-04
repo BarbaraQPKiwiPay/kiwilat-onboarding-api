@@ -30,7 +30,7 @@ public class Loan {
     @Column(name = "clinical_data_id")
     private Long clinicalDataId;
 
-    // ========== LOAN DATA ==========
+    // LOAN DATA
     @Column(name = "income")
     private Double income;
 
@@ -64,12 +64,12 @@ public class Loan {
     @Column(name = "initial")
     private Double initial;
 
-    // ========== STATUS & AUDIT FIELDS ==========
+    // STATUS & AUDIT FIELDS
     @Enumerated(EnumType.STRING)
     @Column(name = "loan_status", nullable = false, length = 50)
     private LoanStatus loanStatus = LoanStatus.PENDING;
 
-    // ========== TIMESTAMPS ==========
+    // TIMESTAMPS
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
@@ -116,7 +116,6 @@ public class Loan {
 
         this.loanStatus = newStatus;
 
-        // Set specific audit timestamps based on new status
         OffsetDateTime now = OffsetDateTime.now();
         switch (newStatus) {
             case APPROVED_BY_RISK:
@@ -129,7 +128,6 @@ public class Loan {
                 this.disbursementAt = now;
                 break;
             default:
-                // No specific audit fields for other states
                 break;
         }
     }

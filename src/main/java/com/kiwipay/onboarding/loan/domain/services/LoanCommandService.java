@@ -5,10 +5,6 @@ import com.kiwipay.onboarding.loan.application.internal.dto.LoanResponse;
 import com.kiwipay.onboarding.loan.application.internal.dto.LoanStatusChangeRequest;
 import com.kiwipay.onboarding.loan.application.internal.dto.LoanUpdateRequest;
 
-/**
- * Command Service interface for Loan operations (Write)
- * Handles all state-changing operations
- */
 public interface LoanCommandService {
 
     /**

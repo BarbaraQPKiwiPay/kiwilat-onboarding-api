@@ -15,10 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Implementation of Query Service for Loan operations
- * Handles all read-only operations
- */
 @Service
 @Transactional(readOnly = true)
 public class LoanQueryServiceImpl implements LoanQueryService {
@@ -55,8 +51,6 @@ public class LoanQueryServiceImpl implements LoanQueryService {
                 .collect(Collectors.toList());
     }
 
-    // ========== MAPPER ==========
-
     private LoanResponse mapToResponse(Loan loan) {
         LoanResponse response = new LoanResponse();
         response.setId(loan.getId());
@@ -75,7 +69,6 @@ public class LoanQueryServiceImpl implements LoanQueryService {
         response.setInitial(loan.getInitial());
         response.setLoanStatus(loan.getLoanStatus());
 
-        // Timestamps
         response.setCreatedAt(loan.getCreatedAt());
         response.setUpdatedAt(loan.getUpdatedAt());
         response.setSignatureAt(loan.getSignatureAt());

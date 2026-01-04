@@ -6,9 +6,6 @@ import lombok.Setter;
 
 import java.time.OffsetDateTime;
 
-/**
- * Response DTO for Loan information
- */
 @Getter
 @Setter
 public class LoanResponse {
@@ -31,7 +28,6 @@ public class LoanResponse {
 
     private LoanStatus loanStatus;
 
-    // Timestamps
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private OffsetDateTime signatureAt;

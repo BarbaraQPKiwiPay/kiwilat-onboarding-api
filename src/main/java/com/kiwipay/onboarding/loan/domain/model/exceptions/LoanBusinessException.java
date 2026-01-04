@@ -2,9 +2,6 @@ package com.kiwipay.onboarding.loan.domain.model.exceptions;
 
 import org.springframework.http.HttpStatus;
 
-/**
- * Business exceptions for Loan domain
- */
 public class LoanBusinessException extends RuntimeException {
 
     private final String errorCode;
@@ -23,8 +20,6 @@ public class LoanBusinessException extends RuntimeException {
     public HttpStatus getHttpStatus() {
         return httpStatus;
     }
-
-    // ========== FACTORY METHODS ==========
 
     public static LoanBusinessException loanNotFound() {
         return new LoanBusinessException(

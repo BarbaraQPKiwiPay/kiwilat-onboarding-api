@@ -24,10 +24,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * REST Controller for Loan management
- * Implements CRUD operations with CQRS pattern
- */
 @RestController
 @RequestMapping("/api/v1/loans")
 @Tag(name = "Loan Management", description = "Managing loan information and status workflow")
@@ -38,8 +34,6 @@ public class LoanController {
 
     @Autowired
     private LoanQueryService loanQueryService;
-
-    // ========== CREATE ==========
 
     @PostMapping
     @Operation(summary = "Create a new loan", description = "Creates a new loan for a client with initial status PENDING")
@@ -58,8 +52,6 @@ public class LoanController {
                     .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
         }
     }
-
-    // ========== READ ==========
 
     @GetMapping("/{loanId}")
     @Operation(summary = "Get loan by ID", description = "Retrieves detailed information for a specific loan")
@@ -125,8 +117,6 @@ public class LoanController {
         }
     }
 
-    // ========== UPDATE ==========
-
     @PutMapping("/{loanId}")
     @Operation(summary = "Update loan information", description = "Updates any field of an existing loan")
     @ApiResponses(value = {
@@ -168,8 +158,6 @@ public class LoanController {
         }
     }
 
-    // ========== DELETE ==========
-
     @DeleteMapping("/{loanId}")
     @Operation(summary = "Delete loan", description = "Deletes a loan (only if not in final state)")
     @ApiResponses(value = {
@@ -187,8 +175,6 @@ public class LoanController {
                     .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
         }
     }
-
-    // ========== ERROR RESPONSE CLASS ==========
 
     public static class ErrorResponse {
         private String errorCode;
