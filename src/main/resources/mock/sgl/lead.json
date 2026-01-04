@@ -1,0 +1,9 @@
+{
+  "loanId": "MOCK_LOAN_001",
+  "amount": 15000.00,
+  "termMonths": 24,
+  "maf": 750.00,
+  "monthlyPayment": 850.00,
+  "interestRate": 18.50,
+  "clientId": "CLIENT_MOCK_001"
+}
