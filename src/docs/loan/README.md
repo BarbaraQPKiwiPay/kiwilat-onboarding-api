@@ -65,8 +65,8 @@ Mantener la integridad y consistencia del préstamo a través de su ciclo de vid
 - Las fechas críticas se registran automáticamente al cambiar a ciertos estados
 
 **Reglas de negocio clave:**
-1. Estado inicial siempre es `PENDING`
-2. Flujo obligatorio: PENDING → DOCUMENTS_COMPLETED → APPROVED_BY_ADV → APPROVED_BY_RISK → SIGNED → DISBURS ED
+1. Estado inicial siempre es `PRE-APROBADO`
+2. Flujo obligatorio: PRE-APROBADO → DOCUMENTS_COMPLETED → APPROVED_BY_ADV → APPROVED_BY_RISK → SIGNED → DISBURSED
 3. Estados "observado" permiten retroceder para correcciones
 4. Al aprobar por riesgos, se registra `approvedByRiskAt`
 5. Al firmar contrato, se registra `signatureAt`
@@ -132,17 +132,15 @@ El estado actual del préstamo en el flujo de evaluación y aprobación.
 
 | Valor | Significado |
 |-------|-------------|
-| `PENDING` | Préstamo creado, pendiente de completar documentos |
+| `PRE_APPROVED` | Préstamo creado, pendiente de completar documentos |
 | `DOCUMENTS_COMPLETED` | Documentos completos, listo para revisión ADV |
 | `APPROVED_BY_ADV` | Aprobado por Área de Ventas, pasa a Riesgos |
 | `OBSERVED_BY_ADV` | Requiere correcciones según ADV |
-| `APPROVED_BY_RISK` | Aprobado por Riesgos, listo para firma |
+| `APPROVED_BY_RISK` | Aprobado por Riesgos, listo para firma (ESTADO FINAL) |
 | `REJECTED_BY_RISK` | Rechazado por Riesgos (ESTADO FINAL) |
 | `OBSERVED_BY_RISK` | Requiere correcciones según Riesgos |
 | `SIGNED` | Contrato firmado digitalmente |
-| `DISBURSED` | Dinero desembolsado (ESTADO FINAL) |
-| `PRE_APPROVED` | Pre-aprobado automáticamente por el sistema |
-| `AUTO_REJECTED` | Rechazado automáticamente por el sistema (ESTADO FINAL) |
+| `DISBURSED` | Dinero desembolsado |
 
 ---
 
@@ -206,7 +204,7 @@ Actualmente no se han implementado eventos de dominio explícitos. El cambio de 
 {
   "id": 1,
   "clientId": 1,
-  "loanStatus": "PENDING",
+  "loanStatus": "PRE-APROBADO",
   "income": 5000.0,
   "createdAt": "2026-01-03T18:00:00Z"
 }
@@ -226,7 +224,7 @@ Actualmente no se han implementado eventos de dominio explícitos. El cambio de 
 {
   "id": 1,
   "clientId": 1,
-  "loanStatus": "APPROVED_BY_RISK",
+  "loanStatus": "PRE-APROBADO",
   "income": 5000.0,
   "approvedByRiskAt": "2026-01-03T18:30:00Z",
   "createdAt": "2026-01-03T18:00:00Z",
@@ -416,7 +414,7 @@ Actualmente **síncrona** mediante validación de IDs en servicios. No hay event
                                       │  - disbursementAt
                                       └──────────────┘
 
-Flujo: PENDING → DOCUMENTS_COMPLETED → APPROVED_BY_ADV 
+Flujo: PRE_APPROVED → DOCUMENTS_COMPLETED → APPROVED_BY_ADV 
        → APPROVED_BY_RISK → SIGNED → DISBURSED
        
 Estados observación permiten retroceso para correcciones
@@ -529,7 +527,7 @@ POST /api/v1/loans
 }
 ```
 
-**Estado:** PENDING
+**Estado:** PRE_APPROVED
 
 ---
 

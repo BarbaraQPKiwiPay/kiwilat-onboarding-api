@@ -7,7 +7,7 @@ package com.kiwipay.onboarding.loan.domain.model.valueobjects;
 public enum LoanStatus {
 
     // ESTADO INICIAL
-    PENDING,
+    PRE_APPROVED,
 
     // FLUJO DE COMERCIAL
     DOCUMENTS_COMPLETED,
@@ -23,16 +23,12 @@ public enum LoanStatus {
 
     // ESTADOS FINALES
     SIGNED,
-    DISBURSED,
-
-    // AUTOMÁTICOS
-    PRE_APPROVED,
-    AUTO_REJECTED;
+    DISBURSED;
 
     public LoanStatus[] getAllowedTransitions() {
         switch (this) {
-            case PENDING:
-                return new LoanStatus[] { DOCUMENTS_COMPLETED, AUTO_REJECTED };
+            case PRE_APPROVED:
+                return new LoanStatus[] { DOCUMENTS_COMPLETED };
 
             case DOCUMENTS_COMPLETED:
                 return new LoanStatus[] { APPROVED_BY_ADV, OBSERVED_BY_ADV };
@@ -49,8 +45,6 @@ public enum LoanStatus {
                 return new LoanStatus[] { DISBURSED };
             case REJECTED_BY_RISK:
             case DISBURSED:
-            case PRE_APPROVED:
-            case AUTO_REJECTED:
             default:
                 return new LoanStatus[] {};
         }
@@ -75,15 +69,14 @@ public enum LoanStatus {
     public boolean isFinalState() {
         return this == REJECTED_BY_RISK ||
                 this == DISBURSED ||
-                this == PRE_APPROVED ||
-                this == AUTO_REJECTED;
+                this == APPROVED_BY_RISK;
     }
 
     /**
      * Verifica si permite subida de documentos
      */
     public boolean allowsDocumentUpload() {
-        return this == PENDING ||
+        return this == PRE_APPROVED ||
                 this == OBSERVED_BY_ADV ||
                 this == OBSERVED_BY_RISK ||
                 this == DOCUMENTS_COMPLETED;
