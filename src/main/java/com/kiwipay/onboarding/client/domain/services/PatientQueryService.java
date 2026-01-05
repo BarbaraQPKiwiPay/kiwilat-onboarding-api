@@ -5,8 +5,14 @@ import com.kiwipay.onboarding.client.application.internal.dto.PatientSummaryResp
 
 import java.util.List;
 
+/**
+ * Patient Query Service
+ * Handles read operations for Patient aggregate
+ */
 public interface PatientQueryService {
-    PatientResponse getPatientById(Long clientId, Long patientId);
-    List<PatientSummaryResponse> getPatientsByClientId(Long clientId);
-    List<PatientResponse> getAllPatientsByClientId(Long clientId);
+    PatientResponse getPatientById(Long loanId, Long patientId);
+
+    List<PatientSummaryResponse> getPatientsByLoanId(Long loanId);
+
+    List<PatientResponse> getAllPatientsByLoanId(Long loanId);
 }

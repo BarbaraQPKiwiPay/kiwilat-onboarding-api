@@ -187,14 +187,18 @@ Actualmente no se han implementado eventos de dominio explícitos. El cambio de 
 ```json
 {
   "clientId": 1,
-  "income": 5000.00,
+  "clinicalDataId": 1,
+  "income": 1000,
   "quotaNumber": 12,
-  "maf": 150.00,
-  "loanGroup": "A",
+  "maf": 150,
+  "group": "A",
   "segment": "Premium",
   "employmentStatus": "EMPLOYED",
   "classification": "Low Risk",
   "finalRate": 12.5,
+  "experianRate": 20,
+  "additionalRate": 5,
+  "initial": 40,
   "createdByUserId": 1
 }
 ```
@@ -204,9 +208,24 @@ Actualmente no se han implementado eventos de dominio explícitos. El cambio de 
 {
   "id": 1,
   "clientId": 1,
-  "loanStatus": "PRE-APROBADO",
-  "income": 5000.0,
-  "createdAt": "2026-01-03T18:00:00Z"
+  "clinicalDataId": null,
+  "income": 1000,
+  "quotaNumber": 12,
+  "maf": 150,
+  "group": "A",
+  "segment": "Premium",
+  "employmentStatus": "EMPLOYED",
+  "classification": "Low Risk",
+  "finalRate": 12.5,
+  "experianRate": 20,
+  "additionalRate": 5,
+  "initial": 40,
+  "loanStatus": "PRE_APPROVED",
+  "createdAt": "2026-01-05T15:11:39.301101-05:00",
+  "updatedAt": "2026-01-05T15:11:39.301101-05:00",
+  "signatureAt": null,
+  "approvedByRiskAt": null,
+  "disbursementAt": null
 }
 ```
 
@@ -221,15 +240,30 @@ Actualmente no se han implementado eventos de dominio explícitos. El cambio de 
 
 **Response 200:**
 ```json
-{
-  "id": 1,
-  "clientId": 1,
-  "loanStatus": "PRE-APROBADO",
-  "income": 5000.0,
-  "approvedByRiskAt": "2026-01-03T18:30:00Z",
-  "createdAt": "2026-01-03T18:00:00Z",
-  "updatedAt": "2026-01-03T18:30:00Z"
-}
+[
+  {
+    "id": 1,
+    "clientId": 1,
+    "clinicalDataId": null,
+    "income": 1000,
+    "quotaNumber": 12,
+    "maf": 150,
+    "group": "A",
+    "segment": "Premium",
+    "employmentStatus": "EMPLOYED",
+    "classification": "Low Risk",
+    "finalRate": 12.5,
+    "experianRate": 20,
+    "additionalRate": 5,
+    "initial": 40,
+    "loanStatus": "PRE_APPROVED",
+    "createdAt": "2026-01-05T20:11:39.301101Z",
+    "updatedAt": "2026-01-05T20:11:39.301101Z",
+    "signatureAt": null,
+    "approvedByRiskAt": null,
+    "disbursementAt": null
+  }
+]
 ```
 
 **Errores:**

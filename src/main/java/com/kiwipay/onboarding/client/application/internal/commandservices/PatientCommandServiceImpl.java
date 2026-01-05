@@ -5,16 +5,22 @@ import com.kiwipay.onboarding.client.application.internal.dto.PatientResponse;
 import com.kiwipay.onboarding.client.application.internal.dto.PatientUpdateRequest;
 import com.kiwipay.onboarding.client.domain.model.aggregates.Patient;
 import com.kiwipay.onboarding.client.domain.model.entities.Address;
-import com.kiwipay.onboarding.client.domain.model.valueobjects.DocumentType;
-import com.kiwipay.onboarding.client.domain.model.valueobjects.Gender;
+import com.kiwipay.onboarding.shared.domain.valueobjects.DocumentType;
+import com.kiwipay.onboarding.shared.domain.valueobjects.Gender;
+import com.kiwipay.onboarding.client.domain.model.exceptions.PatientBusinessException;
 import com.kiwipay.onboarding.client.domain.services.PatientCommandService;
-import com.kiwipay.onboarding.client.infrastructure.persistence.jpa.repositories.ClientRepository;
+import com.kiwipay.onboarding.loan.infrastructure.persistence.jpa.LoanRepository;
 import com.kiwipay.onboarding.client.infrastructure.persistence.jpa.repositories.PatientRepository;
+import com.kiwipay.onboarding.catalog.infrastructure.persistence.jpa.repositories.DepartmentRepository;
+import com.kiwipay.onboarding.catalog.infrastructure.persistence.jpa.repositories.ProvinceRepository;
+import com.kiwipay.onboarding.catalog.infrastructure.persistence.jpa.repositories.DistrictRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
-
+/**
+ * Patient Command Service Implementation
+ * Handles write operations for Patient aggregate
+ */
 @Service
 public class PatientCommandServiceImpl implements PatientCommandService {
 
@@ -22,44 +28,55 @@ public class PatientCommandServiceImpl implements PatientCommandService {
     private PatientRepository patientRepository;
 
     @Autowired
-    private ClientRepository clientRepository;
+    private LoanRepository loanRepository;
+
+    @Autowired
+    private DepartmentRepository departmentRepository;
+
+    @Autowired
+    private ProvinceRepository provinceRepository;
+
+    @Autowired
+    private DistrictRepository districtRepository;
 
     @Override
-    public PatientResponse createPatient(Long clientId, PatientCreateRequest request) {
-        // Verificar que el cliente existe
-        if (!clientRepository.existsById(clientId)) {
-            throw new RuntimeException("Client not found with id: " + clientId);
+    public PatientResponse createPatient(Long loanId, PatientCreateRequest request) {
+        // Verify that the loan exists
+        if (!loanRepository.existsById(loanId)) {
+            throw new RuntimeException("Loan not found with id: " + loanId);
         }
 
         Address address = new Address(
-            request.getAddress().getDepartmentId(),
-            request.getAddress().getProvinceId(),
-            request.getAddress().getDistrictId(),
-            request.getAddress().getLine1()
-        );
+                request.getAddress().getDepartmentId(),
+                request.getAddress().getProvinceId(),
+                request.getAddress().getDistrictId(),
+                request.getAddress().getLine1());
+
+        // Validate address catalog IDs
+        validateAddress(address);
 
         Patient patient = new Patient(
-            clientId,
-            DocumentType.valueOf(request.getDocumentType()),
-            request.getDocumentNumber(),
-            request.getFirstNames(),
-            request.getLastNames(),
-            Gender.valueOf(request.getGender()),
-            request.getPhone(),
-            request.getEmail(),
-            address
-        );
+                loanId,
+                DocumentType.valueOf(request.getDocumentType()),
+                request.getDocumentNumber(),
+                request.getFirstNames(),
+                request.getLastNames(),
+                Gender.valueOf(request.getGender()),
+                request.getPhone(),
+                request.getEmail(),
+                address);
 
         patient = patientRepository.save(patient);
         return toPatientResponse(patient);
     }
 
     @Override
-    public PatientResponse updatePatient(Long clientId, Long patientId, PatientUpdateRequest request) {
-        Patient existingPatient = patientRepository.findByIdAndClientId(patientId, clientId)
-            .orElseThrow(() -> new RuntimeException("Patient not found with id: " + patientId + " for client: " + clientId));
+    public PatientResponse updatePatient(Long loanId, Long patientId, PatientUpdateRequest request) {
+        Patient existingPatient = patientRepository.findByIdAndLoanId(patientId, loanId)
+                .orElseThrow(
+                        () -> new RuntimeException("Patient not found with id: " + patientId + " for loan: " + loanId));
 
-        // Actualizar campos
+        // Update fields
         if (request.getDocumentType() != null) {
             existingPatient.setDocumentType(DocumentType.valueOf(request.getDocumentType()));
         }
@@ -71,15 +88,15 @@ public class PatientCommandServiceImpl implements PatientCommandService {
         existingPatient.setGender(Gender.valueOf(request.getGender()));
         existingPatient.setPhone(request.getPhone());
         existingPatient.setEmail(request.getEmail());
-        existingPatient.setUpdatedAt(OffsetDateTime.now());
 
         if (request.getAddress() != null) {
             Address updatedAddress = new Address(
-                request.getAddress().getDepartmentId(),
-                request.getAddress().getProvinceId(),
-                request.getAddress().getDistrictId(),
-                request.getAddress().getLine1()
-            );
+                    request.getAddress().getDepartmentId(),
+                    request.getAddress().getProvinceId(),
+                    request.getAddress().getDistrictId(),
+                    request.getAddress().getLine1());
+            // Validate address catalog IDs
+            validateAddress(updatedAddress);
             existingPatient.setAddress(updatedAddress);
         }
 
@@ -88,17 +105,17 @@ public class PatientCommandServiceImpl implements PatientCommandService {
     }
 
     @Override
-    public void deletePatient(Long clientId, Long patientId) {
-        if (!patientRepository.existsByIdAndClientId(patientId, clientId)) {
-            throw new RuntimeException("Patient not found with id: " + patientId + " for client: " + clientId);
+    public void deletePatient(Long loanId, Long patientId) {
+        if (!patientRepository.existsByIdAndLoanId(patientId, loanId)) {
+            throw new RuntimeException("Patient not found with id: " + patientId + " for loan: " + loanId);
         }
-        patientRepository.deleteByIdAndClientId(patientId, clientId);
+        patientRepository.deleteByIdAndLoanId(patientId, loanId);
     }
 
     private PatientResponse toPatientResponse(Patient patient) {
         PatientResponse response = new PatientResponse();
         response.setId(patient.getId());
-        response.setClientId(patient.getClientId());
+        response.setLoanId(patient.getLoanId());
         response.setDocumentType(patient.getDocumentType().name());
         response.setDocumentNumber(patient.getDocumentNumber());
         response.setFirstNames(patient.getFirstNames());
@@ -118,5 +135,38 @@ public class PatientCommandServiceImpl implements PatientCommandService {
 
         response.setCreatedAt(patient.getCreatedAt().toString());
         return response;
+    }
+
+    /**
+     * Validates that the geographic IDs in the address exist in the catalog
+     * 
+     * @param address Address to validate
+     * @throws PatientBusinessException if any ID is invalid
+     */
+    private void validateAddress(Address address) {
+        if (address == null) {
+            return; // Skip validation for null addresses
+        }
+
+        // Validate departmentId
+        if (address.getDepartmentId() != null && !address.getDepartmentId().isEmpty()) {
+            if (!departmentRepository.existsById(address.getDepartmentId())) {
+                throw PatientBusinessException.invalidDepartment(address.getDepartmentId());
+            }
+        }
+
+        // Validate provinceId
+        if (address.getProvinceId() != null && !address.getProvinceId().isEmpty()) {
+            if (!provinceRepository.existsById(address.getProvinceId())) {
+                throw PatientBusinessException.invalidProvince(address.getProvinceId());
+            }
+        }
+
+        // Validate districtId
+        if (address.getDistrictId() != null && !address.getDistrictId().isEmpty()) {
+            if (!districtRepository.existsById(address.getDistrictId())) {
+                throw PatientBusinessException.invalidDistrict(address.getDistrictId());
+            }
+        }
     }
 }

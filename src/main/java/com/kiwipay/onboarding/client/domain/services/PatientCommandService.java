@@ -4,8 +4,14 @@ import com.kiwipay.onboarding.client.application.internal.dto.PatientCreateReque
 import com.kiwipay.onboarding.client.application.internal.dto.PatientResponse;
 import com.kiwipay.onboarding.client.application.internal.dto.PatientUpdateRequest;
 
+/**
+ * Patient Command Service
+ * Handles write operations for Patient aggregate
+ */
 public interface PatientCommandService {
-    PatientResponse createPatient(Long clientId, PatientCreateRequest request);
-    PatientResponse updatePatient(Long clientId, Long patientId, PatientUpdateRequest request);
-    void deletePatient(Long clientId, Long patientId);
+    PatientResponse createPatient(Long loanId, PatientCreateRequest request);
+
+    PatientResponse updatePatient(Long loanId, Long patientId, PatientUpdateRequest request);
+
+    void deletePatient(Long loanId, Long patientId);
 }

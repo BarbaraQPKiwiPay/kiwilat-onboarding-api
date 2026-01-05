@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Patient Query Service Implementation
+ * Handles read operations for Patient aggregate
+ */
 @Service
 public class PatientQueryServiceImpl implements PatientQueryService {
 
@@ -18,23 +22,30 @@ public class PatientQueryServiceImpl implements PatientQueryService {
     private PatientRepository patientRepository;
 
     @Override
-    public PatientResponse getPatientById(Long clientId, Long patientId) {
-        return patientRepository.findByIdAndClientId(patientId, clientId)
-            .map(this::toPatientResponse)
-            .orElse(null);
+    public PatientResponse getPatientById(Long loanId, Long patientId) {
+        return patientRepository.findByIdAndLoanId(patientId, loanId)
+                .map(this::toPatientResponse)
+                .orElse(null);
     }
 
     @Override
-    public List<PatientSummaryResponse> getPatientsByClientId(Long clientId) {
-        return patientRepository.findByClientId(clientId).stream()
-            .map(this::toPatientSummaryResponse)
-            .collect(Collectors.toList());
+    public List<PatientSummaryResponse> getPatientsByLoanId(Long loanId) {
+        return patientRepository.findByLoanId(loanId).stream()
+                .map(this::toPatientSummaryResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PatientResponse> getAllPatientsByLoanId(Long loanId) {
+        return patientRepository.findByLoanId(loanId).stream()
+                .map(this::toPatientResponse)
+                .collect(Collectors.toList());
     }
 
     private PatientResponse toPatientResponse(Patient patient) {
         PatientResponse response = new PatientResponse();
         response.setId(patient.getId());
-        response.setClientId(patient.getClientId());
+        response.setLoanId(patient.getLoanId());
         response.setDocumentType(patient.getDocumentType().name());
         response.setDocumentNumber(patient.getDocumentNumber());
         response.setFirstNames(patient.getFirstNames());
@@ -54,13 +65,6 @@ public class PatientQueryServiceImpl implements PatientQueryService {
 
         response.setCreatedAt(patient.getCreatedAt().toString());
         return response;
-    }
-
-    @Override
-    public List<PatientResponse> getAllPatientsByClientId(Long clientId) {
-        return patientRepository.findByClientId(clientId).stream()
-            .map(this::toPatientResponse)
-            .collect(Collectors.toList());
     }
 
     private PatientSummaryResponse toPatientSummaryResponse(Patient patient) {

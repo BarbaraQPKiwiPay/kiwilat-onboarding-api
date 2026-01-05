@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PatientResponse {
     private Long id;
-    private Long clientId;
+    private Long loanId;
     private String documentType;
     private String documentNumber;
     private String firstNames;

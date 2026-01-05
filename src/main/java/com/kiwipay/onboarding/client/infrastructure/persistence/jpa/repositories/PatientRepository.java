@@ -7,10 +7,17 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Patient Repository
+ * Manages persistence operations for Patient aggregate
+ */
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, Long> {
-    List<Patient> findByClientId(Long clientId);
-    Optional<Patient> findByIdAndClientId(Long id, Long clientId);
-    void deleteByIdAndClientId(Long id, Long clientId);
-    boolean existsByIdAndClientId(Long id, Long clientId);
+    List<Patient> findByLoanId(Long loanId);
+
+    Optional<Patient> findByIdAndLoanId(Long id, Long loanId);
+
+    void deleteByIdAndLoanId(Long id, Long loanId);
+
+    boolean existsByIdAndLoanId(Long id, Long loanId);
 }

@@ -67,7 +67,7 @@ public class Loan {
     // STATUS & AUDIT FIELDS
     @Enumerated(EnumType.STRING)
     @Column(name = "loan_status", nullable = false, length = 50)
-    private LoanStatus loanStatus = LoanStatus.PENDING;
+    private LoanStatus loanStatus = LoanStatus.PRE_APPROVED;
 
     // TIMESTAMPS
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -90,7 +90,7 @@ public class Loan {
         createdAt = OffsetDateTime.now();
         updatedAt = OffsetDateTime.now();
         if (loanStatus == null) {
-            loanStatus = LoanStatus.PENDING;
+            loanStatus = LoanStatus.PRE_APPROVED;
         }
     }
 

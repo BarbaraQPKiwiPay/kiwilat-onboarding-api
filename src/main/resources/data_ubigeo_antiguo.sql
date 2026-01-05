@@ -1,23 +1,4 @@
 
-CREATE TABLE department(
-	id VARCHAR(2) NOT NULL PRIMARY KEY ,
-	name VARCHAR(45) NOT NULL
-);
-
-CREATE TABLE province(
-	id VARCHAR(4) NOT NULL PRIMARY KEY,
-	name VARCHAR(45) NOT NULL,
-	department_id VARCHAR(2) NOT NULL
-);
-
-CREATE TABLE district(
-    id VARCHAR(6) NOT NULL PRIMARY KEY,
-	name VARCHAR(45) NULL,
-	province_id VARCHAR(4) NULL,
-	department_id VARCHAR(2) NULL
-);
-
-
 INSERT INTO department (id, name) VALUES ('01', 'Amazonas');
 
 INSERT INTO department (id, name) VALUES ('02', 'Áncash');
