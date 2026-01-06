@@ -42,10 +42,11 @@ public class Spouse {
     @Column(nullable = false, name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public Spouse() {}
+    public Spouse() {
+    }
 
-    public Spouse(String guarantorId, String documentType, String documentNumber, 
-                  String firstNames, String lastNames, String email, String phone) {
+    public Spouse(String guarantorId, String documentType, String documentNumber,
+            String firstNames, String lastNames, String email, String phone) {
         this.guarantorId = guarantorId;
         this.documentType = documentType;
         this.documentNumber = documentNumber;
@@ -57,8 +58,8 @@ public class Spouse {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void updateDetails(String documentType, String documentNumber, 
-                             String firstNames, String lastNames, String email, String phone) {
+    public void updateDetails(String documentType, String documentNumber,
+            String firstNames, String lastNames, String email, String phone) {
         this.documentType = documentType;
         this.documentNumber = documentNumber;
         this.firstNames = firstNames;

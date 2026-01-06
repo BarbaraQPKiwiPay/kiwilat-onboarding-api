@@ -1,16 +1,16 @@
-package com.kiwipay.onboarding.client.application.internal.commandservices;
+package com.kiwipay.onboarding.patient.application.internal.commandservices;
 
-import com.kiwipay.onboarding.client.application.internal.dto.PatientCreateRequest;
-import com.kiwipay.onboarding.client.application.internal.dto.PatientResponse;
-import com.kiwipay.onboarding.client.application.internal.dto.PatientUpdateRequest;
-import com.kiwipay.onboarding.client.domain.model.aggregates.Patient;
-import com.kiwipay.onboarding.client.domain.model.entities.Address;
+import com.kiwipay.onboarding.patient.domain.model.entities.Address;
 import com.kiwipay.onboarding.shared.domain.valueobjects.DocumentType;
 import com.kiwipay.onboarding.shared.domain.valueobjects.Gender;
-import com.kiwipay.onboarding.client.domain.model.exceptions.PatientBusinessException;
-import com.kiwipay.onboarding.client.domain.services.PatientCommandService;
 import com.kiwipay.onboarding.loan.infrastructure.persistence.jpa.LoanRepository;
-import com.kiwipay.onboarding.client.infrastructure.persistence.jpa.repositories.PatientRepository;
+import com.kiwipay.onboarding.patient.application.internal.dto.PatientCreateRequest;
+import com.kiwipay.onboarding.patient.application.internal.dto.PatientResponse;
+import com.kiwipay.onboarding.patient.application.internal.dto.PatientUpdateRequest;
+import com.kiwipay.onboarding.patient.domain.model.aggregates.Patient;
+import com.kiwipay.onboarding.patient.domain.model.exceptions.PatientBusinessException;
+import com.kiwipay.onboarding.patient.domain.services.PatientCommandService;
+import com.kiwipay.onboarding.patient.infrastructure.persistence.jpa.repositories.PatientRepository;
 import com.kiwipay.onboarding.catalog.infrastructure.persistence.jpa.repositories.DepartmentRepository;
 import com.kiwipay.onboarding.catalog.infrastructure.persistence.jpa.repositories.ProvinceRepository;
 import com.kiwipay.onboarding.catalog.infrastructure.persistence.jpa.repositories.DistrictRepository;

@@ -9,7 +9,10 @@ import java.util.Optional;
 @Repository
 public interface SpouseRepository extends JpaRepository<Spouse, Long> {
     Optional<Spouse> findByClientId(Long clientId);
+
     boolean existsByClientId(Long clientId);
+
     boolean existsByDocumentNumber(String documentNumber);
+
     void deleteByClientId(Long clientId);
 }

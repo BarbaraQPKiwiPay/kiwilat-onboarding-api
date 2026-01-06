@@ -1,8 +1,8 @@
-package com.kiwipay.onboarding.client.domain.services;
+package com.kiwipay.onboarding.patient.domain.services;
 
-import com.kiwipay.onboarding.client.application.internal.dto.PatientCreateRequest;
-import com.kiwipay.onboarding.client.application.internal.dto.PatientResponse;
-import com.kiwipay.onboarding.client.application.internal.dto.PatientUpdateRequest;
+import com.kiwipay.onboarding.patient.application.internal.dto.PatientCreateRequest;
+import com.kiwipay.onboarding.patient.application.internal.dto.PatientResponse;
+import com.kiwipay.onboarding.patient.application.internal.dto.PatientUpdateRequest;
 
 /**
  * Patient Command Service

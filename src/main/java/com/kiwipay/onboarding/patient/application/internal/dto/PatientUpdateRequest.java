@@ -1,4 +1,4 @@
-package com.kiwipay.onboarding.client.application.internal.dto;
+package com.kiwipay.onboarding.patient.application.internal.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

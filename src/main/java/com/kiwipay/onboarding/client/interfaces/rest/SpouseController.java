@@ -30,11 +30,11 @@ public class SpouseController {
     @PostMapping
     @Operation(summary = "Create spouse", description = "Creates a new spouse for a specific client")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Spouse created successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid request data"),
-        @ApiResponse(responseCode = "404", description = "Client not found"),
-        @ApiResponse(responseCode = "409", description = "Spouse already exists for this client"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(responseCode = "201", description = "Spouse created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "404", description = "Client not found"),
+            @ApiResponse(responseCode = "409", description = "Spouse already exists for this client"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<?> createSpouse(
             @PathVariable Long clientId,
@@ -44,25 +44,25 @@ public class SpouseController {
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (SpouseBusinessException e) {
             return ResponseEntity.status(e.getHttpStatus())
-                .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
+                    .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest()
-                .body(new ErrorResponse("VALIDATION_ERROR", e.getMessage()));
+                    .body(new ErrorResponse("VALIDATION_ERROR", e.getMessage()));
         }
     }
 
     @GetMapping
     @Operation(summary = "Get spouse information", description = "Retrieves spouse information for a specific client")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Spouse information retrieved successfully"),
-        @ApiResponse(responseCode = "404", description = "Spouse not found for this client"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(responseCode = "200", description = "Spouse information retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Spouse not found for this client"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<?> getSpouse(@PathVariable Long clientId) {
         SpouseResponse response = spouseQueryService.getSpouseByClientId(clientId);
         if (response == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse("SPOUSE_NOT_FOUND", "Spouse not found for this client"));
+                    .body(new ErrorResponse("SPOUSE_NOT_FOUND", "Spouse not found for this client"));
         }
         return ResponseEntity.ok(response);
     }
@@ -70,10 +70,10 @@ public class SpouseController {
     @PutMapping
     @Operation(summary = "Update spouse", description = "Updates spouse information for a specific client")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Spouse updated successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid request data"),
-        @ApiResponse(responseCode = "404", description = "Spouse or client not found"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(responseCode = "200", description = "Spouse updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "404", description = "Spouse or client not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<?> updateSpouse(
             @PathVariable Long clientId,
@@ -83,20 +83,20 @@ public class SpouseController {
             return ResponseEntity.ok(response);
         } catch (SpouseBusinessException e) {
             return ResponseEntity.status(e.getHttpStatus())
-                .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
+                    .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest()
-                .body(new ErrorResponse("VALIDATION_ERROR", e.getMessage()));
+                    .body(new ErrorResponse("VALIDATION_ERROR", e.getMessage()));
         }
     }
 
     @PatchMapping
     @Operation(summary = "Patch spouse", description = "Partially updates spouse information for a specific client")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Spouse patched successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid request data"),
-        @ApiResponse(responseCode = "404", description = "Spouse or client not found"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(responseCode = "200", description = "Spouse patched successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "404", description = "Spouse or client not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<?> patchSpouse(
             @PathVariable Long clientId,
@@ -106,19 +106,19 @@ public class SpouseController {
             return ResponseEntity.ok(response);
         } catch (SpouseBusinessException e) {
             return ResponseEntity.status(e.getHttpStatus())
-                .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
+                    .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest()
-                .body(new ErrorResponse("VALIDATION_ERROR", e.getMessage()));
+                    .body(new ErrorResponse("VALIDATION_ERROR", e.getMessage()));
         }
     }
 
     @DeleteMapping
     @Operation(summary = "Delete spouse", description = "Deletes the spouse of a specific client")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Spouse deleted successfully"),
-        @ApiResponse(responseCode = "404", description = "Spouse or client not found"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(responseCode = "204", description = "Spouse deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Spouse or client not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<?> deleteSpouse(@PathVariable Long clientId) {
         try {
@@ -126,7 +126,7 @@ public class SpouseController {
             return ResponseEntity.noContent().build();
         } catch (SpouseBusinessException e) {
             return ResponseEntity.status(e.getHttpStatus())
-                .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
+                    .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
         }
     }
 
@@ -140,7 +140,12 @@ public class SpouseController {
             this.message = message;
         }
 
-        public String getCode() { return code; }
-        public String getMessage() { return message; }
+        public String getCode() {
+            return code;
+        }
+
+        public String getMessage() {
+            return message;
+        }
     }
 }

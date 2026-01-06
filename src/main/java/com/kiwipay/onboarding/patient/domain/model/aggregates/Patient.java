@@ -1,6 +1,6 @@
-package com.kiwipay.onboarding.client.domain.model.aggregates;
+package com.kiwipay.onboarding.patient.domain.model.aggregates;
 
-import com.kiwipay.onboarding.client.domain.model.entities.Address;
+import com.kiwipay.onboarding.patient.domain.model.entities.Address;
 import com.kiwipay.onboarding.shared.domain.valueobjects.DocumentType;
 import com.kiwipay.onboarding.shared.domain.valueobjects.Gender;
 import jakarta.persistence.*;

@@ -31,31 +31,30 @@ public class SpouseCommandServiceImpl implements SpouseCommandService {
     @Override
     public SpouseResponse createSpouse(Long clientId, SpouseCreateRequest request) {
         Client client = clientRepository.findById(clientId)
-            .orElseThrow(() -> new RuntimeException("Client not found with id: " + clientId));
-        
+                .orElseThrow(() -> new RuntimeException("Client not found with id: " + clientId));
+
         validateClientMaritalStatus(client);
-        
+
         if (spouseRepository.existsByClientId(clientId)) {
             throw SpouseBusinessException.spouseAlreadyExists();
         }
-        
+
         if (spouseRepository.existsByDocumentNumber(request.getDocumentNumber())) {
             throw SpouseBusinessException.documentAlreadyLinked();
         }
-        
+
         validateDocumentFormat(request.getDocumentType(), request.getDocumentNumber());
-        
+
         // 5. Crear el cónyuge
         Spouse spouse = new Spouse(
-            clientId,
-            DocumentType.valueOf(request.getDocumentType()),
-            request.getDocumentNumber(),
-            request.getFirstNames(),
-            request.getLastNames(),
-            request.getEmail(),
-            request.getPhone()
-        );
-        
+                clientId,
+                DocumentType.valueOf(request.getDocumentType()),
+                request.getDocumentNumber(),
+                request.getFirstNames(),
+                request.getLastNames(),
+                request.getEmail(),
+                request.getPhone());
+
         spouse = spouseRepository.save(spouse);
         return toSpouseResponse(spouse);
     }
@@ -63,8 +62,8 @@ public class SpouseCommandServiceImpl implements SpouseCommandService {
     @Override
     public SpouseResponse updateSpouse(Long clientId, SpouseUpdateRequest request) {
         Spouse existingSpouse = spouseRepository.findByClientId(clientId)
-            .orElseThrow(SpouseBusinessException::spouseNotFound);
-        
+                .orElseThrow(SpouseBusinessException::spouseNotFound);
+
         // Actualizar tipo y número de documento si se proporcionan
         if (request.getDocumentType() != null) {
             if (request.getDocumentNumber() != null) {
@@ -75,13 +74,13 @@ public class SpouseCommandServiceImpl implements SpouseCommandService {
         if (request.getDocumentNumber() != null) {
             existingSpouse.setDocumentNumber(request.getDocumentNumber());
         }
-        
+
         existingSpouse.setFirstNames(request.getFirstNames());
         existingSpouse.setLastNames(request.getLastNames());
         existingSpouse.setEmail(request.getEmail());
         existingSpouse.setPhone(request.getPhone());
         existingSpouse.setUpdatedAt(OffsetDateTime.now());
-        
+
         existingSpouse = spouseRepository.save(existingSpouse);
         return toSpouseResponse(existingSpouse);
     }
@@ -89,8 +88,8 @@ public class SpouseCommandServiceImpl implements SpouseCommandService {
     @Override
     public SpouseResponse patchSpouse(Long clientId, SpousePatchRequest request) {
         Spouse existingSpouse = spouseRepository.findByClientId(clientId)
-            .orElseThrow(SpouseBusinessException::spouseNotFound);
-        
+                .orElseThrow(SpouseBusinessException::spouseNotFound);
+
         if (request.getFirstNames() != null) {
             existingSpouse.setFirstNames(request.getFirstNames());
         }
@@ -104,7 +103,7 @@ public class SpouseCommandServiceImpl implements SpouseCommandService {
             existingSpouse.setPhone(request.getPhone());
         }
         existingSpouse.setUpdatedAt(OffsetDateTime.now());
-        
+
         existingSpouse = spouseRepository.save(existingSpouse);
         return toSpouseResponse(existingSpouse);
     }

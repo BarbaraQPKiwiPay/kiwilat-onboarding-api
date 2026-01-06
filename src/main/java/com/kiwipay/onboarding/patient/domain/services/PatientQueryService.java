@@ -1,9 +1,9 @@
-package com.kiwipay.onboarding.client.domain.services;
-
-import com.kiwipay.onboarding.client.application.internal.dto.PatientResponse;
-import com.kiwipay.onboarding.client.application.internal.dto.PatientSummaryResponse;
+package com.kiwipay.onboarding.patient.domain.services;
 
 import java.util.List;
+
+import com.kiwipay.onboarding.patient.application.internal.dto.PatientResponse;
+import com.kiwipay.onboarding.patient.application.internal.dto.PatientSummaryResponse;
 
 /**
  * Patient Query Service

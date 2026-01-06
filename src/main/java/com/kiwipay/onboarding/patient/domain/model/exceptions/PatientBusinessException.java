@@ -1,4 +1,4 @@
-package com.kiwipay.onboarding.client.domain.model.exceptions;
+package com.kiwipay.onboarding.patient.domain.model.exceptions;
 
 public class PatientBusinessException extends RuntimeException {
     private final String errorCode;

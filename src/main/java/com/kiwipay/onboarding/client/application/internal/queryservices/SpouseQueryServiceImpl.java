@@ -16,8 +16,8 @@ public class SpouseQueryServiceImpl implements SpouseQueryService {
     @Override
     public SpouseResponse getSpouseByClientId(Long clientId) {
         return spouseRepository.findByClientId(clientId)
-            .map(this::toSpouseResponse)
-            .orElse(null);
+                .map(this::toSpouseResponse)
+                .orElse(null);
     }
 
     private SpouseResponse toSpouseResponse(Spouse spouse) {
