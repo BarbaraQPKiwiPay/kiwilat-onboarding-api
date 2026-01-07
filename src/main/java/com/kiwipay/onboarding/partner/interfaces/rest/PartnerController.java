@@ -6,6 +6,8 @@ import com.kiwipay.onboarding.partner.application.internal.dto.UpdatePartnerRequ
 import com.kiwipay.onboarding.partner.domain.model.exceptions.PartnerBusinessException;
 import com.kiwipay.onboarding.partner.domain.services.PartnerCommandService;
 import com.kiwipay.onboarding.partner.domain.services.PartnerQueryService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,21 +21,22 @@ import java.util.List;
  * Provides endpoints for CRUD operations on spouse records
  */
 @RestController
-@RequestMapping("/api/v1/spouses")
+@RequestMapping("/api/v1/partners")
+@Tag(name = "Partner Management", description = "Managing partner information including personal data, contact details, and address information. Partners are associated with loan applications.")
 @RequiredArgsConstructor
 public class PartnerController {
 
-    private final PartnerCommandService spouseCommandService;
-    private final PartnerQueryService spouseQueryService;
+    private final PartnerCommandService partnerCommandService;
+    private final PartnerQueryService partnerQueryService;
 
     /**
-     * Create a new spouse
-     * POST /api/v1/spouses
+     * Create a new partner
+     * POST /api/v1/partners
      */
     @PostMapping
-    public ResponseEntity<PartnerResponse> createSpouse(@Valid @RequestBody CreatePartnerRequest request) {
+    public ResponseEntity<PartnerResponse> createPartner(@Valid @RequestBody CreatePartnerRequest request) {
         try {
-            PartnerResponse response = spouseCommandService.createSpouse(request);
+            PartnerResponse response = partnerCommandService.createPartner(request);
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (PartnerBusinessException e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
@@ -41,12 +44,12 @@ public class PartnerController {
     }
 
     /**
-     * Get spouse by ID
-     * GET /api/v1/spouses/{id}
+     * Get partner by ID
+     * GET /api/v1/partners/{id}
      */
     @GetMapping("/{id}")
-    public ResponseEntity<PartnerResponse> getSpouseById(@PathVariable Long id) {
-        return spouseQueryService.getSpouseById(id)
+    public ResponseEntity<PartnerResponse> getPartnerById(@PathVariable Long id) {
+        return partnerQueryService.getPartnerById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -56,11 +59,11 @@ public class PartnerController {
      * PUT /api/v1/spouses/{id}
      */
     @PutMapping("/{id}")
-    public ResponseEntity<PartnerResponse> updateSpouse(
+    public ResponseEntity<PartnerResponse> updatePartner(
             @PathVariable Long id,
             @Valid @RequestBody UpdatePartnerRequest request) {
         try {
-            PartnerResponse response = spouseCommandService.updateSpouse(id, request);
+            PartnerResponse response = partnerCommandService.updatePartner(id, request);
             return ResponseEntity.ok(response);
         } catch (PartnerBusinessException e) {
             return ResponseEntity.badRequest().build();
@@ -68,13 +71,13 @@ public class PartnerController {
     }
 
     /**
-     * Delete spouse
-     * DELETE /api/v1/spouses/{id}
+     * Delete partner
+     * DELETE /api/v1/partners/{id}
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSpouse(@PathVariable Long id) {
+    public ResponseEntity<Void> deletePartner(@PathVariable Long id) {
         try {
-            spouseCommandService.deleteSpouse(id);
+            partnerCommandService.deletePartner(id);
             return ResponseEntity.noContent().build();
         } catch (PartnerBusinessException e) {
             return ResponseEntity.notFound().build();
@@ -82,44 +85,44 @@ public class PartnerController {
     }
 
     /**
-     * Get all spouses for a loan
-     * GET /api/v1/loans/{loanId}/spouses
+     * Get all partners for a loan
+     * GET /api/v1/loans/{loanId}/partners
      */
     @GetMapping("/loan/{loanId}")
-    public ResponseEntity<List<PartnerResponse>> getSpousesByLoan(@PathVariable Long loanId) {
-        List<PartnerResponse> spouses = spouseQueryService.getSpousesByLoan(loanId);
-        return ResponseEntity.ok(spouses);
+    public ResponseEntity<List<PartnerResponse>> getPartnersByLoan(@PathVariable Long loanId) {
+        List<PartnerResponse> partners = partnerQueryService.getPartnersByLoan(loanId);
+        return ResponseEntity.ok(partners);
     }
 
     /**
-     * Get spouse by client ID
-     * GET /api/v1/clients/{clientId}/spouse
+     * Get partner by client ID
+     * GET /api/v1/clients/{clientId}/partner
      */
     @GetMapping("/client/{clientId}")
-    public ResponseEntity<PartnerResponse> getSpouseByClient(@PathVariable Long clientId) {
-        return spouseQueryService.getSpouseByClient(clientId)
+    public ResponseEntity<PartnerResponse> getPartnerByClient(@PathVariable Long clientId) {
+        return partnerQueryService.getPartnerByClient(clientId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     /**
-     * Get spouse by guarantor ID
-     * GET /api/v1/guarantors/{guarantorId}/spouse
+     * Get partner by guarantor ID
+     * GET /api/v1/guarantors/{guarantorId}/partner
      */
     @GetMapping("/guarantor/{guarantorId}")
-    public ResponseEntity<PartnerResponse> getSpouseByGuarantor(@PathVariable String guarantorId) {
-        return spouseQueryService.getSpouseByGuarantor(guarantorId)
+    public ResponseEntity<PartnerResponse> getPartnerByGuarantor(@PathVariable String guarantorId) {
+        return partnerQueryService.getPartnerByGuarantor(guarantorId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     /**
-     * Get spouse by patient ID
-     * GET /api/v1/patients/{patientId}/spouse
+     * Get partner by patient ID
+     * GET /api/v1/patients/{patientId}/partner
      */
     @GetMapping("/patient/{patientId}")
-    public ResponseEntity<PartnerResponse> getSpouseByPatient(@PathVariable Long patientId) {
-        return spouseQueryService.getSpouseByPatient(patientId)
+    public ResponseEntity<PartnerResponse> getPartnerByPatient(@PathVariable Long patientId) {
+        return partnerQueryService.getPartnerByPatient(patientId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

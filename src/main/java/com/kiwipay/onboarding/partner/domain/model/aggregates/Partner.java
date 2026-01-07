@@ -12,17 +12,17 @@ import java.time.OffsetDateTime;
 import java.util.Objects;
 
 /**
- * Spouse Aggregate Root - Unified Implementation
+ * Partner Aggregate Root - Unified Implementation
  * 
- * Represents the spouse of a client, guarantor, or patient
- * Uses SpouseType discriminator to determine which FK should be populated
+ * Represents the partner of a client, guarantor, or patient
+ * Uses PartnerType discriminator to determine which FK should be populated
  * 
  * Business Rules:
  * - Only ONE of clientId, guarantorId, or patientId can be non-null
- * - The populated FK must match the spouseType
- * - CLIENT spouse requires clientId
- * - GUARANTOR spouse requires guarantorId
- * - PATIENT spouse requires patientId
+ * - The populated FK must match the partnerType
+ * - CLIENT partner requires clientId
+ * - GUARANTOR partner requires guarantorId
+ * - PATIENT partner requires patientId
  */
 @Setter
 @Getter
@@ -44,10 +44,10 @@ public class Partner {
     private Long loanId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "spouse_type", nullable = false, length = 20)
-    private PartnerType spouseType;
+    @Column(name = "partner_type", nullable = false, length = 20)
+    private PartnerType partnerType;
 
-    // Conditional Foreign Keys - Only ONE should be populated based on spouseType
+    // Conditional Foreign Keys - Only ONE should be populated based on partnerType
     @Column(name = "client_id")
     private Long clientId;
 
@@ -57,7 +57,7 @@ public class Partner {
     @Column(name = "patient_id")
     private Long patientId;
 
-    // Spouse personal information
+    // Partner personal information
     @Enumerated(EnumType.STRING)
     @Column(name = "document_type", nullable = false, length = 20)
     private DocumentType documentType;
@@ -84,12 +84,12 @@ public class Partner {
     private OffsetDateTime updatedAt;
 
     /**
-     * Constructor for CLIENT spouse
+     * Constructor for CLIENT partner
      */
     public Partner(Long loanId, Long clientId, DocumentType documentType, String documentNumber,
             String firstNames, String lastNames, String email, String phone) {
         this.loanId = loanId;
-        this.spouseType = PartnerType.CLIENT;
+        this.partnerType = PartnerType.CLIENT;
         this.clientId = clientId;
         this.documentType = documentType;
         this.documentNumber = documentNumber;
@@ -100,12 +100,12 @@ public class Partner {
     }
 
     /**
-     * Constructor for GUARANTOR spouse
+     * Constructor for GUARANTOR partner
      */
     public Partner(Long loanId, String guarantorId, DocumentType documentType, String documentNumber,
             String firstNames, String lastNames, String email, String phone) {
         this.loanId = loanId;
-        this.spouseType = PartnerType.GUARANTOR;
+        this.partnerType = PartnerType.GUARANTOR;
         this.guarantorId = guarantorId;
         this.documentType = documentType;
         this.documentNumber = documentNumber;
@@ -116,13 +116,13 @@ public class Partner {
     }
 
     /**
-     * Generic constructor with spouseType
+     * Generic constructor with partnerType
      */
-    public Partner(Long loanId, PartnerType spouseType, Long clientId, String guarantorId, Long patientId,
+    public Partner(Long loanId, PartnerType partnerType, Long clientId, String guarantorId, Long patientId,
             DocumentType documentType, String documentNumber, String firstNames, String lastNames,
             String email, String phone) {
         this.loanId = loanId;
-        this.spouseType = spouseType;
+        this.partnerType = partnerType;
         this.clientId = clientId;
         this.guarantorId = guarantorId;
         this.patientId = patientId;
@@ -149,38 +149,38 @@ public class Partner {
 
     /**
      * Validates business rules for FK consistency
-     * Ensures only ONE FK is populated based on spouseType
+     * Ensures only ONE FK is populated based on partnerType
      */
     public void validate() {
-        if (spouseType == null) {
-            throw new PartnerBusinessException("SpouseType cannot be null");
+        if (partnerType == null) {
+            throw new PartnerBusinessException("PartnerType cannot be null");
         }
 
-        switch (spouseType) {
+        switch (partnerType) {
             case CLIENT:
                 if (clientId == null) {
-                    throw new PartnerBusinessException("CLIENT spouse must have clientId populated");
+                    throw new PartnerBusinessException("CLIENT partner must have clientId populated");
                 }
                 if (guarantorId != null || patientId != null) {
-                    throw new PartnerBusinessException("CLIENT spouse must ONLY have clientId populated");
+                    throw new PartnerBusinessException("CLIENT partner must ONLY have clientId populated");
                 }
                 break;
 
             case GUARANTOR:
                 if (guarantorId == null) {
-                    throw new PartnerBusinessException("GUARANTOR spouse must have guarantorId populated");
+                    throw new PartnerBusinessException("GUARANTOR partner must have guarantorId populated");
                 }
                 if (clientId != null || patientId != null) {
-                    throw new PartnerBusinessException("GUARANTOR spouse must ONLY have guarantorId populated");
+                    throw new PartnerBusinessException("GUARANTOR partner must ONLY have guarantorId populated");
                 }
                 break;
 
             case PATIENT:
                 if (patientId == null) {
-                    throw new PartnerBusinessException("PATIENT spouse must have patientId populated");
+                    throw new PartnerBusinessException("PATIENT partner must have patientId populated");
                 }
                 if (clientId != null || guarantorId != null) {
-                    throw new PartnerBusinessException("PATIENT spouse must ONLY have patientId populated");
+                    throw new PartnerBusinessException("PATIENT partner must ONLY have patientId populated");
                 }
                 break;
         }

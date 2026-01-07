@@ -11,41 +11,41 @@ import com.kiwipay.onboarding.partner.application.internal.dto.UpdatePartnerRequ
 public interface PartnerCommandService {
 
     /**
-     * Creates a new spouse
+     * Creates a new Partner
      * Validates that the owner entity (client/guarantor/patient) exists
-     * Validates that no spouse already exists for the owner
+     * Validates that no partner already exists for the owner
      * 
-     * @param request creation request with spouse data
-     * @return the created spouse response
+     * @param request creation request with partner data
+     * @return the created partner response
      * @throws com.kiwipay.onboarding.partner.domain.model.exceptions.PartnerBusinessException if
      *                                                                                         validation
      *                                                                                         fails
      */
-    PartnerResponse createSpouse(CreatePartnerRequest request);
+    PartnerResponse createPartner(CreatePartnerRequest request);
 
     /**
-     * Updates an existing spouse
-     * Cannot change spouseType or foreign keys
+     * Updates an existing partner
+     * Cannot change partnerType or foreign keys
      * Only updates personal information
      * 
-     * @param id      spouse ID to update
+     * @param id      partner ID to update
      * @param request update request with new data
-     * @return the updated spouse response
+     * @return the updated partner response
      * @throws com.kiwipay.onboarding.partner.domain.model.exceptions.PartnerBusinessException if
-     *                                                                                         spouse
+     *                                                                                         partner
      *                                                                                         not
      *                                                                                         found
      */
-    PartnerResponse updateSpouse(Long id, UpdatePartnerRequest request);
+    PartnerResponse updatePartner(Long id, UpdatePartnerRequest request);
 
     /**
-     * Deletes a spouse
+     * Deletes a partner
      * 
-     * @param id spouse ID to delete
+     * @param id partner ID to delete
      * @throws com.kiwipay.onboarding.partner.domain.model.exceptions.PartnerBusinessException if
-     *                                                                                         spouse
+     *                                                                                         partner
      *                                                                                         not
      *                                                                                         found
      */
-    void deleteSpouse(Long id);
+    void deletePartner(Long id);
 }

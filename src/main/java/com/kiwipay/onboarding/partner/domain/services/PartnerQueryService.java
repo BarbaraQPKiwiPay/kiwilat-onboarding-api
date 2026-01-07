@@ -12,42 +12,42 @@ import java.util.Optional;
 public interface PartnerQueryService {
 
     /**
-     * Get spouse by ID
+     * Get partner by ID
      * 
-     * @param id spouse ID
-     * @return spouse response if found
+     * @param id partner ID
+     * @return partner response if found
      */
-    Optional<PartnerResponse> getSpouseById(Long id);
+    Optional<PartnerResponse> getPartnerById(Long id);
 
     /**
-     * Get all spouses for a given loan
+     * Get all partners for a given loan
      * 
      * @param loanId loan ID
-     * @return list of spouse responses
+     * @return list of partner responses
      */
-    List<PartnerResponse> getSpousesByLoan(Long loanId);
+    List<PartnerResponse> getPartnersByLoan(Long loanId);
 
     /**
-     * Get spouse by client ID
+     * Get partner by client ID
      * 
      * @param clientId client ID
-     * @return spouse response if found
+     * @return partner response if found
      */
-    Optional<PartnerResponse> getSpouseByClient(Long clientId);
+    Optional<PartnerResponse> getPartnerByClient(Long clientId);
 
     /**
-     * Get spouse by guarantor ID
+     * Get partner by guarantor ID
      * 
      * @param guarantorId guarantor ID
-     * @return spouse response if found
+     * @return partner response if found
      */
-    Optional<PartnerResponse> getSpouseByGuarantor(String guarantorId);
+    Optional<PartnerResponse> getPartnerByGuarantor(String guarantorId);
 
     /**
-     * Get spouse by patient ID
+     * Get partner by patient ID
      * 
      * @param patientId patient ID
-     * @return spouse response if found
+     * @return partner response if found
      */
-    Optional<PartnerResponse> getSpouseByPatient(Long patientId);
+    Optional<PartnerResponse> getPartnerByPatient(Long patientId);
 }
