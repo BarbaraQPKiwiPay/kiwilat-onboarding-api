@@ -1,15 +1,15 @@
 package com.kiwipay.onboarding.catalog.domain.model.aggregates;
 
-import com.kiwipay.onboarding.catalog.domain.model.entities.Province;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.util.List;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+/**
+ * Department Aggregate Root
+ * Represents a geographic department (first administrative level in Peru)
+ */
 @Entity
 @Getter
 @Setter
@@ -17,9 +17,11 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 public class Department {
     @Id
     private String id;
+
     private String name;
 
-    @OneToMany(mappedBy = "department")
-    @JsonManagedReference("dept-provinces")
-    private List<Province> provinces;
+    public Department(String id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }

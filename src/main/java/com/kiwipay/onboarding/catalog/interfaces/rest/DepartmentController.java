@@ -3,6 +3,9 @@ package com.kiwipay.onboarding.catalog.interfaces.rest;
 import com.kiwipay.onboarding.catalog.application.internal.dto.DepartmentDto;
 import com.kiwipay.onboarding.catalog.domain.exceptions.CatalogBusinessException;
 import com.kiwipay.onboarding.catalog.domain.services.LocationQueryService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,8 +18,9 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/departments")
+@Tag(name = "Departments", description = "Departments catalog endpoints")
 public class DepartmentController {
-    
+
     @Autowired
     private LocationQueryService locationQueryService;
 
@@ -30,11 +34,11 @@ public class DepartmentController {
     public ResponseEntity<?> getDepartmentById(@PathVariable String departmentId) {
         try {
             return locationQueryService.getDepartmentById(departmentId)
-                .map(ResponseEntity::ok)
-                .orElseThrow(CatalogBusinessException::departmentNotFound);
+                    .map(ResponseEntity::ok)
+                    .orElseThrow(CatalogBusinessException::departmentNotFound);
         } catch (CatalogBusinessException e) {
             return ResponseEntity.status(e.getHttpStatus())
-                .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
+                    .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
         }
     }
 
@@ -48,7 +52,12 @@ public class DepartmentController {
             this.message = message;
         }
 
-        public String getErrorCode() { return errorCode; }
-        public String getMessage() { return message; }
+        public String getErrorCode() {
+            return errorCode;
+        }
+
+        public String getMessage() {
+            return message;
+        }
     }
 }

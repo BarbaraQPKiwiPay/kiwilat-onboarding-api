@@ -17,6 +17,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Location Query Service Implementation
+ * Handles read operations for geographic location catalog (Department,
+ * Province, District)
+ */
 @Service
 public class LocationQueryServiceImpl implements LocationQueryService {
 
@@ -32,44 +37,44 @@ public class LocationQueryServiceImpl implements LocationQueryService {
     @Override
     public List<DepartmentDto> getAllDepartments() {
         return departmentRepository.findAll().stream()
-            .map(this::toDepartmentDto)
-            .collect(Collectors.toList());
+                .map(this::toDepartmentDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public Optional<DepartmentDto> getDepartmentById(String id) {
         return departmentRepository.findById(id)
-            .map(this::toDepartmentDto);
+                .map(this::toDepartmentDto);
     }
 
     @Override
     public List<ProvinceDto> getAllProvinces() {
         return provinceRepository.findAll().stream()
-            .map(this::toProvinceDto)
-            .collect(Collectors.toList());
+                .map(this::toProvinceDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<ProvinceDto> getProvincesByDepartmentId(String departmentId) {
         return provinceRepository.findAll().stream()
-            .filter(p -> p.getDepartment() != null && departmentId.equals(p.getDepartment().getId()))
-            .map(this::toProvinceDto)
-            .collect(Collectors.toList());
+                .filter(p -> departmentId.equals(p.getDepartmentId()))
+                .map(this::toProvinceDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<DistrictDto> getAllDistricts() {
         return districtRepository.findAll().stream()
-            .map(this::toDistrictDto)
-            .collect(Collectors.toList());
+                .map(this::toDistrictDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<DistrictDto> getDistrictsByProvinceId(String provinceId) {
         return districtRepository.findAll().stream()
-            .filter(d -> d.getProvince() != null && provinceId.equals(d.getProvince().getId()))
-            .map(this::toDistrictDto)
-            .collect(Collectors.toList());
+                .filter(d -> provinceId.equals(d.getProvinceId()))
+                .map(this::toDistrictDto)
+                .collect(Collectors.toList());
     }
 
     // Mappers (private utility methods)
@@ -78,12 +83,10 @@ public class LocationQueryServiceImpl implements LocationQueryService {
     }
 
     private ProvinceDto toProvinceDto(Province entity) {
-        String departmentId = entity.getDepartment() != null ? entity.getDepartment().getId() : null;
-        return new ProvinceDto(entity.getId(), entity.getName(), departmentId);
+        return new ProvinceDto(entity.getId(), entity.getName(), entity.getDepartmentId());
     }
 
     private DistrictDto toDistrictDto(District entity) {
-        String provinceId = entity.getProvince() != null ? entity.getProvince().getId() : null;
-        return new DistrictDto(entity.getId(), entity.getName(), provinceId);
+        return new DistrictDto(entity.getId(), entity.getName(), entity.getProvinceId());
     }
 }

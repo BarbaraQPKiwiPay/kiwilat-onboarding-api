@@ -16,44 +16,49 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Catalog Query Service Implementation
+ * Handles read operations for medical catalogs (MedicalCategory, Clinic,
+ * ClinicBranch)
+ */
 @Service
 public class CatalogQueryServiceImpl implements CatalogQueryService {
-    
+
     @Autowired
     private MedicalCategoryRepository medicalCategoryRepository;
-    
+
     @Autowired
     private ClinicRepository clinicRepository;
-    
+
     @Autowired
     private ClinicBranchRepository clinicBranchRepository;
 
     @Override
     public List<MedicalCategoryDto> getAllMedicalCategories() {
         return medicalCategoryRepository.findAll().stream()
-            .map(this::toMedicalCategoryDto)
-            .collect(Collectors.toList());
+                .map(this::toMedicalCategoryDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<ClinicDto> getClinicsByCategory(String categoryId) {
         return clinicRepository.findByMedicalCategoryId(categoryId).stream()
-            .map(this::toClinicDto)
-            .collect(Collectors.toList());
+                .map(this::toClinicDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<ClinicBranchDto> getBranchesByClinic(String clinicId) {
         return clinicBranchRepository.findByClinicId(clinicId).stream()
-            .map(this::toClinicBranchDto)
-            .collect(Collectors.toList());
+                .map(this::toClinicBranchDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<ClinicDto> searchClinics(String query, String categoryId) {
         return clinicRepository.searchByNameAndCategory(query, categoryId).stream()
-            .map(this::toClinicDto)
-            .collect(Collectors.toList());
+                .map(this::toClinicDto)
+                .collect(Collectors.toList());
     }
 
     // Mappers

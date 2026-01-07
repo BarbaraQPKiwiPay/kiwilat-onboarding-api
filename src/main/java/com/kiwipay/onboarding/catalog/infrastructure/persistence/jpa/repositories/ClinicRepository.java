@@ -8,15 +8,19 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * Clinic Repository
+ * Handles persistence operations for Clinic aggregate
+ */
 @Repository
 public interface ClinicRepository extends JpaRepository<Clinic, String> {
-    
-    @Query("SELECT c FROM Clinic c WHERE c.medicalCategory.id = :categoryId")
-    List<Clinic> findByMedicalCategoryId(@Param("categoryId") String categoryId);
-    
-    @Query("SELECT c FROM Clinic c WHERE " +
-           "(:categoryId IS NULL OR c.medicalCategory.id = :categoryId) AND " +
-           "LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%'))")
-    List<Clinic> searchByNameAndCategory(@Param("query") String query, 
-                                        @Param("categoryId") String categoryId);
+
+       @Query("SELECT c FROM Clinic c WHERE c.medicalCategoryId = :categoryId")
+       List<Clinic> findByMedicalCategoryId(@Param("categoryId") String categoryId);
+
+       @Query("SELECT c FROM Clinic c WHERE " +
+                     "(:categoryId IS NULL OR c.medicalCategoryId = :categoryId) AND " +
+                     "LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%'))")
+       List<Clinic> searchByNameAndCategory(@Param("query") String query,
+                     @Param("categoryId") String categoryId);
 }

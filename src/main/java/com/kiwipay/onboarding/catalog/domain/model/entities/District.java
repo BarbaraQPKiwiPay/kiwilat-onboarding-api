@@ -1,13 +1,17 @@
 package com.kiwipay.onboarding.catalog.domain.model.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 
+/**
+ * District Entity
+ * Represents a geographic district (third administrative level in Peru)
+ * Belongs to a Province
+ */
 @Entity
 @Getter
 @Setter
@@ -15,9 +19,15 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 public class District {
     @Id
     private String id;
+
     private String name;
 
-    @ManyToOne
-    @JsonBackReference("prov-districts")
-    private Province province;
+    @Column(name = "province_id")
+    private String provinceId;
+
+    public District(String id, String name, String provinceId) {
+        this.id = id;
+        this.name = name;
+        this.provinceId = provinceId;
+    }
 }

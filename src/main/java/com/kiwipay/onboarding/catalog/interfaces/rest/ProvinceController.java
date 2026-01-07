@@ -3,6 +3,9 @@ package com.kiwipay.onboarding.catalog.interfaces.rest;
 import com.kiwipay.onboarding.catalog.application.internal.dto.ProvinceDto;
 import com.kiwipay.onboarding.catalog.domain.exceptions.CatalogBusinessException;
 import com.kiwipay.onboarding.catalog.domain.services.LocationQueryService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,8 +18,9 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/provinces")
+@Tag(name = "Provinces", description = "Provinces catalog endpoints")
 public class ProvinceController {
-    
+
     @Autowired
     private LocationQueryService locationQueryService;
 
@@ -25,12 +29,12 @@ public class ProvinceController {
             @RequestParam(required = false) String departmentId) {
         try {
             List<ProvinceDto> provinces = departmentId != null
-                ? locationQueryService.getProvincesByDepartmentId(departmentId)
-                : locationQueryService.getAllProvinces();
+                    ? locationQueryService.getProvincesByDepartmentId(departmentId)
+                    : locationQueryService.getAllProvinces();
             return ResponseEntity.ok(Map.of("data", provinces));
         } catch (CatalogBusinessException e) {
             return ResponseEntity.status(e.getHttpStatus())
-                .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
+                    .body(new ErrorResponse(e.getErrorCode(), e.getMessage()));
         }
     }
 
@@ -44,7 +48,12 @@ public class ProvinceController {
             this.message = message;
         }
 
-        public String getErrorCode() { return errorCode; }
-        public String getMessage() { return message; }
+        public String getErrorCode() {
+            return errorCode;
+        }
+
+        public String getMessage() {
+            return message;
+        }
     }
 }

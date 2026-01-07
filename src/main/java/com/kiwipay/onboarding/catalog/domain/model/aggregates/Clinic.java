@@ -1,16 +1,15 @@
 package com.kiwipay.onboarding.catalog.domain.model.aggregates;
 
-import com.kiwipay.onboarding.catalog.domain.model.entities.ClinicBranch;
-import com.kiwipay.onboarding.catalog.domain.model.entities.MedicalCategory;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import java.util.List;
-
+/**
+ * Clinic Aggregate Root
+ * Represents a medical clinic that offers procedures
+ * Belongs to a MedicalCategory
+ */
 @Entity
 @Getter
 @Setter
@@ -18,21 +17,15 @@ import java.util.List;
 public class Clinic {
     @Id
     private String id;
-    
+
     private String name;
-    
-    @ManyToOne
-    @JoinColumn(name = "medical_category_id")
-    @JsonBackReference("category-clinics")
-    private MedicalCategory medicalCategory;
-    
-    @OneToMany(mappedBy = "clinic")
-    @JsonManagedReference("clinic-branches")
-    private List<ClinicBranch> branches;
-    
-    public Clinic(String id, String name, MedicalCategory medicalCategory) {
+
+    @Column(name = "medical_category_id")
+    private String medicalCategoryId;
+
+    public Clinic(String id, String name, String medicalCategoryId) {
         this.id = id;
         this.name = name;
-        this.medicalCategory = medicalCategory;
+        this.medicalCategoryId = medicalCategoryId;
     }
 }
