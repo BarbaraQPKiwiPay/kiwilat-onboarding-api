@@ -37,7 +37,7 @@ El bounded context de **Patient** gestiona la información de los pacientes que 
 | **Patient (Paciente)** | Persona que recibirá el procedimiento médico financiado por el préstamo. Puede ser diferente al titular del crédito. |
 | **Loan (Préstamo)** | Solicitud de financiamiento a la que pertenece el paciente. Un préstamo puede tener múltiples pacientes. |
 | **Document Type (Tipo de Documento)** | Tipo de identificación del paciente: DNI, Carnet de Extranjería, Pasaporte, RUC. |
-| **Address (Dirección)** | Ubicación geográfica del paciente, expresada mediante departamento, provincia, distrito y dirección específica. |
+| **Dirección** | Ubicación geográfica del paciente. |
 | **Gender (Género)** | Género del paciente: Femenino (F), Masculino (M), u Otro (OTHER). |
 
 ---
@@ -82,13 +82,14 @@ El bounded context de **Patient** gestiona la información de los pacientes que 
 | `gender` | Gender | Género del paciente | No |
 | `phone` | String | Teléfono de contacto | No |
 | `email` | String | Correo electrónico | No |
-| `address` | Address (embedded) | Dirección completa | No |
+| `districtId` | String | ID del distrito (6 dígitos) | No |
+| `addressLine1` | String | Línea de dirección específica | No |
 | `createdAt` | OffsetDateTime | Fecha de creación | Sí (auto) |
 | `updatedAt` | OffsetDateTime | Fecha de última actualización | Sí (auto) |
 
 **Relación con otros objetos:**
 - **Loan (N:1)**: Un paciente pertenece a UN préstamo, pero un préstamo puede tener MÚLTIPLES pacientes
-- **Address (Composition)**: La dirección está embebida dentro del paciente
+- **Catalog (District)**: El districtId referencia a la tabla district del catálogo, que a través de su jerarquía permite obtener provincia y departamento
 
 **Identificador:**
 - ID numérico auto-incremental generado por la base de datos
@@ -97,33 +98,7 @@ El bounded context de **Patient** gestiona la información de los pacientes que 
 
 ## 6. Value Objects
 
-### Address
-
-**Qué representa:**
-Representa la dirección geográfica completa del paciente, estructurada en niveles administrativos (departamento, provincia, distrito) más una dirección específica.
-
-**Por qué es inmutable:**
-- La dirección es un valor que describe una ubicación en un momento dado
-- Si cambia la dirección, se reemplaza todo el objeto, no se modifican partes
-- Facilita la comparación y el tracking de cambios
-- Evita inconsistencias parciales (ej: provincia que no pertenece al departamento)
-
-**Estructura:**
-```
-Address {
-  departmentId: String    // ID del departamento (ej: "15" para Lima)
-  provinceId: String      // ID de la provincia
-  districtId: String      // ID del distrito
-  line1: String           // Dirección específica (calle, número, referencia)
-}
-```
-
-**Validaciones que aplican:**
-- Ninguna validación explícita a nivel de código (se confía en la UI)
-- Los IDs deben corresponder a registros válidos en el Catalog
-- La jerarquía geográfica debe ser consistente (distrito ∈ provincia ∈ departamento)
-
----
+No se usan Value Objects en este contexto.
 
 ## 7. Enums del dominio
 
@@ -204,12 +179,8 @@ Sin embargo, estos NO existen actualmente en el código.
   "gender": "M",
   "phone": "987654321",
   "email": "juan.perez@example.com",
-  "address": {
-    "departmentId": "15",
-    "provinceId": "1501",
-    "districtId": "150101",
-    "line1": "Av. Javier Prado 123, San Isidro"
-  }
+  "districtId": "150101",
+  "addressLine1": "Av. Javier Prado 123, San Isidro"
 }
 ```
 
@@ -225,12 +196,8 @@ Sin embargo, estos NO existen actualmente en el código.
   "gender": "M",
   "phone": "987654321",
   "email": "juan.perez@example.com",
-  "address": {
-    "departmentId": "15",
-    "provinceId": "1501",
-    "districtId": "150101",
-    "line1": "Av. Javier Prado 123, San Isidro"
-  },
+  "districtId": "150101",
+  "addressLine1": "Av. Javier Prado 123, San Isidro",
   "createdAt": "2026-01-05T15:30:00-05:00"
 }
 ```
@@ -259,12 +226,8 @@ Sin embargo, estos NO existen actualmente en el código.
     "gender": "M",
     "phone": "987654321",
     "email": "juan.perez@example.com",
-    "address": {
-      "departmentId": "15",
-      "provinceId": "01",
-      "districtId": "01",
-      "line1": "Av. Javier Prado 123, San Isidro"
-    },
+    "districtId": "150101",
+    "addressLine1": "Av. Javier Prado 123, San Isidro",
     "createdAt": "2026-01-05T15:30:00-05:00"
   }
 ]
@@ -291,12 +254,8 @@ Sin embargo, estos NO existen actualmente en el código.
   "gender": "M",
   "phone": "987654321",
   "email": "juan.perez@example.com",
-  "address": {
-    "departmentId": "15",
-    "provinceId": "1501",
-    "districtId": "150101",
-    "line1": "Av. Javier Prado 123, San Isidro"
-  },
+  "districtId": "150101",
+  "addressLine1": "Av. Javier Prado 123, San Isidro",
   "createdAt": "2026-01-05T15:30:00-05:00"
 }
 ```
@@ -320,12 +279,8 @@ Sin embargo, estos NO existen actualmente en el código.
   "gender": "M",
   "phone": "999888777",
   "email": "juan.updated@example.com",
-  "address": {
-    "departmentId": "15",
-    "provinceId": "1501",
-    "districtId": "150101",
-    "line1": "Av. Updated 456"
-  }
+  "districtId": "150101",
+  "addressLine1": "Av. Updated 456"
 }
 ```
 
@@ -341,12 +296,8 @@ Sin embargo, estos NO existen actualmente en el código.
   "gender": "M",
   "phone": "999888777",
   "email": "juan.updated@example.com",
-  "address": {
-    "departmentId": "15",
-    "provinceId": "1501",
-    "districtId": "150101",
-    "line1": "Av. Updated 456"
-  },
+  "districtId": "150101",
+  "addressLine1": "Av. Updated 456",
   "createdAt": "2026-01-05T15:30:00-05:00"
 }
 ```
@@ -384,10 +335,8 @@ Sin embargo, estos NO existen actualmente en el código.
 | `gender` | VARCHAR(10) | | Género (F, M, OTHER) |
 | `phone` | VARCHAR(20) | | Teléfono de contacto |
 | `email` | VARCHAR(100) | | Correo electrónico |
-| `department_id` | VARCHAR(10) | | ID del departamento (embebido) |
-| `province_id` | VARCHAR(10) | | ID de la provincia (embebido) |
-| `district_id` | VARCHAR(10) | | ID del distrito (embebido) |
-| `address_line1` | VARCHAR(255) | | Dirección específica (embebido) |
+| `district_id` | VARCHAR(10) | | ID del distrito (6 dígitos) |
+| `address_line1` | VARCHAR(255) | | Dirección específica |
 | `created_at` | TIMESTAMP | NOT NULL | Fecha de creación |
 | `updated_at` | TIMESTAMP | NOT NULL | Fecha de actualización |
 
@@ -403,7 +352,7 @@ Sin embargo, estos NO existen actualmente en el código.
 | Contexto | Tipo | Propósito |
 |----------|------|-----------|
 | **Loan** | Síncrono (Repository) | Valida que el préstamo exista antes de crear/actualizar paciente |
-| **Catalog** | Implícito | Los IDs de departamento/provincia/distrito deben existir en catálogo (validado explícitamente) |
+| **Catalog** | Implícito | El districtId debe existir en catálogo (validado explícitamente) |
 
 ### Qué contexto produce
 
@@ -443,33 +392,30 @@ Sin embargo, estos NO existen actualmente en el código.
 │  - gender (Gender enum - SHARED)                             │
 │  - phone, email                                              │
 │                                                              │
-│  Ubicación (Value Object embebido):                          │
-│  - address (Address)                                         │
-│    ├─ departmentId                                           │
-│    ├─ provinceId                                             │
-│    ├─ districtId                                             │
-│    └─ line1                                                  │
+│  Ubicación (campos simples):                                │
+│  - districtId (6 dígitos, ej: "150122")                     │
+│  - addressLine1                                              │
 │                                                              │
 │  Auditoría:                                                  │
 │  - createdAt (auto-gestionado)                               │
 │  - updatedAt (auto-gestionado)                               │
 └─────────────────────────────────────────────────────────────┘
                         │
-                        │ Referencias (no modeladas como FK)
+                        │ Referencia (no modelada como FK)
                         │
                         ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                      CATALOG                                 │
-│  - Department (por departmentId)                             │
-│  - Province (por provinceId)                                 │
 │  - District (por districtId)                                 │
+│    └── province_id → Province                                 │
+│       └── department_id → Department                         │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 **Relaciones clave:**
 - **Loan → Patient**: Un préstamo puede tener N pacientes (1:N)
-- **Patient → Address**: Composición (el address no existe sin patient)
-- **Patient → Catalog**: Referencia débil (validados)
+- **Patient → Catalog (District)**: Referencia débil validada en aplicación
+- **Jerarquía geográfica**: District → Province → Department (modelo normalizado)
 
 ---
 
@@ -581,6 +527,36 @@ Sin embargo, estos NO existen actualmente en el código.
   - Validación de catálogos implementada en la capa de aplicación para verificar existencia
   - Estructura de IDs: `department` (2 dígitos), `province` (4 dígitos), `district` (6 dígitos)
 
+### ADR-005: Simplificación de Address - De Value Object a campos primitivos
+
+- **Decisión**: Eliminar el Value Object `Address` y usar solo `districtId` y `addressLine1` como campos primitivos en el Patient aggregate
+- **Fecha**: 2026-01-07
+- **Contexto**:
+  - El Value Object `Address` contenía `departmentId`, `provinceId`, `districtId`, y `line1`
+  - Esto generaba redundancia ya que el departamento y provincia son derivables desde el distrito
+  - El ADR-004 normalizó el modelo de ubigeo, eliminando `department_id` de la tabla district
+  - La jerarquía geográfica ya está garantizada en el catálogo: District → Province → Department
+  - Solo necesitamos el `districtId` (nivel más específico) para derivar toda la jerarquía
+- **Razones**:
+  1. **Elimina redundancia**: No es necesario almacenar department_id y province_id si tenemos district_id
+  2. **Modelo normalizado**: La jerarquía geográfica se obtiene mediante JOINs en el catálogo
+  3. **Simplicidad**: Menos campos en request/response, API más simple
+  4. **Consistencia**: Imposible tener inconsistencias como provincia que no pertenece al departamento
+  5. **Mantenibilidad**: Si cambia la jerarquía administrativa, solo se actualiza el catálogo
+- **Alternativas consideradas**:
+  1. Mantener Value Object `Address` con todos los campos (rechazado: redundancia)
+  2. Mantener `Address` pero solo con `districtId` y `line1` (rechazado: over-engineering para 2 campos)
+  3. Campos primitivos `districtId` y `addressLine1` (seleccionado)
+- **Consecuencia**:
+  - **Breaking change en API**: 
+    - Antes: `"address": { "departmentId": "15", "provinceId": "1501", "districtId": "150101", "line1": "..." }`
+    - Ahora: `"districtId": "150101", "addressLine1": "..."`
+  - **Simplificación de DTOs**: Eliminación de clase anidada `AddressDto`
+  - **Validación simplificada**: Solo se valida `districtId` contra el catálogo
+  - **Modelo de datos**: Se eliminan columnas `department_id` y `province_id` de la tabla `patient`
+  - **Frontend debe adaptarse**: Debe obtener department y province consultando el catálogo con el districtId
+  - **Queries para reportes**: Requieren JOIN con catalog.district → province → department
+
 ---
 
 ## 16. Ejemplos reales de flujo
@@ -601,12 +577,8 @@ POST /api/v1/loans/123/patients
   "gender": "F",
   "phone": "987123456",
   "email": "maria.gonzales@gmail.com",
-  "address": {
-    "departmentId": "15",
-    "provinceId": "1501",
-    "districtId": "150122",
-    "line1": "Calle Los Jazmines 456, Miraflores"
-  }
+  "districtId": "150122",
+  "addressLine1": "Calle Los Jazmines 456, Miraflores"
 }
 ```
 
@@ -632,12 +604,8 @@ POST /api/v1/loans/123/patients
   "gender": "F",
   "phone": "987123456",
   "email": "maria.gonzales@gmail.com",
-  "address": {
-    "departmentId": "15",
-    "provinceId": "1501",
-    "districtId": "150122",
-    "line1": "Calle Los Jazmines 456, Miraflores"
-  },
+  "districtId": "150122",
+  "addressLine1": "Calle Los Jazmines 456, Miraflores",
   "createdAt": "2026-01-05T10:30:25-05:00"
 }
 ```
@@ -669,19 +637,15 @@ PUT /api/v1/loans/123/patients/45
   "gender": "F",
   "phone": "987123456",
   "email": "maria.gonzales@gmail.com",
-  "address": {
-    "departmentId": "15",
-    "provinceId": "1501",
-    "districtId": "150122",
-    "line1": "Calle Los Jazmines 654, Miraflores"
-  }
+  "districtId": "150122",
+  "addressLine1": "Calle Los Jazmines 654, Miraflores"
 }
 ```
 
 **Proceso:**
 1. API recibe request en `PatientController.updatePatient(loanId=123, patientId=45, request)`
 2. Controller delega a `PatientCommandService.updatePatient(123, 45, request)`
-3. Servicio busca paciente: `patientRepository.findByIdAndLoanId(45, 123)` ✅
+3. Servicio busca paciente: `patientRepository.findByIdAndLoanId(45, 123)` 
 4. Actualiza campos del paciente existente:
    - Reemplaza `address` completo con nuevo objeto Address
    - Otros campos se mantienen
@@ -701,12 +665,8 @@ PUT /api/v1/loans/123/patients/45
   "gender": "F",
   "phone": "987123456",
   "email": "maria.gonzales@gmail.com",
-  "address": {
-    "departmentId": "15",
-    "provinceId": "1501",
-    "districtId": "150122",
-    "line1": "Calle Los Jazmines 654, Miraflores"
-  },
+  "districtId": "150122",
+  "addressLine1": "Calle Los Jazmines 654, Miraflores",
   "createdAt": "2026-01-05T10:30:25-05:00"
 }
 ```
@@ -734,6 +694,6 @@ PUT /api/v1/loans/123/patients/45
 
 ---
 
-**Fecha de documentación:** 2026-01-05  
-**Versión del sistema:** 1.0  
-**Última actualización:** Migración de clientId a loanId completada
+**Fecha de documentación:** 2026-01-07  
+**Versión del sistema:** 1.1  
+**Última actualización:** Simplificación de Address - Eliminación de Value Object, uso de districtId y addressLine1
