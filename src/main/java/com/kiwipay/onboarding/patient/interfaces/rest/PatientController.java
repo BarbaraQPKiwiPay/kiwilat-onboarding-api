@@ -26,7 +26,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/v1")
-@Tag(name = "Patient Management", description = "Managing patient information including personal data, contact details, and address information. Patients are associated with loan applications.")
+@Tag(name = "Patient Management", description = "Managing patient information including personal data, contact details, district ID, and address line. Patients are associated with loan applications.")
 public class PatientController {
 
         @Autowired
@@ -36,7 +36,7 @@ public class PatientController {
         private PatientQueryService patientQueryService;
 
         @PostMapping("/loans/{loanId}/patients")
-        @Operation(summary = "Create a new patient", description = "Creates a new patient for a specific loan with complete personal information, contact details and address")
+        @Operation(summary = "Create a new patient", description = "Creates a new patient for a specific loan with complete personal information, contact details, district ID and address line")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "201", description = "Patient created successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PatientResponse.class))),
                         @ApiResponse(responseCode = "400", description = "Invalid request data - Check required fields and data formats", content = @Content(mediaType = "application/json")),
@@ -51,7 +51,7 @@ public class PatientController {
         }
 
         @GetMapping("/loans/{loanId}/patients")
-        @Operation(summary = "Get all patients for a loan", description = "Retrieves a complete list of all patients associated with a specific loan, including full contact information and addresses")
+        @Operation(summary = "Get all patients for a loan", description = "Retrieves a complete list of all patients associated with a specific loan, including full contact information, district ID and address line")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "List of patients retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PatientResponse.class))),
                         @ApiResponse(responseCode = "404", description = "Loan not found - The specified loanId does not exist", content = @Content(mediaType = "application/json"))
@@ -63,7 +63,7 @@ public class PatientController {
         }
 
         @GetMapping("/loans/{loanId}/patients/{patientId}")
-        @Operation(summary = "Get specific patient details", description = "Retrieves detailed information of a specific patient including personal data, phone, email, and complete address (department, province, district)")
+        @Operation(summary = "Get specific patient details", description = "Retrieves detailed information of a specific patient including personal data, phone, email, district ID and address line")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "Patient details retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PatientResponse.class))),
                         @ApiResponse(responseCode = "404", description = "Patient or loan not found - Check that both loanId and patientId exist and are associated", content = @Content(mediaType = "application/json"))
@@ -79,7 +79,7 @@ public class PatientController {
         }
 
         @PutMapping("/loans/{loanId}/patients/{patientId}")
-        @Operation(summary = "Update patient information", description = "Updates complete patient information including personal data, contact details, and address information")
+        @Operation(summary = "Update patient information", description = "Updates complete patient information including personal data, contact details, district ID and address line")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "Patient updated successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PatientResponse.class))),
                         @ApiResponse(responseCode = "400", description = "Invalid request data - Check required fields and data formats", content = @Content(mediaType = "application/json")),

@@ -54,16 +54,8 @@ public class PatientQueryServiceImpl implements PatientQueryService {
         response.setGender(patient.getGender().name());
         response.setPhone(patient.getPhone());
         response.setEmail(patient.getEmail());
-
-        if (patient.getAddress() != null) {
-            PatientResponse.AddressDto addressDto = new PatientResponse.AddressDto();
-            addressDto.setDepartmentId(patient.getAddress().getDepartmentId());
-            addressDto.setProvinceId(patient.getAddress().getProvinceId());
-            addressDto.setDistrictId(patient.getAddress().getDistrictId());
-            addressDto.setLine1(patient.getAddress().getLine1());
-            response.setAddress(addressDto);
-        }
-
+        response.setDistrictId(patient.getDistrictId());
+        response.setAddressLine1(patient.getAddressLine1());
         response.setCreatedAt(patient.getCreatedAt().toString());
         return response;
     }

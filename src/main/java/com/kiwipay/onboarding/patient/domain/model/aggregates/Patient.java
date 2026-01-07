@@ -1,6 +1,5 @@
 package com.kiwipay.onboarding.patient.domain.model.aggregates;
 
-import com.kiwipay.onboarding.patient.domain.model.entities.Address;
 import com.kiwipay.onboarding.shared.domain.valueobjects.DocumentType;
 import com.kiwipay.onboarding.shared.domain.valueobjects.Gender;
 import jakarta.persistence.*;
@@ -47,8 +46,11 @@ public class Patient {
     private String phone;
     private String email;
 
-    @Embedded
-    private Address address;
+    @Column(name = "district_id")
+    private String districtId;
+
+    @Column(name = "address_line1")
+    private String addressLine1;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
@@ -57,7 +59,7 @@ public class Patient {
     private OffsetDateTime updatedAt;
 
     public Patient(Long loanId, DocumentType documentType, String documentNumber, String firstNames,
-            String lastNames, Gender gender, String phone, String email, Address address) {
+            String lastNames, Gender gender, String phone, String email, String districtId, String addressLine1) {
         this.loanId = loanId;
         this.documentType = documentType;
         this.documentNumber = documentNumber;
@@ -66,7 +68,8 @@ public class Patient {
         this.gender = gender;
         this.phone = phone;
         this.email = email;
-        this.address = address;
+        this.districtId = districtId;
+        this.addressLine1 = addressLine1;
     }
 
     @PrePersist

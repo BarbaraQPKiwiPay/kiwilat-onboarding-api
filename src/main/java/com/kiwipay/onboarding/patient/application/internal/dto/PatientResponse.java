@@ -15,15 +15,7 @@ public class PatientResponse {
     private String gender;
     private String phone;
     private String email;
-    private AddressDto address;
+    private String districtId;
+    private String addressLine1;
     private String createdAt;
-
-    @Data
-    @NoArgsConstructor
-    public static class AddressDto {
-        private String departmentId;
-        private String provinceId;
-        private String districtId;
-        private String line1;
-    }
 }
