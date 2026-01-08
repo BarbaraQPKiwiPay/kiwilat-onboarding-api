@@ -4,7 +4,10 @@ import com.kiwipay.onboarding.quote.application.internal.dto.QuoteResponse;
 import java.util.List;
 
 public interface QuoteQueryService {
+
     QuoteResponse getQuoteById(Long quoteId);
-    List<QuoteResponse> getQuotesByClientId(Long clientId);
+
+    List<QuoteResponse> getQuotesByLoanId(Long loanId);
+
     List<QuoteResponse> getAllQuotes();
 }

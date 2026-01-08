@@ -9,9 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
 
-/**
- * Response DTO for spouse information
- */
 @Data
 @Builder
 @NoArgsConstructor
@@ -20,7 +17,7 @@ public class PartnerResponse {
 
     private Long id;
     private Long loanId;
-    private PartnerType spouseType;
+    private PartnerType partnerType;
 
     // Conditional foreign keys
     private Long clientId;

@@ -12,6 +12,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of QuoteQueryService.
+ * Handles read operations for quotes.
+ */
 @Service
 public class QuoteQueryServiceImpl implements QuoteQueryService {
 
@@ -29,8 +33,8 @@ public class QuoteQueryServiceImpl implements QuoteQueryService {
     }
 
     @Override
-    public List<QuoteResponse> getQuotesByClientId(Long clientId) {
-        List<Quote> quotes = quoteRepository.findByClientId(clientId);
+    public List<QuoteResponse> getQuotesByLoanId(Long loanId) {
+        List<Quote> quotes = quoteRepository.findByLoanId(loanId);
         return quotes.stream()
                 .map(quote -> {
                     QuoteResponse response = new QuoteResponse();
@@ -42,6 +46,13 @@ public class QuoteQueryServiceImpl implements QuoteQueryService {
 
     @Override
     public List<QuoteResponse> getAllQuotes() {
-        return List.of();
+        List<Quote> quotes = quoteRepository.findAll();
+        return quotes.stream()
+                .map(quote -> {
+                    QuoteResponse response = new QuoteResponse();
+                    BeanUtils.copyProperties(quote, response);
+                    return response;
+                })
+                .collect(Collectors.toList());
     }
 }

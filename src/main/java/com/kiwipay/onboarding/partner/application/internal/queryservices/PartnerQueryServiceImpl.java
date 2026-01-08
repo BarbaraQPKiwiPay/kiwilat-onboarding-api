@@ -21,37 +21,37 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class PartnerQueryServiceImpl implements PartnerQueryService {
 
-    private final PartnerRepository spouseRepository;
-    private final PartnerMapper spouseMapper;
+    private final PartnerRepository partnerRepository;
+    private final PartnerMapper partnerMapper;
 
     @Override
-    public Optional<PartnerResponse> getSpouseById(Long id) {
-        return spouseRepository.findById(id)
-                .map(spouseMapper::toResponse);
+    public Optional<PartnerResponse> getPartnerById(Long id) {
+        return partnerRepository.findById(id)
+                .map(partnerMapper::toResponse);
     }
 
     @Override
-    public List<PartnerResponse> getSpousesByLoan(Long loanId) {
-        return spouseRepository.findByLoanId(loanId).stream()
-                .map(spouseMapper::toResponse)
+    public List<PartnerResponse> getPartnersByLoan(Long loanId) {
+        return partnerRepository.findByLoanId(loanId).stream()
+                .map(partnerMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<PartnerResponse> getSpouseByClient(Long clientId) {
-        return spouseRepository.findByClientId(clientId)
-                .map(spouseMapper::toResponse);
+    public Optional<PartnerResponse> getPartnerByClient(Long clientId) {
+        return partnerRepository.findByClientId(clientId)
+                .map(partnerMapper::toResponse);
     }
 
     @Override
-    public Optional<PartnerResponse> getSpouseByGuarantor(String guarantorId) {
-        return spouseRepository.findByGuarantorId(guarantorId)
-                .map(spouseMapper::toResponse);
+    public Optional<PartnerResponse> getPartnerByGuarantor(String guarantorId) {
+        return partnerRepository.findByGuarantorId(guarantorId)
+                .map(partnerMapper::toResponse);
     }
 
     @Override
-    public Optional<PartnerResponse> getSpouseByPatient(Long patientId) {
-        return spouseRepository.findByPatientId(patientId)
-                .map(spouseMapper::toResponse);
+    public Optional<PartnerResponse> getPartnerByPatient(Long patientId) {
+        return partnerRepository.findByPatientId(patientId)
+                .map(partnerMapper::toResponse);
     }
 }

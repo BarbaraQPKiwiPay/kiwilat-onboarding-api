@@ -3,35 +3,29 @@ package com.kiwipay.onboarding.partner.application.internal.dto;
 import com.kiwipay.onboarding.partner.domain.model.aggregates.Partner;
 import org.springframework.stereotype.Component;
 
-/**
- * Mapper for converting between Spouse entity and DTOs
- */
 @Component
 public class PartnerMapper {
 
-    /**
-     * Convert Spouse entity to SpouseResponse DTO
-     */
-    public PartnerResponse toResponse(Partner spouse) {
-        if (spouse == null) {
+    public PartnerResponse toResponse(Partner partner) {
+        if (partner == null) {
             return null;
         }
 
         return PartnerResponse.builder()
-                .id(spouse.getId())
-                .loanId(spouse.getLoanId())
-                .spouseType(spouse.getSpouseType())
-                .clientId(spouse.getClientId())
-                .guarantorId(spouse.getGuarantorId())
-                .patientId(spouse.getPatientId())
-                .documentType(spouse.getDocumentType())
-                .documentNumber(spouse.getDocumentNumber())
-                .firstNames(spouse.getFirstNames())
-                .lastNames(spouse.getLastNames())
-                .email(spouse.getEmail())
-                .phone(spouse.getPhone())
-                .createdAt(spouse.getCreatedAt())
-                .updatedAt(spouse.getUpdatedAt())
+                .id(partner.getId())
+                .loanId(partner.getLoanId())
+                .partnerType(partner.getPartnerType())
+                .clientId(partner.getClientId())
+                .guarantorId(partner.getGuarantorId())
+                .patientId(partner.getPatientId())
+                .documentType(partner.getDocumentType())
+                .documentNumber(partner.getDocumentNumber())
+                .firstNames(partner.getFirstNames())
+                .lastNames(partner.getLastNames())
+                .email(partner.getEmail())
+                .phone(partner.getPhone())
+                .createdAt(partner.getCreatedAt())
+                .updatedAt(partner.getUpdatedAt())
                 .build();
     }
 
@@ -45,7 +39,7 @@ public class PartnerMapper {
 
         return new Partner(
                 request.getLoanId(),
-                request.getSpouseType(),
+                request.getPartnerType(),
                 request.getClientId(),
                 request.getGuarantorId(),
                 request.getPatientId(),
@@ -61,16 +55,16 @@ public class PartnerMapper {
      * Update Spouse entity from UpdateSpouseRequest
      * Only updates personal information, not FKs or spouseType
      */
-    public void updateEntity(Partner spouse, UpdatePartnerRequest request) {
-        if (spouse == null || request == null) {
+    public void updateEntity(Partner partner, UpdatePartnerRequest request) {
+        if (partner == null || request == null) {
             return;
         }
 
-        spouse.setDocumentType(request.getDocumentType());
-        spouse.setDocumentNumber(request.getDocumentNumber());
-        spouse.setFirstNames(request.getFirstNames());
-        spouse.setLastNames(request.getLastNames());
-        spouse.setEmail(request.getEmail());
-        spouse.setPhone(request.getPhone());
+        partner.setDocumentType(request.getDocumentType());
+        partner.setDocumentNumber(request.getDocumentNumber());
+        partner.setFirstNames(request.getFirstNames());
+        partner.setLastNames(request.getLastNames());
+        partner.setEmail(request.getEmail());
+        partner.setPhone(request.getPhone());
     }
 }

@@ -19,10 +19,10 @@ public class CreatePartnerRequest {
     @NotNull(message = "Loan ID is required")
     private Long loanId;
 
-    @NotNull(message = "Spouse type is required")
-    private PartnerType spouseType;
+    @NotNull(message = "Partner type is required")
+    private PartnerType partnerType;
 
-    // Conditional foreign keys - only ONE should be provided based on spouseType
+    // Conditional foreign keys - only ONE should be provided based on partnerType
     private Long clientId;
     private String guarantorId;
     private Long patientId;

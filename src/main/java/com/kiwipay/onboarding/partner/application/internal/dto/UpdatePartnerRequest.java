@@ -7,10 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Request DTO for updating spouse information
- * Cannot change spouseType or foreign keys
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
