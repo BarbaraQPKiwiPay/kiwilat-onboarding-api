@@ -17,4 +17,12 @@ public class QuoteResponse {
     private String branchId;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
+
+    // Calculated quote fields
+    private BigDecimal maf; // Monto a Financiar
+    private Integer quotaNumber; // Plazo (número de cuotas)
+    private BigDecimal monthlyPayment; // Cuota mensual
+    private BigDecimal tea; // Tasa Efectiva Anual
+    private BigDecimal tcea; // Tasa de Costo Efectivo Anual
+    private Boolean selected; // Si fue seleccionada
 }

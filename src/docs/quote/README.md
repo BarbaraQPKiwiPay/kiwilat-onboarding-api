@@ -6,12 +6,17 @@ El bounded context de **Quote** (Cotización) tiene como propósito gestionar la
 
 ### Qué problema de negocio resuelve:
 - Almacena y gestiona la información financiera preliminar del solicitante (ingreso mensual, tipo y número de documento)
-- Permite registrar múltiples cotizaciones para un mismo préstamo antes de la aprobación final
+- **Registra las cotizaciones calculadas** del sistema con diferentes opciones de plazo y montos
+- Permite registrar **múltiples cotizaciones** para un mismo préstamo (diferentes plazos: 6, 12, 14, 16, 18 meses)
+- Almacena los **cálculos financieros** (MAF, cuota mensual, TEA, TCEA) para cada opción de plazo
+- Permite que el usuario **seleccione** una de las opciones de cotización calculadas
 - Mantiene un historial de las cotizaciones realizadas con auditoría de fechas
 - Vincula la información del solicitante con una sucursal específica del negocio
 
 ### Qué procesos cubre:
-- Creación de cotizaciones asociadas a préstamos (loan applications)
+- Creación de cotizaciones con **cálculos financieros** (MAF, cuota, tasas)
+- Almacenamiento de **múltiples opciones de plazo** para un mismo préstamo
+- **Selección** de la cotización preferida por el cliente
 - Consulta de cotizaciones por préstamo individual
 - Actualización completa o parcial de los datos de una cotización
 - Eliminación de cotizaciones
@@ -45,7 +50,13 @@ El bounded context de **Quote** (Cotización) tiene como propósito gestionar la
 
 | Término | Significado en el Dominio |
 |---------|---------------------------|
-| **Quote (Cotización)** | Registro de la información financiera preliminar del solicitante de un préstamo, incluyendo su documento de identidad y su ingreso mensual declarado |
+| **Quote (Cotización)** | Opción de financiamiento calculada para un préstamo, que incluye monto a financiar, plazo, cuota mensual y tasas de interés |
+| **MAF (Monto a Financiar)** | Monto total del préstamo que será financiado. Ejemplo: S/. 25,431.00 |
+| **Quota Number (Número de Cuotas)** | Plazo del préstamo expresado en número de cuotas mensuales. Valores típicos: 6, 12, 14, 16, 18 meses |
+| **Monthly Payment (Cuota Mensual)** | Monto que el cliente debe pagar mensualmente. Calculado en base al MAF, plazo y tasas. Ejemplo: S/. 2,277.00 |
+| **TEA (Tasa Efectiva Anual)** | Tasa de interés anual efectiva del préstamo. Ejemplo: 66.60% |
+| **TCEA (Tasa de Costo Efectivo Anual)** | Tasa que incluye intereses y todos los costos asociados al crédito. Ejemplo: 67.71% |
+| **Selected (Seleccionada)** | Indica si el cliente eligió esta opción de cotización entre las disponibles |
 | **Monthly Income (Ingreso Mensual)** | Monto en moneda local que el solicitante declara como ingreso mensual. Se utiliza para cálculos de capacidad de pago |
 | **Document Type** | Tipo de documento de identidad del solicitante (DNI, CE, Pasaporte, etc.) |
 | **Document Number** | Número único del documento de identidad del solicitante |
@@ -71,6 +82,12 @@ El bounded context de **Quote** (Cotización) tiene como propósito gestionar la
 
 **Reglas de negocio clave:**
 - El ingreso mensual debe tener como máximo 2 decimales (precisión financiera)
+- Los campos calculados (MAF, quotaNumber, monthlyPayment, TEA, TCEA) son **opcionales** - pueden ser null
+- Un préstamo puede tener **múltiples cotizaciones** con diferentes plazos (6, 12, 14, 16, 18 meses)
+- Solo **una cotización** puede estar marcada como `selected = true` por préstamo (regla de negocio a validar en servicio)
+- Los montos (MAF, monthlyPayment) tienen precisión de 10 dígitos enteros y 2 decimales
+- Las tasas (TEA, TCEA) tienen precisión de 5 dígitos enteros y 2 decimales (permite valores hasta 999.99%)
+- `selected` por defecto es `false` si no se especifica
 - Una vez creada, la cotización mantiene auditoría automática de fechas (created_at, updated_at)
 - El `branchId` es opcional (puede haber cotizaciones sin sucursal específica)
 - La validación se ejecuta siempre antes de persistir cambios (construcción y actualización)
@@ -90,6 +107,12 @@ El bounded context de **Quote** (Cotización) tiene como propósito gestionar la
 | `documentNumber` | String | Número de documento del solicitante | Sí |
 | `monthlyIncome` | BigDecimal | Ingreso mensual declarado (precisión 10,2) | Sí |
 | `branchId` | String | Identificador de la sucursal | No |
+| **`maf`** | **BigDecimal** | **Monto a Financiar (precisión 10,2)** | **No** |
+| **`quotaNumber`** | **Integer** | **Plazo en número de cuotas (6,12,14,16,18)** | **No** |
+| **`monthlyPayment`** | **BigDecimal** | **Cuota mensual calculada (precisión 10,2)** | **No** |
+| **`tea`** | **BigDecimal** | **Tasa Efectiva Anual (precisión 5,2)** | **No** |
+| **`tcea`** | **BigDecimal** | **Tasa de Costo Efectivo Anual (precisión 5,2)** | **No** |
+| **`selected`** | **Boolean** | **Si fue seleccionada por el cliente** | **No (default: false)** |
 | `createdAt` | OffsetDateTime | Fecha y hora de creación (auto) | Sí (auto) |
 | `updatedAt` | OffsetDateTime | Fecha y hora de última actualización (auto) | Sí (auto) |
 
@@ -174,9 +197,17 @@ En la implementación actual, el bounded context de Quote **NO** emite eventos d
   "documentType": "DNI",
   "documentNumber": "12345678",
   "monthlyIncome": 3500.00,
-  "branchId": "BRANCH001"
+  "branchId": "BRANCH001",
+  "maf": 25431.00,
+  "quotaNumber": 18,
+  "monthlyPayment": 2277.00,
+  "tea": 66.60,
+  "tcea": 67.71,
+  "selected": false
 }
 ```
+
+**Nota:** Los campos calculados (maf, quotaNumber, monthlyPayment, tea, tcea, selected) son **opcionales**.
 
 **Response (201 Created):**
 ```json
@@ -187,6 +218,12 @@ En la implementación actual, el bounded context de Quote **NO** emite eventos d
   "documentNumber": "12345678",
   "monthlyIncome": 3500.00,
   "branchId": "BRANCH001",
+  "maf": 25431.00,
+  "quotaNumber": 18,
+  "monthlyPayment": 2277.00,
+  "tea": 66.60,
+  "tcea": 67.71,
+  "selected": false,
   "createdAt": "2026-01-08T14:30:00-05:00",
   "updatedAt": "2026-01-08T14:30:00-05:00"
 }
@@ -391,6 +428,12 @@ Sin cuerpo de respuesta.
 | `document_number` | VARCHAR(50) | NOT NULL | Número de documento |
 | `monthly_income` | DECIMAL(10,2) | NOT NULL | Ingreso mensual declarado |
 | `branch_id` | VARCHAR(50) | NULLABLE | Identificador de sucursal |
+| **`maf`** | **DECIMAL(10,2)** | **NULLABLE** | **Monto a Financiar** |
+| **`quota_number`** | **INT** | **NULLABLE** | **Número de cuotas/plazo** |
+| **`monthly_payment`** | **DECIMAL(10,2)** | **NULLABLE** | **Cuota mensual calculada** |
+| **`tea`** | **DECIMAL(5,2)** | **NULLABLE** | **Tasa Efectiva Anual** |
+| **`tcea`** | **DECIMAL(5,2)** | **NULLABLE** | **Tasa de Costo Efectivo Anual** |
+| **`selected`** | **BOOLEAN** | **NULLABLE** | **Si fue seleccionada** |
 | `created_at` | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Fecha de creación |
 | `updated_at` | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | Fecha de actualización |
 
@@ -427,7 +470,7 @@ Sin cuerpo de respuesta.
 
 **Suposiciones:**
 - El módulo **Loan** probablemente consume las cotizaciones para armar el expediente completo del préstamo
-- El sistema **SGL externo** podría consultar cotizaciones para análisis de riesgo
+- El sistema **SGL externo** manda la consulta de cotizaciones para análisis de riesgo
 - El módulo de **Reporting/Analytics** podría consumir cotizaciones para estadísticas
 
 **Nota:** No se observa producción de eventos, por lo que la comunicación es mediante consultas pull (GET).
@@ -555,16 +598,6 @@ Utilizar IDs primitivos (`Long`, `String`) para referenciar entidades de otros b
    - Pros: Desacoplamiento total
    - Contras: Complejidad innecesaria para el caso de uso actual
 
-**Consecuencias:**
-- ✅ Boundaries de bounded contexts claramente definidos
-- ✅ No hay dependencies accidentales entre módulos
-- ✅ Control explícito de cuándo y cómo se validan FKs
-- ✅ Facilita migración a microservicios en el futuro
-- ⚠️ Se debe validar manualmente la existencia de entidades referenciadas
-- ⚠️ No hay constraints de FK en base de datos (integridad en aplicación)
-
----
-
 ### ADR-002: No Emitir Eventos de Dominio
 
 **Decisión:**
@@ -590,15 +623,6 @@ No implementar eventos de dominio para cambios en cotizaciones en la versión ac
    - Pros: Desacoplamiento total, escalabilidad
    - Contras: Complejidad operacional, overhead innecesario
 
-**Consecuencias:**
-- ✅ Arquitectura más simple y fácil de entender
-- ✅ Menos infraestructura que mantener
-- ✅ Timestamps de auditoría permiten detectar cambios
-- ⚠️ Los consumidores deben hacer polling o consultas activas
-- ⚠️ Dificulta eventual migración a arquitectura event-driven
-
----
-
 ## 16. Ejemplos Reales de Flujo
 
 ### Ejemplo 1: Creación de Cotización para Cliente Nuevo
@@ -617,7 +641,13 @@ Content-Type: application/json
   "documentType": "DNI",
   "documentNumber": "12345678",
   "monthlyIncome": 3500.00,
-  "branchId": "CLINIC_SAN_ISIDRO"
+  "branchId": "CLINIC_SAN_ISIDRO",
+  "maf": 25431.00,
+  "quotaNumber": 18,
+  "monthlyPayment": 2277.00,
+  "tea": 66.60,
+  "tcea": 67.71,
+  "selected": false
 }
 ```
 
@@ -650,6 +680,12 @@ Content-Type: application/json
   "documentNumber": "12345678",
   "monthlyIncome": 3500.00,
   "branchId": "CLINIC_SAN_ISIDRO",
+  "maf": 25431.00,
+  "quotaNumber": 18,
+  "monthlyPayment": 2277.00,
+  "tea": 66.60,
+  "tcea": 67.71,
+  "selected": false,
   "createdAt": "2026-01-08T14:30:00-05:00",
   "updatedAt": "2026-01-08T14:30:00-05:00"
 }

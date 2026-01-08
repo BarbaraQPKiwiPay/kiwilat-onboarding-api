@@ -1,6 +1,5 @@
 package com.kiwipay.onboarding.quote.application.internal.commandservices;
 
-import com.kiwipay.onboarding.loan.domain.model.aggregates.Loan;
 import com.kiwipay.onboarding.loan.infrastructure.persistence.jpa.LoanRepository;
 import com.kiwipay.onboarding.quote.application.internal.dto.QuoteCreateRequest;
 import com.kiwipay.onboarding.quote.application.internal.dto.QuoteResponse;
@@ -33,7 +32,7 @@ public class QuoteCommandServiceImpl implements QuoteCommandService {
     @Override
     public QuoteResponse createQuote(Long loanId, QuoteCreateRequest request) {
         // Validate that the loan exists
-        Loan loan = loanRepository.findById(loanId)
+        loanRepository.findById(loanId)
                 .orElseThrow(QuoteBusinessException::loanNotFound);
 
         // Create new quote
@@ -42,7 +41,13 @@ public class QuoteCommandServiceImpl implements QuoteCommandService {
                 request.getDocumentType(),
                 request.getDocumentNumber(),
                 request.getMonthlyIncome(),
-                request.getBranchId());
+                request.getBranchId(),
+                request.getMaf(),
+                request.getQuotaNumber(),
+                request.getMonthlyPayment(),
+                request.getTea(),
+                request.getTcea(),
+                request.getSelected());
 
         Quote savedQuote = quoteRepository.save(quote);
         QuoteResponse response = new QuoteResponse();
@@ -60,6 +65,14 @@ public class QuoteCommandServiceImpl implements QuoteCommandService {
         quote.setDocumentNumber(request.getDocumentNumber());
         quote.setMonthlyIncome(request.getMonthlyIncome());
         quote.setBranchId(request.getBranchId());
+
+        // Update calculated fields
+        quote.setMaf(request.getMaf());
+        quote.setQuotaNumber(request.getQuotaNumber());
+        quote.setMonthlyPayment(request.getMonthlyPayment());
+        quote.setTea(request.getTea());
+        quote.setTcea(request.getTcea());
+        quote.setSelected(request.getSelected());
 
         // Validate updated quote
         quote.validate();
@@ -91,6 +104,36 @@ public class QuoteCommandServiceImpl implements QuoteCommandService {
                     break;
                 case "branchId":
                     quote.setBranchId((String) value);
+                    break;
+                case "maf":
+                    if (value instanceof Number) {
+                        quote.setMaf(new BigDecimal(value.toString()));
+                    }
+                    break;
+                case "quotaNumber":
+                    if (value instanceof Number) {
+                        quote.setQuotaNumber(((Number) value).intValue());
+                    }
+                    break;
+                case "monthlyPayment":
+                    if (value instanceof Number) {
+                        quote.setMonthlyPayment(new BigDecimal(value.toString()));
+                    }
+                    break;
+                case "tea":
+                    if (value instanceof Number) {
+                        quote.setTea(new BigDecimal(value.toString()));
+                    }
+                    break;
+                case "tcea":
+                    if (value instanceof Number) {
+                        quote.setTcea(new BigDecimal(value.toString()));
+                    }
+                    break;
+                case "selected":
+                    if (value instanceof Boolean) {
+                        quote.setSelected((Boolean) value);
+                    }
                     break;
                 default:
                     throw new IllegalArgumentException("Invalid field: " + key);

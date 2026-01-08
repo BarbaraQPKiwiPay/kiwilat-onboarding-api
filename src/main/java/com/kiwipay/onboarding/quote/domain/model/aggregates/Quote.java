@@ -38,6 +38,24 @@ public class Quote {
     @Column(name = "branch_id")
     private String branchId;
 
+    @Column(name = "maf", precision = 10, scale = 2)
+    private BigDecimal maf;
+
+    @Column(name = "quota_number")
+    private Integer quotaNumber;
+
+    @Column(name = "monthly_payment", precision = 10, scale = 2)
+    private BigDecimal monthlyPayment;
+
+    @Column(name = "tea", precision = 5, scale = 2)
+    private BigDecimal tea;
+
+    @Column(name = "tcea", precision = 5, scale = 2)
+    private BigDecimal tcea;
+
+    @Column(name = "selected")
+    private Boolean selected;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
@@ -49,12 +67,20 @@ public class Quote {
     public Quote() {
     }
 
-    public Quote(Long loanId, String documentType, String documentNumber, BigDecimal monthlyIncome, String branchId) {
+    public Quote(Long loanId, String documentType, String documentNumber, BigDecimal monthlyIncome, String branchId,
+            BigDecimal maf, Integer quotaNumber, BigDecimal monthlyPayment, BigDecimal tea, BigDecimal tcea,
+            Boolean selected) {
         this.loanId = loanId;
         this.documentType = documentType;
         this.documentNumber = documentNumber;
         this.monthlyIncome = monthlyIncome;
         this.branchId = branchId;
+        this.maf = maf;
+        this.quotaNumber = quotaNumber;
+        this.monthlyPayment = monthlyPayment;
+        this.tea = tea;
+        this.tcea = tcea;
+        this.selected = selected != null ? selected : false;
         validate();
     }
 
