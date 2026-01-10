@@ -1,7 +1,7 @@
 package com.kiwipay.onboarding.keynua.application.internal.builder;
 
 import com.kiwipay.onboarding.client.application.internal.dto.ClientResponse;
-import com.kiwipay.onboarding.client.application.internal.dto.SpouseResponse;
+import com.kiwipay.onboarding.partner.application.internal.dto.PartnerResponse;
 import com.kiwipay.onboarding.guarantor.application.internal.dto.GuarantorResponse;
 import com.kiwipay.onboarding.keynua.dto.SglLoanData;
 import com.kiwipay.onboarding.keynua.dto.keynua.KeynuaContractRequest;
@@ -33,14 +33,14 @@ public class KeynuaPayloadBuilder {
     /**
      * Builds Keynua contract payload using appropriate strategy
      * 
-     * @param loanId           loan ID
-     * @param requestType      single or multiple signers
-     * @param templateId       Keynua template ID
-     * @param client           main client
-     * @param clientSpouse     client spouse (optional)
-     * @param guarantors       list of guarantors (optional)
-     * @param guarantorSpouses map of guarantor spouses (optional)
-     * @param sglData          SGL loan data
+     * @param loanId            loan ID
+     * @param requestType       single or multiple signers
+     * @param templateId        Keynua template ID
+     * @param client            main client
+     * @param clientPartner     client partner (optional)
+     * @param guarantors        list of guarantors (optional)
+     * @param guarantorPartners map of guarantor partners (optional)
+     * @param sglData           SGL loan data
      * @return payload result with request and missing fields
      */
     public PayloadResult buildPayload(
@@ -48,9 +48,9 @@ public class KeynuaPayloadBuilder {
             RequestType requestType,
             String templateId,
             ClientResponse client,
-            SpouseResponse clientSpouse,
+            PartnerResponse clientPartner,
             List<GuarantorResponse> guarantors,
-            Map<String, com.kiwipay.onboarding.guarantor.application.internal.dto.SpouseResponse> guarantorSpouses,
+            Map<Long, PartnerResponse> guarantorPartners,
             SglLoanData sglData) {
 
         // Build context
@@ -58,9 +58,9 @@ public class KeynuaPayloadBuilder {
                 .loanId(loanId)
                 .templateId(templateId)
                 .client(client)
-                .clientSpouse(clientSpouse)
+                .clientPartner(clientPartner)
                 .guarantors(guarantors)
-                .guarantorSpouses(guarantorSpouses != null ? guarantorSpouses : new HashMap<>())
+                .guarantorPartners(guarantorPartners != null ? guarantorPartners : new HashMap<>())
                 .sglData(sglData)
                 .build();
 

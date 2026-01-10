@@ -27,8 +27,8 @@ public class Loan {
     @Column(name = "client_id", nullable = false)
     private Long clientId;
 
-    @Column(name = "clinical_data_id")
-    private Long clinicalDataId;
+    @Column(name = "clinic_branch_id", length = 50)
+    private String clinicBranchId;
 
     // LOAN DATA
     @Column(name = "income")
@@ -79,8 +79,8 @@ public class Loan {
     @Column(name = "signature_at")
     private OffsetDateTime signatureAt;
 
-    @Column(name = "approved_by_risk_at")
-    private OffsetDateTime approvedByRiskAt;
+    @Column(name = "risk_approval_at")
+    private OffsetDateTime riskApprovalAt;
 
     @Column(name = "disbursement_at")
     private OffsetDateTime disbursementAt;
@@ -119,7 +119,7 @@ public class Loan {
         OffsetDateTime now = OffsetDateTime.now();
         switch (newStatus) {
             case APPROVED_BY_RISK:
-                this.approvedByRiskAt = now;
+                this.riskApprovalAt = now;
                 break;
             case SIGNED:
                 this.signatureAt = now;

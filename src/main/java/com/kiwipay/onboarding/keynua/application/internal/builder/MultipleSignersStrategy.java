@@ -1,7 +1,7 @@
 package com.kiwipay.onboarding.keynua.application.internal.builder;
 
 import com.kiwipay.onboarding.client.application.internal.dto.ClientResponse;
-import com.kiwipay.onboarding.client.application.internal.dto.SpouseResponse;
+import com.kiwipay.onboarding.partner.application.internal.dto.PartnerResponse;
 import com.kiwipay.onboarding.guarantor.application.internal.dto.GuarantorResponse;
 import com.kiwipay.onboarding.keynua.application.internal.util.CivilStatusMapper;
 import com.kiwipay.onboarding.keynua.application.internal.util.DocumentTypeDetector;
@@ -58,12 +58,12 @@ public class MultipleSignersStrategy implements SignerStrategy {
                 client.getDocumentNumber(), users, prefilledItems, context);
         currentUserId[0]++;
 
-        // Add client spouse/representative if exists
+        // Add client partner/representative if exists
         List<KeynuaCavaliRepresentative> clientRepresentatives = new ArrayList<>();
-        if (context.getClientSpouse() != null) {
-            SpouseResponse spouse = context.getClientSpouse();
-            addUser(spouse.getFirstNames(), spouse.getLastNames(), spouse.getEmail(),
-                    spouse.getDocumentNumber(), users, prefilledItems, context);
+        if (context.getClientPartner() != null) {
+            PartnerResponse partner = context.getClientPartner();
+            addUser(partner.getFirstNames(), partner.getLastNames(), partner.getEmail(),
+                    partner.getDocumentNumber(), users, prefilledItems, context);
             clientRepresentatives.add(new KeynuaCavaliRepresentative(currentUserId[0]));
             currentUserId[0]++;
         }
@@ -86,13 +86,13 @@ public class MultipleSignersStrategy implements SignerStrategy {
                 guarantee.setUserId(guarantorUserId);
                 guarantee.setCivilStatus(guarantorCivilStatus);
 
-                // Add guarantor spouse/representative if exists
-                if (context.getGuarantorSpouses() != null &&
-                        context.getGuarantorSpouses().containsKey(guarantor.getGuarantorId())) {
-                    com.kiwipay.onboarding.guarantor.application.internal.dto.SpouseResponse guarantorSpouse = context
-                            .getGuarantorSpouses().get(guarantor.getGuarantorId());
-                    addUser(guarantorSpouse.getFirstNames(), guarantorSpouse.getLastNames(),
-                            guarantorSpouse.getEmail(), guarantorSpouse.getDocumentNumber(),
+                // Add guarantor partner/representative if exists
+                if (context.getGuarantorPartners() != null &&
+                        context.getGuarantorPartners().containsKey(guarantor.getId())) {
+                    PartnerResponse guarantorPartner = context
+                            .getGuarantorPartners().get(guarantor.getId());
+                    addUser(guarantorPartner.getFirstNames(), guarantorPartner.getLastNames(),
+                            guarantorPartner.getEmail(), guarantorPartner.getDocumentNumber(),
                             users, prefilledItems, context);
 
                     List<KeynuaCavaliRepresentative> guarantorReps = new ArrayList<>();
@@ -195,7 +195,7 @@ public class MultipleSignersStrategy implements SignerStrategy {
         KeynuaCavaliClient cavaliClient = new KeynuaCavaliClient(0, civilStatus);
         cavaliData.setClient(cavaliClient);
 
-        // Set representatives if client has spouse
+        // Set representatives if client has partner
         if (!clientRepresentatives.isEmpty()) {
             cavaliData.setRepresentatives(clientRepresentatives);
         } else {

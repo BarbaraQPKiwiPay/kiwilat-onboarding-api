@@ -49,10 +49,6 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
 
         List<Loan> findByCreatedAtAfter(OffsetDateTime date);
 
-        Optional<Loan> findByClinicalDataId(Long clinicalDataId);
-
-        boolean existsByClinicalDataId(Long clinicalDataId);
-
         List<Loan> findByClientIdOrderByCreatedAtDesc(Long clientId);
 
         List<Loan> findByClientIdAndLoanStatusNot(Long clientId, LoanStatus excludeStatus);

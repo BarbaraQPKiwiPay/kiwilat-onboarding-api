@@ -1,7 +1,6 @@
 package com.kiwipay.onboarding.loan.application.internal.commandservices;
 
 import com.kiwipay.onboarding.client.infrastructure.persistence.jpa.repositories.ClientRepository;
-import com.kiwipay.onboarding.clinicaldata.infrastructure.persistence.jpa.repositories.ClinicalDataRepository;
 import com.kiwipay.onboarding.loan.application.internal.dto.LoanCreateRequest;
 import com.kiwipay.onboarding.loan.application.internal.dto.LoanResponse;
 import com.kiwipay.onboarding.loan.application.internal.dto.LoanStatusChangeRequest;
@@ -27,9 +26,6 @@ public class LoanCommandServiceImpl implements LoanCommandService {
     @Autowired
     private ClientRepository clientRepository;
 
-    @Autowired
-    private ClinicalDataRepository clinicalDataRepository;
-
     @Override
     @Transactional
     public LoanResponse createLoan(LoanCreateRequest request) {
@@ -38,16 +34,10 @@ public class LoanCommandServiceImpl implements LoanCommandService {
             throw LoanBusinessException.clientNotFound();
         }
 
-        // Validate clinical data if provided
-        if (request.getClinicalDataId() != null &&
-                !clinicalDataRepository.existsById(request.getClinicalDataId())) {
-            throw LoanBusinessException.clinicalDataNotFound();
-        }
-
         // Create loan entity
         Loan loan = new Loan();
         loan.setClientId(request.getClientId());
-        loan.setClinicalDataId(request.getClinicalDataId());
+        loan.setClinicBranchId(request.getClinicBranchId());
         loan.setIncome(request.getIncome());
         loan.setQuotaNumber(request.getQuotaNumber());
         loan.setMaf(request.getMaf());
@@ -82,12 +72,8 @@ public class LoanCommandServiceImpl implements LoanCommandService {
             loan.setClientId(request.getClientId());
         }
 
-        if (request.getClinicalDataId() != null) {
-            // Validate clinical data exists
-            if (!clinicalDataRepository.existsById(request.getClinicalDataId())) {
-                throw LoanBusinessException.clinicalDataNotFound();
-            }
-            loan.setClinicalDataId(request.getClinicalDataId());
+        if (request.getClinicBranchId() != null) {
+            loan.setClinicBranchId(request.getClinicBranchId());
         }
 
         if (request.getIncome() != null)
@@ -162,7 +148,7 @@ public class LoanCommandServiceImpl implements LoanCommandService {
         LoanResponse response = new LoanResponse();
         response.setId(loan.getId());
         response.setClientId(loan.getClientId());
-        response.setClinicalDataId(loan.getClinicalDataId());
+        response.setClinicBranchId(loan.getClinicBranchId());
         response.setIncome(loan.getIncome());
         response.setQuotaNumber(loan.getQuotaNumber());
         response.setMaf(loan.getMaf());
@@ -180,7 +166,7 @@ public class LoanCommandServiceImpl implements LoanCommandService {
         response.setCreatedAt(loan.getCreatedAt());
         response.setUpdatedAt(loan.getUpdatedAt());
         response.setSignatureAt(loan.getSignatureAt());
-        response.setApprovedByRiskAt(loan.getApprovedByRiskAt());
+        response.setRiskApprovalAt(loan.getRiskApprovalAt());
         response.setDisbursementAt(loan.getDisbursementAt());
 
         return response;

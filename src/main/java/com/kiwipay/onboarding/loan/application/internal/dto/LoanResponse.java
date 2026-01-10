@@ -12,7 +12,7 @@ public class LoanResponse {
 
     private Long id;
     private Long clientId;
-    private Long clinicalDataId;
+    private String clinicBranchId;
 
     private Double income;
     private Double quotaNumber;
@@ -31,6 +31,6 @@ public class LoanResponse {
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private OffsetDateTime signatureAt;
-    private OffsetDateTime approvedByRiskAt;
+    private OffsetDateTime riskApprovalAt;
     private OffsetDateTime disbursementAt;
 }

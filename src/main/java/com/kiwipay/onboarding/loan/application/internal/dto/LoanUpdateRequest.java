@@ -9,7 +9,7 @@ import lombok.Setter;
 public class LoanUpdateRequest {
 
     private Long clientId;
-    private Long clinicalDataId;
+    private String clinicBranchId;
 
     private Double income;
     private Double quotaNumber;

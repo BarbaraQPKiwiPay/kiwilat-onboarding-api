@@ -11,7 +11,7 @@ public class LoanCreateRequest {
     @NotNull(message = "Client ID is required")
     private Long clientId;
 
-    private Long clinicalDataId;
+    private String clinicBranchId;
 
     private Double income;
     private Double quotaNumber;

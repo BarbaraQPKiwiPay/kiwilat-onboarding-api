@@ -55,7 +55,7 @@ public class LoanQueryServiceImpl implements LoanQueryService {
         LoanResponse response = new LoanResponse();
         response.setId(loan.getId());
         response.setClientId(loan.getClientId());
-        response.setClinicalDataId(loan.getClinicalDataId());
+        response.setClinicBranchId(loan.getClinicBranchId());
         response.setIncome(loan.getIncome());
         response.setQuotaNumber(loan.getQuotaNumber());
         response.setMaf(loan.getMaf());
@@ -72,7 +72,7 @@ public class LoanQueryServiceImpl implements LoanQueryService {
         response.setCreatedAt(loan.getCreatedAt());
         response.setUpdatedAt(loan.getUpdatedAt());
         response.setSignatureAt(loan.getSignatureAt());
-        response.setApprovedByRiskAt(loan.getApprovedByRiskAt());
+        response.setRiskApprovalAt(loan.getRiskApprovalAt());
         response.setDisbursementAt(loan.getDisbursementAt());
 
         return response;

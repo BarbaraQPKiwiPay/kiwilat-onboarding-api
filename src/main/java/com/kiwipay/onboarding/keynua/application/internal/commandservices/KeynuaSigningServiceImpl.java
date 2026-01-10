@@ -1,7 +1,7 @@
 package com.kiwipay.onboarding.keynua.application.internal.commandservices;
 
 import com.kiwipay.onboarding.client.application.internal.dto.ClientResponse;
-import com.kiwipay.onboarding.client.application.internal.dto.SpouseResponse;
+import com.kiwipay.onboarding.partner.application.internal.dto.PartnerResponse;
 import com.kiwipay.onboarding.client.domain.services.ClientQueryService;
 
 import com.kiwipay.onboarding.guarantor.application.internal.dto.GuarantorResponse;
@@ -84,9 +84,9 @@ public class KeynuaSigningServiceImpl implements KeynuaSigningService {
                 request.getRequestType(),
                 keynuaProperties.getDocumentTemplateId(),
                 dataBundle.client,
-                dataBundle.clientSpouse,
+                dataBundle.clientPartner,
                 dataBundle.guarantors,
-                dataBundle.guarantorSpouses,
+                dataBundle.guarantorPartners,
                 sglData);
 
         log.info("Payload generated successfully. Missing fields: {}", result.getMissingFields());
@@ -199,25 +199,25 @@ public class KeynuaSigningServiceImpl implements KeynuaSigningService {
         // Create mock client
         ClientResponse client = createMockClient(loanId);
 
-        // Create mock client spouse (optional - can be null)
-        SpouseResponse clientSpouse = createMockClientSpouse();
+        // Create mock client partner (optional - can be null)
+        PartnerResponse clientPartner = createMockClientPartner();
 
         // Create mock guarantors if MULTIPLE_SIGNERS
         List<GuarantorResponse> guarantors = new ArrayList<>();
-        Map<String, com.kiwipay.onboarding.guarantor.application.internal.dto.SpouseResponse> guarantorSpouses = new HashMap<>();
+        Map<Long, PartnerResponse> guarantorPartners = new HashMap<>();
 
         if (requestType == com.kiwipay.onboarding.keynua.dto.request.RequestType.MULTIPLE_SIGNERS) {
             // Add 2 mock guarantors
-            GuarantorResponse guarantor1 = createMockGuarantor("G001", 101L);
-            GuarantorResponse guarantor2 = createMockGuarantor("G002", 102L);
+            GuarantorResponse guarantor1 = createMockGuarantor(101L, 201L);
+            GuarantorResponse guarantor2 = createMockGuarantor(102L, 202L);
             guarantors.add(guarantor1);
             guarantors.add(guarantor2);
 
-            // Add spouse for first guarantor
-            guarantorSpouses.put("G001", createMockGuarantorSpouse("G001"));
+            // Add partner for first guarantor
+            guarantorPartners.put(101L, createMockGuarantorPartner(101L));
         }
 
-        return new ClientDataBundle(client, clientSpouse, guarantors, guarantorSpouses);
+        return new ClientDataBundle(client, clientPartner, guarantors, guarantorPartners);
     }
 
     private ClientResponse createMockClient(String loanId) {
@@ -244,46 +244,49 @@ public class KeynuaSigningServiceImpl implements KeynuaSigningService {
         return client;
     }
 
-    private SpouseResponse createMockClientSpouse() {
-        SpouseResponse spouse = new SpouseResponse();
-        spouse.setId(2L);
-        spouse.setClientId(1L);
-        spouse.setDocumentType("DNI");
-        spouse.setDocumentNumber("87654321");
-        spouse.setFirstNames("María Elena");
-        spouse.setLastNames("Torres Vega");
-        spouse.setEmail("maria.torres@example.com");
-        spouse.setPhone("+51912345678");
-        return spouse;
+    private PartnerResponse createMockClientPartner() {
+        PartnerResponse partner = new PartnerResponse();
+        partner.setId(2L);
+        partner.setLoanId(1L);
+        partner.setPartnerType(com.kiwipay.onboarding.partner.domain.model.valueobjects.PartnerType.CLIENT);
+        partner.setClientId(1L);
+        partner.setDocumentType(com.kiwipay.onboarding.shared.domain.valueobjects.DocumentType.DNI);
+        partner.setDocumentNumber("87654321");
+        partner.setFirstNames("María Elena");
+        partner.setLastNames("Torres Vega");
+        partner.setEmail("maria.torres@example.com");
+        partner.setPhone("+51912345678");
+        return partner;
     }
 
-    private GuarantorResponse createMockGuarantor(String guarantorId, Long clientId) {
+    private GuarantorResponse createMockGuarantor(Long guarantorId, Long loanId) {
         GuarantorResponse guarantor = new GuarantorResponse();
-        guarantor.setGuarantorId(guarantorId);
-        guarantor.setClientId(clientId);
-        guarantor.setDocumentType("DNI");
-        guarantor.setDocumentNumber("111" + guarantorId.substring(guarantorId.length() - 3));
+        guarantor.setId(guarantorId);
+        guarantor.setLoanId(loanId);
+        guarantor.setDocumentType(com.kiwipay.onboarding.shared.domain.valueobjects.DocumentType.DNI);
+        guarantor.setDocumentNumber("111" + String.format("%03d", guarantorId));
         guarantor.setFirstNames("Garante " + guarantorId);
         guarantor.setLastNames("Apellido " + guarantorId);
         guarantor.setEmail("garantor" + guarantorId + "@example.com");
-        guarantor.setPhone("+51900000" + guarantorId.substring(guarantorId.length() - 3));
+        guarantor.setPhone("+51900000" + String.format("%03d", guarantorId));
         guarantor.setMaritalStatus(
-                com.kiwipay.onboarding.guarantor.domain.model.aggregates.Guarantor.MaritalStatus.MARRIED);
+                com.kiwipay.onboarding.shared.domain.valueobjects.MaritalStatus.MARRIED);
         return guarantor;
     }
 
-    private com.kiwipay.onboarding.guarantor.application.internal.dto.SpouseResponse createMockGuarantorSpouse(
-            String guarantorId) {
-        com.kiwipay.onboarding.guarantor.application.internal.dto.SpouseResponse spouse = new com.kiwipay.onboarding.guarantor.application.internal.dto.SpouseResponse();
-        spouse.setId(Long.parseLong(guarantorId.replaceAll("[^0-9]", "")) + 100L);
-        spouse.setGuarantorId(guarantorId);
-        spouse.setDocumentType("DNI");
-        spouse.setDocumentNumber("222" + guarantorId.substring(guarantorId.length() - 3));
-        spouse.setFirstNames("Cónyuge Garante");
-        spouse.setLastNames("Apellido " + guarantorId);
-        spouse.setEmail("spouse" + guarantorId + "@example.com");
-        spouse.setPhone("+51900001" + guarantorId.substring(guarantorId.length() - 3));
-        return spouse;
+    private PartnerResponse createMockGuarantorPartner(Long guarantorId) {
+        PartnerResponse partner = new PartnerResponse();
+        partner.setId(guarantorId + 100L);
+        partner.setLoanId(200L + guarantorId);
+        partner.setPartnerType(com.kiwipay.onboarding.partner.domain.model.valueobjects.PartnerType.GUARANTOR);
+        partner.setGuarantorId(guarantorId);
+        partner.setDocumentType(com.kiwipay.onboarding.shared.domain.valueobjects.DocumentType.DNI);
+        partner.setDocumentNumber("222" + String.format("%03d", guarantorId));
+        partner.setFirstNames("Cónyuge Garante");
+        partner.setLastNames("Apellido " + guarantorId);
+        partner.setEmail("spouse" + guarantorId + "@example.com");
+        partner.setPhone("+51900001" + String.format("%03d", guarantorId));
+        return partner;
     }
 
     private boolean hasCriticalMissingFields(List<String> missingFields) {
@@ -344,17 +347,17 @@ public class KeynuaSigningServiceImpl implements KeynuaSigningService {
      */
     private static class ClientDataBundle {
         ClientResponse client;
-        SpouseResponse clientSpouse;
+        PartnerResponse clientPartner;
         List<GuarantorResponse> guarantors;
-        Map<String, com.kiwipay.onboarding.guarantor.application.internal.dto.SpouseResponse> guarantorSpouses;
+        Map<Long, PartnerResponse> guarantorPartners;
 
-        ClientDataBundle(ClientResponse client, SpouseResponse clientSpouse,
+        ClientDataBundle(ClientResponse client, PartnerResponse clientPartner,
                 List<GuarantorResponse> guarantors,
-                Map<String, com.kiwipay.onboarding.guarantor.application.internal.dto.SpouseResponse> guarantorSpouses) {
+                Map<Long, PartnerResponse> guarantorPartners) {
             this.client = client;
-            this.clientSpouse = clientSpouse;
+            this.clientPartner = clientPartner;
             this.guarantors = guarantors;
-            this.guarantorSpouses = guarantorSpouses;
+            this.guarantorPartners = guarantorPartners;
         }
     }
 }
