@@ -69,4 +69,18 @@ public class DocumentBusinessException extends RuntimeException {
                 "DOCUMENT_UPLOAD_NOT_ALLOWED",
                 403);
     }
+
+    public static DocumentBusinessException riskDocumentNotAllowedHere() {
+        return new DocumentBusinessException(
+                "FICHA_DE_RIESGOS must be uploaded through the dedicated risk document endpoint: POST /api/v1/loans/{loanId}/risk-document",
+                "RISK_DOCUMENT_NOT_ALLOWED_HERE",
+                400);
+    }
+
+    public static DocumentBusinessException onlyRiskDocumentAllowed() {
+        return new DocumentBusinessException(
+                "Only FICHA_DE_RIESGOS document type is allowed in this endpoint. Use standard endpoints for other document types.",
+                "ONLY_RISK_DOCUMENT_ALLOWED",
+                400);
+    }
 }

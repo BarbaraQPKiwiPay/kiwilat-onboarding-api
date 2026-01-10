@@ -2,14 +2,11 @@ package com.kiwipay.onboarding.document.domain.services;
 
 import com.kiwipay.onboarding.document.application.internal.dto.DocumentPreviewResponse;
 import com.kiwipay.onboarding.document.application.internal.dto.DocumentResponse;
-import com.kiwipay.onboarding.document.application.internal.dto.DocumentTypeResponse;
 import com.kiwipay.onboarding.document.domain.model.valueobjects.DocumentOwnerType;
 
 import java.util.List;
 
 public interface DocumentQueryService {
-    List<DocumentTypeResponse> getAllDocumentTypes();
-
     List<DocumentResponse> getDocumentsByLoanId(Long loanId);
 
     List<DocumentResponse> getDocumentsByLoanIdAndOwnerType(Long loanId, DocumentOwnerType ownerType);

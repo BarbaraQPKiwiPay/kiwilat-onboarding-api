@@ -7,6 +7,8 @@ import com.kiwipay.onboarding.document.application.internal.dto.DocumentReviewRe
 public interface DocumentCommandService {
     DocumentResponse uploadDocument(Long loanId, Long ownerId, DocumentUploadRequest request);
 
+    DocumentResponse uploadRiskDocument(Long loanId, DocumentUploadRequest request);
+
     void deleteDocument(String documentId);
 
     DocumentResponse reviewDocument(String documentId, DocumentReviewRequest request);

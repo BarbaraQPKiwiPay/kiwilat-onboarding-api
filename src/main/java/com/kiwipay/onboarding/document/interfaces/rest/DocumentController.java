@@ -8,10 +8,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -109,6 +114,26 @@ public class DocumentController {
         return ResponseEntity.ok(preview);
     }
 
+    @GetMapping("/documents/{documentId}/download")
+    @Operation(summary = "Download document", description = "Download document file with appropriate headers")
+    public ResponseEntity<Resource> downloadDocument(@PathVariable String documentId) {
+        DocumentPreviewResponse document = documentQueryService.previewDocument(documentId);
+
+        // Decode base64 content
+        byte[] fileContent = Base64.getDecoder().decode(document.getContentBase64());
+        ByteArrayResource resource = new ByteArrayResource(fileContent);
+
+        // Set headers for download
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getFilename() + "\"");
+        headers.setContentType(MediaType.parseMediaType(document.getMimeType()));
+        headers.setContentLength(fileContent.length);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(resource);
+    }
+
     @PatchMapping("/documents/{documentId}/review")
     @Operation(summary = "Review document", description = "Approve or reject a document")
     public ResponseEntity<DocumentResponse> reviewDocument(
@@ -126,13 +151,15 @@ public class DocumentController {
     }
 
     // ============================================================
-    // DOCUMENT TYPES
+    // RISK DOCUMENT (FICHA DE RIESGOS)
     // ============================================================
 
-    @GetMapping("/document-types")
-    @Operation(summary = "Get all document types", description = "Retrieve all available document types")
-    public ResponseEntity<List<DocumentTypeResponse>> getAllDocumentTypes() {
-        List<DocumentTypeResponse> types = documentQueryService.getAllDocumentTypes();
-        return ResponseEntity.ok(types);
+    @PostMapping("/loans/{loanId}/risk-document")
+    @Operation(summary = "Upload risk document", description = "Upload FICHA_DE_RIESGOS for a loan. Only one risk document allowed per loan. Up loading a new one replaces the existing.")
+    public ResponseEntity<DocumentResponse> uploadRiskDocument(
+            @PathVariable Long loanId,
+            @Valid @RequestBody DocumentUploadRequest request) {
+        DocumentResponse response = documentCommandService.uploadRiskDocument(loanId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

@@ -8,7 +8,6 @@ import com.kiwipay.onboarding.document.domain.model.exceptions.DocumentBusinessE
 import com.kiwipay.onboarding.document.domain.model.valueobjects.DocumentOwnerType;
 import com.kiwipay.onboarding.document.domain.services.DocumentCommandService;
 import com.kiwipay.onboarding.document.infrastructure.persistence.jpa.DocumentRepository;
-import com.kiwipay.onboarding.document.infrastructure.persistence.jpa.DocumentTypeRepository;
 import com.kiwipay.onboarding.loan.infrastructure.persistence.jpa.LoanRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +28,6 @@ public class DocumentCommandServiceImpl implements DocumentCommandService {
     private DocumentRepository documentRepository;
 
     @Autowired
-    private DocumentTypeRepository documentTypeRepository;
-
-    @Autowired
     private LoanRepository loanRepository;
 
     private static final List<String> ALLOWED_MIME_TYPES = Arrays.asList(
@@ -43,11 +39,6 @@ public class DocumentCommandServiceImpl implements DocumentCommandService {
         // Validar que el loan existe
         if (!loanRepository.existsById(loanId)) {
             throw DocumentBusinessException.loanNotFound();
-        }
-
-        // Validar que el tipo de documento existe
-        if (!documentTypeRepository.existsById(request.getDocumentTypeId())) {
-            throw DocumentBusinessException.documentTypeNotFound();
         }
 
         // Validar MIME type
@@ -88,7 +79,55 @@ public class DocumentCommandServiceImpl implements DocumentCommandService {
                 request.getOwnerType(),
                 clientId,
                 guarantorId,
-                request.getDocumentTypeId(),
+                request.getDocumentType(),
+                request.getFilename(),
+                request.getMimeType(),
+                request.getSizeBytes(),
+                request.getComment(),
+                request.getContentBase64());
+
+        Document savedDocument = documentRepository.save(document);
+
+        DocumentResponse response = new DocumentResponse();
+        BeanUtils.copyProperties(savedDocument, response);
+        return response;
+    }
+
+    @Override
+    public DocumentResponse uploadRiskDocument(Long loanId, DocumentUploadRequest request) {
+        // Validar que el loan existe
+        if (!loanRepository.existsById(loanId)) {
+            throw DocumentBusinessException.loanNotFound();
+        }
+
+        // Validar MIME type
+        if (!ALLOWED_MIME_TYPES.contains(request.getMimeType())) {
+            throw DocumentBusinessException.invalidMimeType();
+        }
+
+        // Validar tamaño del archivo
+        if (request.getSizeBytes() > MAX_FILE_SIZE) {
+            throw DocumentBusinessException.fileSizeExceeded();
+        }
+
+        // Validar Base64
+        try {
+            Base64.getDecoder().decode(request.getContentBase64());
+        } catch (IllegalArgumentException e) {
+            throw DocumentBusinessException.invalidBase64();
+        }
+
+        // Generar ID único
+        String documentId = generateDocumentId();
+
+        // Crear documento de riesgo (sin clientId ni guarantorId específico)
+        Document document = new Document(
+                documentId,
+                loanId,
+                request.getOwnerType(),
+                null, // clientId - no aplica para documento de riesgo
+                null, // guarantorId - no aplica para documento de riesgo
+                request.getDocumentType(),
                 request.getFilename(),
                 request.getMimeType(),
                 request.getSizeBytes(),

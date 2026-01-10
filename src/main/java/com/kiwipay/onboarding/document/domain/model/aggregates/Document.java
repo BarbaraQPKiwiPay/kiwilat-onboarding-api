@@ -2,6 +2,7 @@ package com.kiwipay.onboarding.document.domain.model.aggregates;
 
 import com.kiwipay.onboarding.document.domain.model.valueobjects.DocumentOwnerType;
 import com.kiwipay.onboarding.document.domain.model.valueobjects.DocumentStatus;
+import com.kiwipay.onboarding.document.domain.model.valueobjects.DocumentType;
 import com.kiwipay.onboarding.document.domain.model.valueobjects.ReviewStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -30,8 +31,9 @@ public class Document {
     @Column(name = "guarantor_id")
     private Long guarantorId;
 
-    @Column(nullable = false, name = "document_type_id")
-    private String documentTypeId;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "document_type")
+    private DocumentType documentType;
 
     @Column(nullable = false)
     private String filename;
@@ -65,14 +67,14 @@ public class Document {
     }
 
     public Document(String id, Long loanId, DocumentOwnerType ownerType, Long clientId, Long guarantorId,
-            String documentTypeId, String filename, String mimeType, Long sizeBytes,
+            DocumentType documentType, String filename, String mimeType, Long sizeBytes,
             String comment, String contentBase64) {
         this.id = id;
         this.loanId = loanId;
         this.ownerType = ownerType;
         this.clientId = clientId;
         this.guarantorId = guarantorId;
-        this.documentTypeId = documentTypeId;
+        this.documentType = documentType;
         this.filename = filename;
         this.mimeType = mimeType;
         this.sizeBytes = sizeBytes;
