@@ -1,7 +1,7 @@
 package com.kiwipay.onboarding.keynua.application.internal.builder;
 
 import com.kiwipay.onboarding.client.application.internal.dto.ClientResponse;
-import com.kiwipay.onboarding.client.application.internal.dto.SpouseResponse;
+import com.kiwipay.onboarding.partner.application.internal.dto.SpouseResponse;
 import com.kiwipay.onboarding.guarantor.application.internal.dto.GuarantorResponse;
 import com.kiwipay.onboarding.keynua.dto.SglLoanData;
 import lombok.Builder;
@@ -24,9 +24,9 @@ public class PayloadBuilderContext {
     private ClientResponse client;
     private SpouseResponse clientSpouse;
     private List<GuarantorResponse> guarantors;
-    private Map<String, com.kiwipay.onboarding.guarantor.application.internal.dto.SpouseResponse> guarantorSpouses; // guarantorId
-                                                                                                                    // ->
-                                                                                                                    // spouse
+    private Map<String, com.kiwipay.onboarding.partner.application.internal.dto.SpouseResponse> guarantorSpouses; // guarantorId
+                                                                                                                  // ->
+                                                                                                                  // spouse
     private SglLoanData sglData;
 
     /**

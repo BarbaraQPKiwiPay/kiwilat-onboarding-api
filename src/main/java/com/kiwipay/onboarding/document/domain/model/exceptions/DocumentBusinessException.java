@@ -10,8 +10,13 @@ public class DocumentBusinessException extends RuntimeException {
         this.httpStatus = httpStatus;
     }
 
-    public String getErrorCode() { return errorCode; }
-    public int getHttpStatus() { return httpStatus; }
+    public String getErrorCode() {
+        return errorCode;
+    }
+
+    public int getHttpStatus() {
+        return httpStatus;
+    }
 
     public static DocumentBusinessException documentNotFound() {
         return new DocumentBusinessException("Document not found", "DOCUMENT_NOT_FOUND", 404);
@@ -21,12 +26,21 @@ public class DocumentBusinessException extends RuntimeException {
         return new DocumentBusinessException("Client not found", "CLIENT_NOT_FOUND", 404);
     }
 
+    public static DocumentBusinessException loanNotFound() {
+        return new DocumentBusinessException("Loan not found", "LOAN_NOT_FOUND", 404);
+    }
+
+    public static DocumentBusinessException guarantorNotFound() {
+        return new DocumentBusinessException("Guarantor not found", "GUARANTOR_NOT_FOUND", 404);
+    }
+
     public static DocumentBusinessException documentTypeNotFound() {
         return new DocumentBusinessException("Document type not found", "DOCUMENT_TYPE_NOT_FOUND", 404);
     }
 
     public static DocumentBusinessException invalidMimeType() {
-        return new DocumentBusinessException("Invalid MIME type. Only PDF, JPG, and PNG are allowed", "INVALID_MIME_TYPE", 400);
+        return new DocumentBusinessException("Invalid MIME type. Only PDF, JPG, and PNG are allowed",
+                "INVALID_MIME_TYPE", 400);
     }
 
     public static DocumentBusinessException fileSizeExceeded() {
@@ -34,7 +48,8 @@ public class DocumentBusinessException extends RuntimeException {
     }
 
     public static DocumentBusinessException maxDocumentsExceeded() {
-        return new DocumentBusinessException("Maximum number of documents (10) exceeded for this client", "MAX_DOCUMENTS_EXCEEDED", 409);
+        return new DocumentBusinessException("Maximum number of documents (10) exceeded for this client",
+                "MAX_DOCUMENTS_EXCEEDED", 409);
     }
 
     public static DocumentBusinessException invalidBase64() {
@@ -42,14 +57,16 @@ public class DocumentBusinessException extends RuntimeException {
     }
 
     public static DocumentBusinessException documentNotBelongsToClient() {
-        return new DocumentBusinessException("Document does not belong to the specified client", "DOCUMENT_NOT_BELONGS_TO_CLIENT", 403);
+        return new DocumentBusinessException("Document does not belong to the specified client",
+                "DOCUMENT_NOT_BELONGS_TO_CLIENT", 403);
     }
-    
+
     public static DocumentBusinessException documentUploadNotAllowed(String currentStatus) {
         return new DocumentBusinessException(
-            String.format("Document upload not allowed in current status: %s. Only MANUAL and OBSERVADO_POR_ADV statuses allow document upload.", currentStatus), 
-            "DOCUMENT_UPLOAD_NOT_ALLOWED", 
-            403
-        );
+                String.format(
+                        "Document upload not allowed in current status: %s. Only MANUAL and OBSERVADO_POR_ADV statuses allow document upload.",
+                        currentStatus),
+                "DOCUMENT_UPLOAD_NOT_ALLOWED",
+                403);
     }
 }

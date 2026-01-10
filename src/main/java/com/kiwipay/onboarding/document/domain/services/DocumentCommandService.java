@@ -5,7 +5,9 @@ import com.kiwipay.onboarding.document.application.internal.dto.DocumentResponse
 import com.kiwipay.onboarding.document.application.internal.dto.DocumentReviewRequest;
 
 public interface DocumentCommandService {
-    DocumentResponse uploadDocument(Long clientId, DocumentUploadRequest request);
-    void deleteDocument(Long clientId, String documentId);
+    DocumentResponse uploadDocument(Long loanId, Long ownerId, DocumentUploadRequest request);
+
+    void deleteDocument(String documentId);
+
     DocumentResponse reviewDocument(String documentId, DocumentReviewRequest request);
 }

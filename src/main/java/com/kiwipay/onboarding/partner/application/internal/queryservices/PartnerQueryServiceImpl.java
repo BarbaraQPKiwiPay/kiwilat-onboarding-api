@@ -44,7 +44,7 @@ public class PartnerQueryServiceImpl implements PartnerQueryService {
     }
 
     @Override
-    public Optional<PartnerResponse> getPartnerByGuarantor(String guarantorId) {
+    public Optional<PartnerResponse> getPartnerByGuarantor(Long guarantorId) {
         return partnerRepository.findByGuarantorId(guarantorId)
                 .map(partnerMapper::toResponse);
     }

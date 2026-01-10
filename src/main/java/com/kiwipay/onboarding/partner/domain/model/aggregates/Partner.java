@@ -52,7 +52,7 @@ public class Partner {
     private Long clientId;
 
     @Column(name = "guarantor_id", length = 50)
-    private String guarantorId;
+    private Long guarantorId;
 
     @Column(name = "patient_id")
     private Long patientId;
@@ -84,41 +84,36 @@ public class Partner {
     private OffsetDateTime updatedAt;
 
     /**
-     * Constructor for CLIENT partner
+     * Static factory method for CLIENT partner
      */
-    public Partner(Long loanId, Long clientId, DocumentType documentType, String documentNumber,
-            String firstNames, String lastNames, String email, String phone) {
-        this.loanId = loanId;
-        this.partnerType = PartnerType.CLIENT;
-        this.clientId = clientId;
-        this.documentType = documentType;
-        this.documentNumber = documentNumber;
-        this.firstNames = firstNames;
-        this.lastNames = lastNames;
-        this.email = email;
-        this.phone = phone;
+    public static Partner forClient(Long loanId, Long clientId, DocumentType documentType,
+            String documentNumber, String firstNames, String lastNames, String email, String phone) {
+        return new Partner(loanId, PartnerType.CLIENT, clientId, null, null,
+                documentType, documentNumber, firstNames, lastNames, email, phone);
     }
 
     /**
-     * Constructor for GUARANTOR partner
+     * Static factory method for GUARANTOR partner
      */
-    public Partner(Long loanId, String guarantorId, DocumentType documentType, String documentNumber,
-            String firstNames, String lastNames, String email, String phone) {
-        this.loanId = loanId;
-        this.partnerType = PartnerType.GUARANTOR;
-        this.guarantorId = guarantorId;
-        this.documentType = documentType;
-        this.documentNumber = documentNumber;
-        this.firstNames = firstNames;
-        this.lastNames = lastNames;
-        this.email = email;
-        this.phone = phone;
+    public static Partner forGuarantor(Long loanId, Long guarantorId, DocumentType documentType,
+            String documentNumber, String firstNames, String lastNames, String email, String phone) {
+        return new Partner(loanId, PartnerType.GUARANTOR, null, guarantorId, null,
+                documentType, documentNumber, firstNames, lastNames, email, phone);
+    }
+
+    /**
+     * Static factory method for PATIENT partner
+     */
+    public static Partner forPatient(Long loanId, Long patientId, DocumentType documentType,
+            String documentNumber, String firstNames, String lastNames, String email, String phone) {
+        return new Partner(loanId, PartnerType.PATIENT, null, null, patientId,
+                documentType, documentNumber, firstNames, lastNames, email, phone);
     }
 
     /**
      * Generic constructor with partnerType
      */
-    public Partner(Long loanId, PartnerType partnerType, Long clientId, String guarantorId, Long patientId,
+    public Partner(Long loanId, PartnerType partnerType, Long clientId, Long guarantorId, Long patientId,
             DocumentType documentType, String documentNumber, String firstNames, String lastNames,
             String email, String phone) {
         this.loanId = loanId;

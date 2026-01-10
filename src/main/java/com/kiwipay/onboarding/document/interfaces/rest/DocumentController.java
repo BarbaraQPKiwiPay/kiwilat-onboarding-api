@@ -1,31 +1,22 @@
 package com.kiwipay.onboarding.document.interfaces.rest;
 
-import com.kiwipay.onboarding.document.application.internal.dto.DocumentResponse;
-import com.kiwipay.onboarding.document.application.internal.dto.DocumentTypeResponse;
-import com.kiwipay.onboarding.document.application.internal.dto.DocumentUploadRequest;
-import com.kiwipay.onboarding.document.application.internal.dto.DocumentReviewRequest;
+import com.kiwipay.onboarding.document.application.internal.dto.*;
+import com.kiwipay.onboarding.document.domain.model.valueobjects.DocumentOwnerType;
 import com.kiwipay.onboarding.document.domain.services.DocumentCommandService;
 import com.kiwipay.onboarding.document.domain.services.DocumentQueryService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
-@CrossOrigin(origins = "http://localhost:4200")
-@Tag(name = "Document Management", description = "Managing documents and document types")
+@Tag(name = "Document Controller", description = "Manages documents for loans (client and guarantor documents)")
 public class DocumentController {
 
     @Autowired
@@ -34,126 +25,114 @@ public class DocumentController {
     @Autowired
     private DocumentQueryService documentQueryService;
 
-    @Autowired
+    // ============================================================
+    // CLIENT DOCUMENTS
+    // ============================================================
 
-    @GetMapping("/document-types")
-    @Operation(summary = "Get all document types", description = "Retrieves a list of all available document types")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Document types retrieved successfully"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<List<DocumentTypeResponse>> getAllDocumentTypes() {
-        return ResponseEntity.ok(documentQueryService.getAllDocumentTypes());
-    }
-
-    @PostMapping("/clients/{clientId}/documents")
-    @Operation(summary = "Upload a document", description = "Uploads a new document for a specific client")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Document uploaded successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid MIME type or Base64 content"),
-        @ApiResponse(responseCode = "404", description = "Client or document type not found"),
-        @ApiResponse(responseCode = "409", description = "Maximum number of documents exceeded"),
-        @ApiResponse(responseCode = "413", description = "File size exceeds maximum limit"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<DocumentResponse> uploadDocument(
+    @PostMapping("/loans/{loanId}/clients/{clientId}/documents")
+    @Operation(summary = "Upload client document", description = "Upload a document for a client associated with a loan")
+    public ResponseEntity<DocumentResponse> uploadClientDocument(
+            @PathVariable Long loanId,
             @PathVariable Long clientId,
             @Valid @RequestBody DocumentUploadRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(documentCommandService.uploadDocument(clientId, request));
+        request.setOwnerType(DocumentOwnerType.CLIENT);
+        DocumentResponse response = documentCommandService.uploadDocument(loanId, clientId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/clients/{clientId}/documents")
-    @Operation(summary = "Get client documents", description = "Retrieves all documents for a specific client")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Documents retrieved successfully"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<List<DocumentResponse>> getClientDocuments(@PathVariable Long clientId) {
-        return ResponseEntity.ok(documentQueryService.getDocumentsByClientId(clientId));
+    @GetMapping("/loans/{loanId}/clients/{clientId}/documents")
+    @Operation(summary = "Get client documents", description = "Retrieve all documents for a specific client in a loan")
+    public ResponseEntity<List<DocumentResponse>> getClientDocuments(
+            @PathVariable Long loanId,
+            @PathVariable Long clientId) {
+        List<DocumentResponse> documents = documentQueryService.getDocumentsByClientId(clientId);
+        return ResponseEntity.ok(documents);
     }
 
-    @GetMapping("/documents/{documentId}/content")
-    @Operation(summary = "Download document content", description = "Downloads the binary content of a document")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Document content retrieved successfully"),
-        @ApiResponse(responseCode = "404", description = "Document not found"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<byte[]> getDocumentContent(@PathVariable String documentId) {
-        // Obtener información del documento para los headers
-        DocumentResponse documentInfo = documentQueryService.getDocumentById(documentId);
-        byte[] content = documentQueryService.getDocumentContent(documentId);
+    // ============================================================
+    // GUARANTOR DOCUMENTS
+    // ============================================================
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType(documentInfo.getMimeType()));
-        headers.setContentDispositionFormData("inline", documentInfo.getFilename());
-        headers.setContentLength(content.length);
-
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(content);
+    @PostMapping("/loans/{loanId}/guarantors/{guarantorId}/documents")
+    @Operation(summary = "Upload guarantor document", description = "Upload a document for a guarantor associated with a loan")
+    public ResponseEntity<DocumentResponse> uploadGuarantorDocument(
+            @PathVariable Long loanId,
+            @PathVariable Long guarantorId,
+            @Valid @RequestBody DocumentUploadRequest request) {
+        request.setOwnerType(DocumentOwnerType.GUARANTOR);
+        DocumentResponse response = documentCommandService.uploadDocument(loanId, guarantorId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @DeleteMapping("/clients/{clientId}/documents/{documentId}")
-    @Operation(summary = "Delete a document", description = "Deletes a specific document belonging to a client")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Document deleted successfully"),
-        @ApiResponse(responseCode = "403", description = "Document does not belong to the specified client"),
-        @ApiResponse(responseCode = "404", description = "Document not found"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<Void> deleteDocument(
-            @PathVariable Long clientId,
-            @PathVariable String documentId) {
-        documentCommandService.deleteDocument(clientId, documentId);
-        return ResponseEntity.noContent().build();
+    @GetMapping("/loans/{loanId}/guarantors/{guarantorId}/documents")
+    @Operation(summary = "Get guarantor documents", description = "Retrieve all documents for a specific guarantor in a loan")
+    public ResponseEntity<List<DocumentResponse>> getGuarantorDocuments(
+            @PathVariable Long loanId,
+            @PathVariable Long guarantorId) {
+        List<DocumentResponse> documents = documentQueryService.getDocumentsByGuarantorId(guarantorId);
+        return ResponseEntity.ok(documents);
     }
 
-    // =============== NEW ENDPOINTS ===============
+    // ============================================================
+    // LOAN DOCUMENTS (ALL)
+    // ============================================================
+
+    @GetMapping("/loans/{loanId}/documents")
+    @Operation(summary = "Get all loan documents", description = "Retrieve all documents for a loan, optionally filtered by owner type")
+    public ResponseEntity<List<DocumentResponse>> getLoanDocuments(
+            @PathVariable Long loanId,
+            @RequestParam(required = false) DocumentOwnerType ownerType) {
+        List<DocumentResponse> documents;
+        if (ownerType != null) {
+            documents = documentQueryService.getDocumentsByLoanIdAndOwnerType(loanId, ownerType);
+        } else {
+            documents = documentQueryService.getDocumentsByLoanId(loanId);
+        }
+        return ResponseEntity.ok(documents);
+    }
+
+    // ============================================================
+    // DOCUMENT OPERATIONS (BY ID)
+    // ============================================================
+
+    @GetMapping("/documents/{documentId}")
+    @Operation(summary = "Get document by ID", description = "Retrieve a specific document")
+    public ResponseEntity<DocumentResponse> getDocumentById(@PathVariable String documentId) {
+        DocumentResponse document = documentQueryService.getDocumentById(documentId);
+        return ResponseEntity.ok(document);
+    }
+
+    @GetMapping("/documents/{documentId}/preview")
+    @Operation(summary = "Preview document", description = "Get document with base64 content for preview")
+    public ResponseEntity<DocumentPreviewResponse> previewDocument(@PathVariable String documentId) {
+        DocumentPreviewResponse preview = documentQueryService.previewDocument(documentId);
+        return ResponseEntity.ok(preview);
+    }
 
     @PatchMapping("/documents/{documentId}/review")
-    @Operation(summary = "Review document", description = "Approves or rejects a document by updating its review status and optionally adding a comment")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Document reviewed successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid review status or comment"),
-        @ApiResponse(responseCode = "404", description = "Document not found"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
+    @Operation(summary = "Review document", description = "Approve or reject a document")
     public ResponseEntity<DocumentResponse> reviewDocument(
             @PathVariable String documentId,
             @Valid @RequestBody DocumentReviewRequest request) {
-        
-        DocumentResponse reviewedDocument = documentCommandService.reviewDocument(documentId, request);
-        
-        // Obtener el rol del usuario actual
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String currentUserRole = auth.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");
-        
-        // Generar notificaciones automáticas según las reglas de negocio
-        String reviewStatus = request.getReviewStatus().name(); // Convertir enum a String
-    
-        
-        return ResponseEntity.ok(reviewedDocument);
+        DocumentResponse response = documentCommandService.reviewDocument(documentId, request);
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/clients/{clientId}/documents/non-risk")
-    @Operation(summary = "Get non-risk documents", description = "Retrieves all documents for a client excluding FICHA_RIESGO type")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Non-risk documents retrieved successfully"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<List<DocumentResponse>> getNonRiskDocuments(@PathVariable Long clientId) {
-        return ResponseEntity.ok(documentQueryService.getNonRiskDocumentsByClientId(clientId));
+    @DeleteMapping("/documents/{documentId}")
+    @Operation(summary = "Delete document", description = "Delete a document")
+    public ResponseEntity<Void> deleteDocument(@PathVariable String documentId) {
+        documentCommandService.deleteDocument(documentId);
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/clients/{clientId}/documents/risk")
-    @Operation(summary = "Get risk documents", description = "Retrieves all FICHA_RIESGO documents for a client")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Risk documents retrieved successfully"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<List<DocumentResponse>> getRiskDocuments(@PathVariable Long clientId) {
-        return ResponseEntity.ok(documentQueryService.getRiskDocumentsByClientId(clientId));
+    // ============================================================
+    // DOCUMENT TYPES
+    // ============================================================
+
+    @GetMapping("/document-types")
+    @Operation(summary = "Get all document types", description = "Retrieve all available document types")
+    public ResponseEntity<List<DocumentTypeResponse>> getAllDocumentTypes() {
+        List<DocumentTypeResponse> types = documentQueryService.getAllDocumentTypes();
+        return ResponseEntity.ok(types);
     }
 }

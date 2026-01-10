@@ -1,10 +1,12 @@
 package com.kiwipay.onboarding.document.application.internal.queryservices;
 
+import com.kiwipay.onboarding.document.application.internal.dto.DocumentPreviewResponse;
 import com.kiwipay.onboarding.document.application.internal.dto.DocumentResponse;
 import com.kiwipay.onboarding.document.application.internal.dto.DocumentTypeResponse;
 import com.kiwipay.onboarding.document.domain.model.aggregates.Document;
-import com.kiwipay.onboarding.document.domain.model.entities.DocumentType;
+import com.kiwipay.onboarding.document.domain.model.entities.DocumentTypeEntity;
 import com.kiwipay.onboarding.document.domain.model.exceptions.DocumentBusinessException;
+import com.kiwipay.onboarding.document.domain.model.valueobjects.DocumentOwnerType;
 import com.kiwipay.onboarding.document.domain.services.DocumentQueryService;
 import com.kiwipay.onboarding.document.infrastructure.persistence.jpa.DocumentRepository;
 import com.kiwipay.onboarding.document.infrastructure.persistence.jpa.DocumentTypeRepository;
@@ -12,7 +14,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,72 +28,76 @@ public class DocumentQueryServiceImpl implements DocumentQueryService {
 
     @Override
     public List<DocumentTypeResponse> getAllDocumentTypes() {
-        List<DocumentType> documentTypes = documentTypeRepository.findAll();
-        return documentTypes.stream()
-            .map(documentType -> {
-                DocumentTypeResponse response = new DocumentTypeResponse();
-                BeanUtils.copyProperties(documentType, response);
-                return response;
-            })
-            .collect(Collectors.toList());
+        return documentTypeRepository.findAll().stream()
+                .map(this::toDocumentTypeResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DocumentResponse> getDocumentsByLoanId(Long loanId) {
+        return documentRepository.findByLoanId(loanId).stream()
+                .map(this::toDocumentResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DocumentResponse> getDocumentsByLoanIdAndOwnerType(Long loanId, DocumentOwnerType ownerType) {
+        return documentRepository.findByLoanIdAndOwnerType(loanId, ownerType).stream()
+                .map(this::toDocumentResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<DocumentResponse> getDocumentsByClientId(Long clientId) {
-        List<Document> documents = documentRepository.findByClientIdOrderByCreatedAtDesc(clientId);
-        return documents.stream()
-            .map(document -> {
-                DocumentResponse response = new DocumentResponse();
-                BeanUtils.copyProperties(document, response);
-                // No incluir el contenido Base64 en la lista
-                return response;
-            })
-            .collect(Collectors.toList());
+        return documentRepository.findByClientId(clientId).stream()
+                .map(this::toDocumentResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public byte[] getDocumentContent(String documentId) {
-        Document document = documentRepository.findById(documentId)
-            .orElseThrow(DocumentBusinessException::documentNotFound);
-
-        try {
-            return Base64.getDecoder().decode(document.getContentBase64());
-        } catch (IllegalArgumentException e) {
-            throw DocumentBusinessException.invalidBase64();
-        }
+    public List<DocumentResponse> getDocumentsByGuarantorId(Long guarantorId) {
+        return documentRepository.findByGuarantorId(guarantorId).stream()
+                .map(this::toDocumentResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
     public DocumentResponse getDocumentById(String documentId) {
         Document document = documentRepository.findById(documentId)
-            .orElseThrow(DocumentBusinessException::documentNotFound);
+                .orElseThrow(DocumentBusinessException::documentNotFound);
+        return toDocumentResponse(document);
+    }
 
+    @Override
+    public DocumentPreviewResponse previewDocument(String documentId) {
+        Document document = documentRepository.findById(documentId)
+                .orElseThrow(DocumentBusinessException::documentNotFound);
+
+        DocumentPreviewResponse preview = new DocumentPreviewResponse();
+        preview.setId(document.getId());
+        preview.setLoanId(document.getLoanId());
+        preview.setOwnerType(document.getOwnerType());
+        preview.setDocumentTypeId(document.getDocumentTypeId());
+        preview.setFilename(document.getFilename());
+        preview.setMimeType(document.getMimeType());
+        preview.setSizeBytes(document.getSizeBytes());
+        preview.setComment(document.getComment());
+        preview.setContentBase64(document.getContentBase64());
+        preview.setCreatedAt(document.getCreatedAt());
+
+        return preview;
+    }
+
+    private DocumentResponse toDocumentResponse(Document document) {
         DocumentResponse response = new DocumentResponse();
         BeanUtils.copyProperties(document, response);
         return response;
     }
 
-    @Override
-    public List<DocumentResponse> getNonRiskDocumentsByClientId(Long clientId) {
-        List<Document> documents = documentRepository.findByClientIdAndDocumentTypeIdNotOrderByCreatedAtDesc(clientId, "FICHA_RIESGO");
-        return documents.stream()
-            .map(document -> {
-                DocumentResponse response = new DocumentResponse();
-                BeanUtils.copyProperties(document, response);
-                return response;
-            })
-            .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<DocumentResponse> getRiskDocumentsByClientId(Long clientId) {
-        List<Document> documents = documentRepository.findByClientIdAndDocumentTypeIdOrderByCreatedAtDesc(clientId, "FICHA_RIESGO");
-        return documents.stream()
-            .map(document -> {
-                DocumentResponse response = new DocumentResponse();
-                BeanUtils.copyProperties(document, response);
-                return response;
-            })
-            .collect(Collectors.toList());
+    private DocumentTypeResponse toDocumentTypeResponse(DocumentTypeEntity entity) {
+        DocumentTypeResponse response = new DocumentTypeResponse();
+        response.setId(entity.getId());
+        response.setName(entity.getName());
+        return response;
     }
 }

@@ -30,7 +30,7 @@ public interface PartnerRepository extends JpaRepository<Partner, Long> {
      * Find partner by guarantor ID
      * Should return at most one record due to unique constraint
      */
-    Optional<Partner> findByGuarantorId(String guarantorId);
+    Optional<Partner> findByGuarantorId(Long guarantorId);
 
     /**
      * Find partner by patient ID

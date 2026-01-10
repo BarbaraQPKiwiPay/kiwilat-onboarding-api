@@ -1,17 +1,24 @@
 package com.kiwipay.onboarding.document.domain.services;
 
+import com.kiwipay.onboarding.document.application.internal.dto.DocumentPreviewResponse;
 import com.kiwipay.onboarding.document.application.internal.dto.DocumentResponse;
 import com.kiwipay.onboarding.document.application.internal.dto.DocumentTypeResponse;
+import com.kiwipay.onboarding.document.domain.model.valueobjects.DocumentOwnerType;
 
 import java.util.List;
 
 public interface DocumentQueryService {
     List<DocumentTypeResponse> getAllDocumentTypes();
+
+    List<DocumentResponse> getDocumentsByLoanId(Long loanId);
+
+    List<DocumentResponse> getDocumentsByLoanIdAndOwnerType(Long loanId, DocumentOwnerType ownerType);
+
     List<DocumentResponse> getDocumentsByClientId(Long clientId);
-    byte[] getDocumentContent(String documentId);
+
+    List<DocumentResponse> getDocumentsByGuarantorId(Long guarantorId);
+
     DocumentResponse getDocumentById(String documentId);
-    
-    // New methods for filtered documents
-    List<DocumentResponse> getNonRiskDocumentsByClientId(Long clientId);
-    List<DocumentResponse> getRiskDocumentsByClientId(Long clientId);
+
+    DocumentPreviewResponse previewDocument(String documentId);
 }

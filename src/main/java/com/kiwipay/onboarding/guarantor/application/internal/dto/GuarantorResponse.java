@@ -1,7 +1,8 @@
 package com.kiwipay.onboarding.guarantor.application.internal.dto;
 
-import com.kiwipay.onboarding.guarantor.domain.model.aggregates.Guarantor.Gender;
-import com.kiwipay.onboarding.guarantor.domain.model.aggregates.Guarantor.MaritalStatus;
+import com.kiwipay.onboarding.shared.domain.valueobjects.DocumentType;
+import com.kiwipay.onboarding.shared.domain.valueobjects.Gender;
+import com.kiwipay.onboarding.shared.domain.valueobjects.MaritalStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,9 +12,9 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 public class GuarantorResponse {
-    private String guarantorId;
-    private Long clientId;
-    private String documentType;
+    private Long id;
+    private Long loanId;
+    private DocumentType documentType;
     private String documentNumber;
     private BigDecimal monthlyIncome;
     private String firstNames;
@@ -22,7 +23,8 @@ public class GuarantorResponse {
     private MaritalStatus maritalStatus;
     private String email;
     private String phone;
-    private GuarantorAddressResponse address;
+    private String districtId;
+    private String addressLine1;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

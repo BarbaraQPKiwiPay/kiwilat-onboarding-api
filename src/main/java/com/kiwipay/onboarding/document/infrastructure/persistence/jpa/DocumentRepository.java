@@ -1,18 +1,22 @@
 package com.kiwipay.onboarding.document.infrastructure.persistence.jpa;
 
 import com.kiwipay.onboarding.document.domain.model.aggregates.Document;
+import com.kiwipay.onboarding.document.domain.model.valueobjects.DocumentOwnerType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
+@Repository
 public interface DocumentRepository extends JpaRepository<Document, String> {
-    List<Document> findByClientIdOrderByCreatedAtDesc(Long clientId);
-    Optional<Document> findByIdAndClientId(String id, Long clientId);
-    long countByClientId(Long clientId);
-    boolean existsByIdAndClientId(String id, Long clientId);
-    
-    // New methods for filtering by document type
-    List<Document> findByClientIdAndDocumentTypeIdNotOrderByCreatedAtDesc(Long clientId, String documentTypeId);
-    List<Document> findByClientIdAndDocumentTypeIdOrderByCreatedAtDesc(Long clientId, String documentTypeId);
+
+    List<Document> findByLoanId(Long loanId);
+
+    List<Document> findByLoanIdAndOwnerType(Long loanId, DocumentOwnerType ownerType);
+
+    List<Document> findByClientId(Long clientId);
+
+    List<Document> findByGuarantorId(Long guarantorId);
+
+    boolean existsByLoanIdAndId(Long loanId, String id);
 }

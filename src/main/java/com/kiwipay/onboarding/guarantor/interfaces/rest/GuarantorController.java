@@ -1,17 +1,14 @@
 package com.kiwipay.onboarding.guarantor.interfaces.rest;
 
-import com.kiwipay.onboarding.guarantor.application.internal.dto.*;
+import com.kiwipay.onboarding.guarantor.application.internal.dto.GuarantorCreateRequest;
+import com.kiwipay.onboarding.guarantor.application.internal.dto.GuarantorResponse;
 import com.kiwipay.onboarding.guarantor.domain.services.GuarantorCommandService;
 import com.kiwipay.onboarding.guarantor.domain.services.GuarantorQueryService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +17,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1")
-@Tag(name = "Guarantor Management", description = "Managing guarantors and their documents")
+@Tag(name = "Guarantor Management", description = "Manages guarantors for loans")
 public class GuarantorController {
 
     @Autowired
@@ -29,205 +26,51 @@ public class GuarantorController {
     @Autowired
     private GuarantorQueryService guarantorQueryService;
 
-    // =============== GUARANTOR CRUD ===============
-
-    @GetMapping("/clients/{clientId}/guarantor")
-    @Operation(summary = "Get guarantor by client ID", description = "Retrieves guarantor information for a specific client")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Guarantor retrieved successfully"),
-        @ApiResponse(responseCode = "404", description = "Guarantor not found"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<GuarantorResponse> getGuarantorByClientId(@PathVariable Long clientId) {
-        return ResponseEntity.ok(guarantorQueryService.getGuarantorByClientId(clientId));
-    }
-
-    @PutMapping("/clients/{clientId}/guarantor")
-    @Operation(summary = "Create or update guarantor", description = "Creates a new guarantor or updates an existing one for a client")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Guarantor created or updated successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid request data"),
-        @ApiResponse(responseCode = "404", description = "Client not found"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<GuarantorResponse> createOrUpdateGuarantor(
-            @PathVariable Long clientId,
+    @PostMapping("/loans/{loanId}/guarantors")
+    @Operation(summary = "Create guarantor", description = "Create a new guarantor for a loan")
+    public ResponseEntity<GuarantorResponse> createGuarantor(
+            @PathVariable Long loanId,
             @Valid @RequestBody GuarantorCreateRequest request) {
-        return ResponseEntity.ok(guarantorCommandService.createOrUpdateGuarantor(clientId, request));
+        GuarantorResponse response = guarantorCommandService.createGuarantor(loanId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PatchMapping("/clients/{clientId}/guarantor")
-    @Operation(summary = "Partially update guarantor", description = "Updates specific fields of an existing guarantor")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Guarantor updated successfully"),
-        @ApiResponse(responseCode = "404", description = "Guarantor not found"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
+    @GetMapping("/loans/{loanId}/guarantors")
+    @Operation(summary = "Get guarantors by loan", description = "Retrieve all guarantors for a specific loan")
+    public ResponseEntity<List<GuarantorResponse>> getGuarantorsByLoan(@PathVariable Long loanId) {
+        List<GuarantorResponse> guarantors = guarantorQueryService.getGuarantorsByLoanId(loanId);
+        return ResponseEntity.ok(guarantors);
+    }
+
+    @GetMapping("/guarantors/{guarantorId}")
+    @Operation(summary = "Get guarantor by ID", description = "Retrieve a specific guarantor")
+    public ResponseEntity<GuarantorResponse> getGuarantorById(@PathVariable Long guarantorId) {
+        GuarantorResponse guarantor = guarantorQueryService.getGuarantorById(guarantorId);
+        return ResponseEntity.ok(guarantor);
+    }
+
+    @PutMapping("/guarantors/{guarantorId}")
+    @Operation(summary = "Update guarantor", description = "Update an existing guarantor")
+    public ResponseEntity<GuarantorResponse> updateGuarantor(
+            @PathVariable Long guarantorId,
+            @Valid @RequestBody GuarantorCreateRequest request) {
+        GuarantorResponse response = guarantorCommandService.updateGuarantor(guarantorId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/guarantors/{guarantorId}")
+    @Operation(summary = "Partially update guarantor", description = "Partially update guarantor fields")
     public ResponseEntity<GuarantorResponse> patchGuarantor(
-            @PathVariable Long clientId,
+            @PathVariable Long guarantorId,
             @RequestBody Map<String, Object> updates) {
-        return ResponseEntity.ok(guarantorCommandService.patchGuarantor(clientId, updates));
+        GuarantorResponse response = guarantorCommandService.patchGuarantor(guarantorId, updates);
+        return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/clients/{clientId}/guarantor")
-    @Operation(summary = "Delete guarantor", description = "Deletes the guarantor for a specific client")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Guarantor deleted successfully"),
-        @ApiResponse(responseCode = "404", description = "Guarantor not found"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<Void> deleteGuarantor(@PathVariable Long clientId) {
-        guarantorCommandService.deleteGuarantor(clientId);
-        return ResponseEntity.noContent().build();
-    }
-
-    // =============== GUARANTOR DOCUMENTS CRUD ===============
-
-    @PostMapping("/clients/{clientId}/guarantor/documents")
-    @Operation(summary = "Upload guarantor document", description = "Uploads a new document for a guarantor")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Document uploaded successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid MIME type or Base64 content"),
-        @ApiResponse(responseCode = "404", description = "Client or document type not found"),
-        @ApiResponse(responseCode = "409", description = "Maximum number of documents exceeded"),
-        @ApiResponse(responseCode = "413", description = "File size exceeds maximum limit"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<GuarantorDocumentResponse> uploadGuarantorDocument(
-            @PathVariable Long clientId,
-            @Valid @RequestBody GuarantorDocumentUploadRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(guarantorCommandService.uploadDocument(clientId, request));
-    }
-
-    @GetMapping("/clients/{clientId}/guarantor/documents")
-    @Operation(summary = "Get guarantor documents", description = "Retrieves all documents for a guarantor")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Documents retrieved successfully"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<List<GuarantorDocumentResponse>> getGuarantorDocuments(@PathVariable Long clientId) {
-        return ResponseEntity.ok(guarantorQueryService.getDocumentsByClientId(clientId));
-    }
-
-    @GetMapping("/guarantor-documents/{documentId}/content")
-    @Operation(summary = "Download guarantor document content", description = "Downloads the binary content of a guarantor document")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Document content retrieved successfully"),
-        @ApiResponse(responseCode = "404", description = "Document not found"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<byte[]> getGuarantorDocumentContent(@PathVariable String documentId) {
-        GuarantorDocumentResponse documentInfo = guarantorQueryService.getDocumentById(documentId);
-        byte[] content = guarantorQueryService.getDocumentContent(documentId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType(documentInfo.getMimeType()));
-        headers.add("Content-Disposition", "inline; filename=\"" + documentInfo.getFilename() + "\"");
-        headers.setContentLength(content.length);
-
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(content);
-    }
-
-    @PatchMapping("/guarantor-documents/{documentId}")
-    @Operation(summary = "Update guarantor document", description = "Updates comment or document type of a guarantor document")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Document updated successfully"),
-        @ApiResponse(responseCode = "404", description = "Document not found"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<GuarantorDocumentResponse> patchGuarantorDocument(
-            @PathVariable String documentId,
-            @RequestBody Map<String, Object> updates) {
-        return ResponseEntity.ok(guarantorCommandService.patchDocument(documentId, updates));
-    }
-
-    @DeleteMapping("/clients/{clientId}/guarantor/documents/{documentId}")
-    @Operation(summary = "Delete guarantor document", description = "Deletes a specific guarantor document")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Document deleted successfully"),
-        @ApiResponse(responseCode = "403", description = "Document does not belong to the specified client"),
-        @ApiResponse(responseCode = "404", description = "Document not found"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<Void> deleteGuarantorDocument(
-            @PathVariable Long clientId,
-            @PathVariable String documentId) {
-        guarantorCommandService.deleteDocument(clientId, documentId);
-        return ResponseEntity.noContent().build();
-    }
-
-    // =============== DOCUMENT REVIEW OPERATIONS ===============
-
-    @PatchMapping("/guarantor-documents/{documentId}/review")
-    @Operation(summary = "Update status of document", description = "Updates the review status of a guarantor document and optionally adds a comment")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Document status updated successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid review status or comment"),
-        @ApiResponse(responseCode = "404", description = "Document not found"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<GuarantorDocumentResponse> reviewGuarantorDocument(
-            @PathVariable String documentId,
-            @Valid @RequestBody GuarantorDocumentReviewRequest request) {
-        return ResponseEntity.ok(guarantorCommandService.reviewDocument(documentId, request));
-    }
-
-    // =============== SPOUSE CRUD ===============
-
-    @PostMapping("/guarantors/{guarantorId}/spouse")
-    @Operation(summary = "Create spouse for guarantor", description = "Creates a spouse for a specific guarantor")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Spouse created successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid request data or guarantor already has spouse"),
-        @ApiResponse(responseCode = "404", description = "Guarantor not found"),
-        @ApiResponse(responseCode = "409", description = "Document already exists for another spouse"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<SpouseResponse> createSpouse(
-            @PathVariable String guarantorId,
-            @Valid @RequestBody SpouseCreateRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(guarantorCommandService.createSpouse(guarantorId, request));
-    }
-
-    @GetMapping("/guarantors/{guarantorId}/spouse")
-    @Operation(summary = "Get spouse by guarantor ID", description = "Retrieves spouse information for a specific guarantor")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Spouse retrieved successfully"),
-        @ApiResponse(responseCode = "404", description = "Spouse not found"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<SpouseResponse> getSpouseByGuarantorId(@PathVariable String guarantorId) {
-        return ResponseEntity.ok(guarantorQueryService.getSpouseByGuarantorId(guarantorId));
-    }
-
-    @PutMapping("/guarantors/{guarantorId}/spouse")
-    @Operation(summary = "Update spouse", description = "Updates spouse information for a specific guarantor")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Spouse updated successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid request data"),
-        @ApiResponse(responseCode = "404", description = "Guarantor or spouse not found"),
-        @ApiResponse(responseCode = "409", description = "Document already exists for another spouse"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<SpouseResponse> updateSpouse(
-            @PathVariable String guarantorId,
-            @Valid @RequestBody SpouseUpdateRequest request) {
-        return ResponseEntity.ok(guarantorCommandService.updateSpouse(guarantorId, request));
-    }
-
-    @DeleteMapping("/guarantors/{guarantorId}/spouse")
-    @Operation(summary = "Delete spouse", description = "Deletes spouse for a specific guarantor")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Spouse deleted successfully"),
-        @ApiResponse(responseCode = "404", description = "Guarantor or spouse not found"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<Void> deleteSpouse(@PathVariable String guarantorId) {
-        guarantorCommandService.deleteSpouse(guarantorId);
+    @DeleteMapping("/guarantors/{guarantorId}")
+    @Operation(summary = "Delete guarantor", description = "Delete a guarantor")
+    public ResponseEntity<Void> deleteGuarantor(@PathVariable Long guarantorId) {
+        guarantorCommandService.deleteGuarantor(guarantorId);
         return ResponseEntity.noContent().build();
     }
 }

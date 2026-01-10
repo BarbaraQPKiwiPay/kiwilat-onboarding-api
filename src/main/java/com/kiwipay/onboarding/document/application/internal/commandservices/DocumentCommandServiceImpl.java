@@ -1,16 +1,15 @@
 package com.kiwipay.onboarding.document.application.internal.commandservices;
 
-import com.kiwipay.onboarding.client.domain.model.aggregates.Client;
-import com.kiwipay.onboarding.client.domain.model.valueobjects.ClientStatus;
-import com.kiwipay.onboarding.client.infrastructure.persistence.jpa.repositories.ClientRepository;
+import com.kiwipay.onboarding.document.application.internal.dto.DocumentReviewRequest;
 import com.kiwipay.onboarding.document.application.internal.dto.DocumentUploadRequest;
 import com.kiwipay.onboarding.document.application.internal.dto.DocumentResponse;
-import com.kiwipay.onboarding.document.application.internal.dto.DocumentReviewRequest;
 import com.kiwipay.onboarding.document.domain.model.aggregates.Document;
 import com.kiwipay.onboarding.document.domain.model.exceptions.DocumentBusinessException;
+import com.kiwipay.onboarding.document.domain.model.valueobjects.DocumentOwnerType;
 import com.kiwipay.onboarding.document.domain.services.DocumentCommandService;
 import com.kiwipay.onboarding.document.infrastructure.persistence.jpa.DocumentRepository;
 import com.kiwipay.onboarding.document.infrastructure.persistence.jpa.DocumentTypeRepository;
+import com.kiwipay.onboarding.loan.infrastructure.persistence.jpa.LoanRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,32 +32,17 @@ public class DocumentCommandServiceImpl implements DocumentCommandService {
     private DocumentTypeRepository documentTypeRepository;
 
     @Autowired
-    private ClientRepository clientRepository;
+    private LoanRepository loanRepository;
 
     private static final List<String> ALLOWED_MIME_TYPES = Arrays.asList(
             "application/pdf", "image/jpeg", "image/png");
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-    private static final int MAX_DOCUMENTS_PER_CLIENT = 10;
 
     @Override
-    public DocumentResponse uploadDocument(Long clientId, DocumentUploadRequest request) {
-        // Validar que el cliente existe y obtener su estado
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> DocumentBusinessException.clientNotFound());
-
-        // VALIDACIÓN CRÍTICA: Verificar si el estado permite subida de documentos
-        // Para documentos FICHA_RIESGO, permitir subida en cualquier estado excepto
-        // APROBADO_POR_RIESGOS
-        boolean isFichaRiesgo = "FICHA_RIESGO".equals(request.getDocumentTypeId());
-        if (isFichaRiesgo) {
-            if (client.getStatus() == ClientStatus.APROBADO_POR_RIESGOS) {
-                throw DocumentBusinessException.documentUploadNotAllowed(client.getStatus().name());
-            }
-        } else {
-            // Para otros tipos de documentos, aplicar la validación estándar
-            if (!client.allowsDocumentUpload()) {
-                throw DocumentBusinessException.documentUploadNotAllowed(client.getStatus().name());
-            }
+    public DocumentResponse uploadDocument(Long loanId, Long ownerId, DocumentUploadRequest request) {
+        // Validar que el loan existe
+        if (!loanRepository.existsById(loanId)) {
+            throw DocumentBusinessException.loanNotFound();
         }
 
         // Validar que el tipo de documento existe
@@ -76,16 +60,22 @@ public class DocumentCommandServiceImpl implements DocumentCommandService {
             throw DocumentBusinessException.fileSizeExceeded();
         }
 
-        // Validar límite de documentos por cliente
-        if (documentRepository.countByClientId(clientId) >= MAX_DOCUMENTS_PER_CLIENT) {
-            throw DocumentBusinessException.maxDocumentsExceeded();
-        }
-
         // Validar Base64
         try {
             Base64.getDecoder().decode(request.getContentBase64());
         } catch (IllegalArgumentException e) {
             throw DocumentBusinessException.invalidBase64();
+        }
+
+        // Determinar clientId/guarantorId según ownerType
+        // NO validamos existencia - eso es responsabilidad del caller
+        Long clientId = null;
+        Long guarantorId = null;
+
+        if (request.getOwnerType() == DocumentOwnerType.CLIENT) {
+            clientId = ownerId;
+        } else if (request.getOwnerType() == DocumentOwnerType.GUARANTOR) {
+            guarantorId = ownerId;
         }
 
         // Generar ID único
@@ -94,7 +84,10 @@ public class DocumentCommandServiceImpl implements DocumentCommandService {
         // Crear documento
         Document document = new Document(
                 documentId,
+                loanId,
+                request.getOwnerType(),
                 clientId,
+                guarantorId,
                 request.getDocumentTypeId(),
                 request.getFilename(),
                 request.getMimeType(),
@@ -110,10 +103,9 @@ public class DocumentCommandServiceImpl implements DocumentCommandService {
     }
 
     @Override
-    public void deleteDocument(Long clientId, String documentId) {
-        // Verificar que el documento existe y pertenece al cliente
-        if (!documentRepository.existsByIdAndClientId(documentId, clientId)) {
-            throw DocumentBusinessException.documentNotBelongsToClient();
+    public void deleteDocument(String documentId) {
+        if (!documentRepository.existsById(documentId)) {
+            throw DocumentBusinessException.documentNotFound();
         }
 
         documentRepository.deleteById(documentId);

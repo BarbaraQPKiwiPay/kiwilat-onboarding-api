@@ -110,7 +110,7 @@ public class PartnerController {
      * GET /api/v1/guarantors/{guarantorId}/partner
      */
     @GetMapping("/guarantor/{guarantorId}")
-    public ResponseEntity<PartnerResponse> getPartnerByGuarantor(@PathVariable String guarantorId) {
+    public ResponseEntity<PartnerResponse> getPartnerByGuarantor(@PathVariable Long guarantorId) {
         return partnerQueryService.getPartnerByGuarantor(guarantorId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

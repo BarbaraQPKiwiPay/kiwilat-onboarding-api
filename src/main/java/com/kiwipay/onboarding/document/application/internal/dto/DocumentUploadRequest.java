@@ -1,5 +1,6 @@
 package com.kiwipay.onboarding.document.application.internal.dto;
 
+import com.kiwipay.onboarding.document.domain.model.valueobjects.DocumentOwnerType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -9,6 +10,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class DocumentUploadRequest {
+
+    @NotNull(message = "Owner type is required")
+    private DocumentOwnerType ownerType;
+
     @NotBlank(message = "Document type ID is required")
     private String documentTypeId;
 

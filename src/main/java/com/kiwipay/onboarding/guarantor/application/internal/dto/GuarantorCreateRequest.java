@@ -1,8 +1,8 @@
 package com.kiwipay.onboarding.guarantor.application.internal.dto;
 
-import com.kiwipay.onboarding.guarantor.domain.model.aggregates.Guarantor.Gender;
-import com.kiwipay.onboarding.guarantor.domain.model.aggregates.Guarantor.MaritalStatus;
-import jakarta.validation.Valid;
+import com.kiwipay.onboarding.shared.domain.valueobjects.DocumentType;
+import com.kiwipay.onboarding.shared.domain.valueobjects.Gender;
+import com.kiwipay.onboarding.shared.domain.valueobjects.MaritalStatus;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,8 +12,8 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 public class GuarantorCreateRequest {
-    @NotBlank(message = "Document type is required")
-    private String documentType;
+    @NotNull(message = "Document type is required")
+    private DocumentType documentType;
 
     @NotBlank(message = "Document number is required")
     private String documentNumber;
@@ -35,13 +35,12 @@ public class GuarantorCreateRequest {
     private MaritalStatus maritalStatus;
 
     @NotBlank(message = "Email is required")
-    @Email(message = "Invalid email format")
+    @Email(message = "Email must be valid")
     private String email;
 
     @NotBlank(message = "Phone is required")
     private String phone;
 
-    @Valid
-    @NotNull(message = "Address is required")
-    private GuarantorAddressRequest address;
+    private String districtId;
+    private String addressLine1;
 }

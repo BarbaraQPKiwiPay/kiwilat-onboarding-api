@@ -10,8 +10,13 @@ public class GuarantorBusinessException extends RuntimeException {
         this.httpStatus = httpStatus;
     }
 
-    public String getErrorCode() { return errorCode; }
-    public int getHttpStatus() { return httpStatus; }
+    public String getErrorCode() {
+        return errorCode;
+    }
+
+    public int getHttpStatus() {
+        return httpStatus;
+    }
 
     // Guarantor exceptions
     public static GuarantorBusinessException guarantorNotFound() {
@@ -20,6 +25,10 @@ public class GuarantorBusinessException extends RuntimeException {
 
     public static GuarantorBusinessException clientNotFound() {
         return new GuarantorBusinessException("Client not found", "CLIENT_NOT_FOUND", 404);
+    }
+
+    public static GuarantorBusinessException loanNotFound() {
+        return new GuarantorBusinessException("Loan not found", "LOAN_NOT_FOUND", 404);
     }
 
     public static GuarantorBusinessException documentTypeNotFound() {
@@ -32,7 +41,8 @@ public class GuarantorBusinessException extends RuntimeException {
     }
 
     public static GuarantorBusinessException invalidMimeType() {
-        return new GuarantorBusinessException("Invalid MIME type. Only PDF, JPG, and PNG are allowed", "INVALID_MIME_TYPE", 400);
+        return new GuarantorBusinessException("Invalid MIME type. Only PDF, JPG, and PNG are allowed",
+                "INVALID_MIME_TYPE", 400);
     }
 
     public static GuarantorBusinessException fileSizeExceeded() {
@@ -40,7 +50,8 @@ public class GuarantorBusinessException extends RuntimeException {
     }
 
     public static GuarantorBusinessException maxDocumentsExceeded() {
-        return new GuarantorBusinessException("Maximum number of documents (10) exceeded for this guarantor", "MAX_DOCUMENTS_EXCEEDED", 409);
+        return new GuarantorBusinessException("Maximum number of documents (10) exceeded for this guarantor",
+                "MAX_DOCUMENTS_EXCEEDED", 409);
     }
 
     public static GuarantorBusinessException invalidBase64() {
@@ -48,7 +59,8 @@ public class GuarantorBusinessException extends RuntimeException {
     }
 
     public static GuarantorBusinessException documentNotBelongsToClient() {
-        return new GuarantorBusinessException("Document does not belong to the specified client", "DOCUMENT_NOT_BELONGS_TO_CLIENT", 403);
+        return new GuarantorBusinessException("Document does not belong to the specified client",
+                "DOCUMENT_NOT_BELONGS_TO_CLIENT", 403);
     }
 
     public static GuarantorBusinessException invalidReviewStatus() {

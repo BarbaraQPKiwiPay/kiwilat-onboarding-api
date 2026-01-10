@@ -41,7 +41,7 @@ public interface PartnerQueryService {
      * @param guarantorId guarantor ID
      * @return partner response if found
      */
-    Optional<PartnerResponse> getPartnerByGuarantor(String guarantorId);
+    Optional<PartnerResponse> getPartnerByGuarantor(Long guarantorId);
 
     /**
      * Get partner by patient ID

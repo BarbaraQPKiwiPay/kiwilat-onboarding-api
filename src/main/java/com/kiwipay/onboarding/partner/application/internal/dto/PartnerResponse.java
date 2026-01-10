@@ -21,7 +21,7 @@ public class PartnerResponse {
 
     // Conditional foreign keys
     private Long clientId;
-    private String guarantorId;
+    private Long guarantorId;
     private Long patientId;
 
     // Personal information

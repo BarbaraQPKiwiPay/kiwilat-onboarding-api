@@ -24,7 +24,7 @@ public class CreatePartnerRequest {
 
     // Conditional foreign keys - only ONE should be provided based on partnerType
     private Long clientId;
-    private String guarantorId;
+    private Long guarantorId;
     private Long patientId;
 
     @NotNull(message = "Document type is required")

@@ -1,9 +1,13 @@
 package com.kiwipay.onboarding.guarantor.domain.model.aggregates;
 
-import com.kiwipay.onboarding.guarantor.domain.model.valueobjects.GuarantorAddress;
+import com.kiwipay.onboarding.shared.domain.valueobjects.DocumentType;
+import com.kiwipay.onboarding.shared.domain.valueobjects.Gender;
+import com.kiwipay.onboarding.shared.domain.valueobjects.MaritalStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,24 +18,26 @@ import java.time.LocalDateTime;
 @Table(name = "guarantors")
 public class Guarantor {
     @Id
-    private String guarantorId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(nullable = false, name = "client_id", unique = true)
-    private Long clientId;
+    @Column(name = "loan_id", nullable = false)
+    private Long loanId;
 
-    @Column(nullable = false, name = "document_type")
-    private String documentType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "document_type", nullable = false)
+    private DocumentType documentType;
 
-    @Column(nullable = false, name = "document_number")
+    @Column(name = "document_number", nullable = false)
     private String documentNumber;
 
-    @Column(nullable = false, precision = 10, scale = 2, name = "monthly_income")
+    @Column(name = "monthly_income", nullable = false, precision = 10, scale = 2)
     private BigDecimal monthlyIncome;
 
-    @Column(nullable = false, name = "first_names")
+    @Column(name = "first_names", nullable = false)
     private String firstNames;
 
-    @Column(nullable = false, name = "last_names")
+    @Column(name = "last_names", nullable = false)
     private String lastNames;
 
     @Enumerated(EnumType.STRING)
@@ -39,7 +45,7 @@ public class Guarantor {
     private Gender gender;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name = "marital_status")
+    @Column(name = "marital_status", nullable = false)
     private MaritalStatus maritalStatus;
 
     @Column(nullable = false)
@@ -48,22 +54,27 @@ public class Guarantor {
     @Column(nullable = false)
     private String phone;
 
-    @Embedded
-    private GuarantorAddress address;
+    @Column(name = "district_id")
+    private String districtId;
 
-    @Column(nullable = false, name = "created_at")
+    @Column(name = "address_line1")
+    private String addressLine1;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false, name = "updated_at")
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    public Guarantor() {}
+    public Guarantor() {
+    }
 
-    public Guarantor(String guarantorId, Long clientId, String documentType, String documentNumber,
-                    BigDecimal monthlyIncome, String firstNames, String lastNames, Gender gender,
-                    MaritalStatus maritalStatus, String email, String phone, GuarantorAddress address) {
-        this.guarantorId = guarantorId;
-        this.clientId = clientId;
+    public Guarantor(Long loanId, DocumentType documentType, String documentNumber,
+            BigDecimal monthlyIncome, String firstNames, String lastNames, Gender gender,
+            MaritalStatus maritalStatus, String email, String phone, String districtId, String addressLine1) {
+        this.loanId = loanId;
         this.documentType = documentType;
         this.documentNumber = documentNumber;
         this.monthlyIncome = monthlyIncome;
@@ -73,14 +84,13 @@ public class Guarantor {
         this.maritalStatus = maritalStatus;
         this.email = email;
         this.phone = phone;
-        this.address = address;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.districtId = districtId;
+        this.addressLine1 = addressLine1;
     }
 
-    public void updateDetails(String documentType, String documentNumber, BigDecimal monthlyIncome,
-                             String firstNames, String lastNames, Gender gender, MaritalStatus maritalStatus,
-                             String email, String phone, GuarantorAddress address) {
+    public void updateDetails(DocumentType documentType, String documentNumber, BigDecimal monthlyIncome,
+            String firstNames, String lastNames, Gender gender, MaritalStatus maritalStatus,
+            String email, String phone, String districtId, String addressLine1) {
         this.documentType = documentType;
         this.documentNumber = documentNumber;
         this.monthlyIncome = monthlyIncome;
@@ -90,15 +100,7 @@ public class Guarantor {
         this.maritalStatus = maritalStatus;
         this.email = email;
         this.phone = phone;
-        this.address = address;
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public enum Gender {
-        M, F
-    }
-
-    public enum MaritalStatus {
-        SINGLE, MARRIED, DIVORCED, WIDOWED
+        this.districtId = districtId;
+        this.addressLine1 = addressLine1;
     }
 }
